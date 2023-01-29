@@ -2,6 +2,7 @@ package com.example.feature_screen_setting_impl.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -36,6 +37,11 @@ internal class CauseAdapter :
     ) : ViewHolder(binding.root) {
         fun bind(cause: Cause){
             binding.titleStress.text = cause.name
+            when(cause.name){
+                "Артефакты"-> binding.deletedSource.isVisible = false
+                "Сон"-> binding.deletedSource.isVisible = false
+                else -> binding.deletedSource.isVisible = true
+            }
             binding.deletedSource.setOnClickListener {
                 callback?.deleteCause(cause)
             }

@@ -29,6 +29,15 @@ class SettingDB: SettingApi {
 
     init {
         DatabaseComponent.get().inject(this)
+        CoroutineScope(Dispatchers.IO).launch {
+            if("Артефакты" !in causeDao.getCause().first().map { it.cause }){
+                causeDao.insertCause(CauseEntity("Артефакты"))
+            }
+            if("Сон" !in causeDao.getCause().first().map { it.cause }){
+                causeDao.insertCause(CauseEntity("Сон"))
+            }
+        }
+
     }
 
 

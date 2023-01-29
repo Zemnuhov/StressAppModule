@@ -52,6 +52,7 @@ dependencies {
     implementation project(path: ':feature-item-markup-api')
     implementation project(path: ':feature-item-markup-api')
     implementation project(path: ':navigation-api')
+    implementation 'androidx.core:core-ktx:+'
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
     implementation 'androidx.core:core-ktx:1.9.0'

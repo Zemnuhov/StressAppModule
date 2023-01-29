@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import com.cesarferreira.tempo.toDate
 import com.neurotech.core_database_api.model.User
 import com.neurotech.utils.TimeFormat
-import com.neurotech.utils.toLocalDateTime
 
 @Entity
 data class UserEntity(

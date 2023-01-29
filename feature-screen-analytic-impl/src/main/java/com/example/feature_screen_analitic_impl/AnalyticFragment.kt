@@ -227,7 +227,11 @@ class AnalyticFragment: Fragment() {
         var id = 0.01f
         resultEntityList.list.sortedBy { it.date }.forEach {
             val x = it.date.toString("dd").toFloat()
-            val y = it.peaks + id
+            val y = if(resultEntityList.list.any { it.peaks>0 }){
+                it.peaks + id
+            } else {
+                it.peaks.toFloat()
+            }
             barEntryList.add(BarEntry(x, y))
             sourceMap[y] = it.stressCause?:""
             yValueList.add(y)

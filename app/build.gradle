@@ -65,6 +65,7 @@ dependencies {
     implementation project(path: ':feature-screen-statistic-impl')
     implementation project(path: ':feature-screen-setting-impl')
     implementation project(path: ':feature-screen-analytic-impl')
+    implementation 'androidx.core:core-ktx:+'
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
     implementation 'androidx.navigation:navigation-fragment:2.5.3'

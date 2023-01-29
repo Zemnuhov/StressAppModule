@@ -13,7 +13,6 @@ import com.example.feature_phase_info_impl.databinding.FragmentPhaseInfoBinding
 import com.example.feature_phase_info_impl.di.PhaseInfoComponent
 import com.jjoe64.graphview.series.BarGraphSeries
 import com.jjoe64.graphview.series.DataPoint
-import com.neurotech.utils.toDate
 import javax.inject.Inject
 import dagger.Lazy
 
