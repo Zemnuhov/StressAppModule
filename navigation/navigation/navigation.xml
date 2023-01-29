@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation"
+    app:startDestination="@id/scanFragment">
+    <fragment
+        android:id="@+id/scanFragment"
+        android:name="com.neurotech.feature_scan_impl.ScanFragment"
+        android:label="Поиск устройств" >
+        <action
+            android:id="@+id/action_scanFragment_to_MainGraph"
+            app:destination="@id/MainGraph" />
+
+    </fragment>
+    <navigation android:id="@+id/MainGraph"
+        app:startDestination="@id/mainFragment">
+        <deepLink
+            app:uri="android-app://com.example.feature_main_screen_impl.MainFragment"/>
+        <fragment
+            android:id="@+id/mainFragment"
+            android:name="com.example.feature_main_screen_impl.MainFragment"
+            android:label="Главная" />
+    </navigation>
+</navigation>

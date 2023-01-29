@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.feature_main_screen_impl.MainFragment"
+        android:label="Главная" >
+        <action
+            android:id="@+id/action_mainFragment_to_statisticScreenFragment"
+            app:destination="@id/statisticScreenFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/statisticScreenFragment"
+        android:name="com.example.feature_screen_statistic_impl.StatisticFragment"
+        android:label="Статистика" >
+        <action
+            android:id="@+id/action_statisticScreenFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.example.feature_screen_setting_impl.SettingFragment"
+        android:label="Настройки" />
+    <fragment
+        android:id="@+id/analyticFragment"
+        android:name="com.example.feature_screen_analitic_impl.AnalyticFragment"
+        android:label="Аналитика" />
+
+</navigation>

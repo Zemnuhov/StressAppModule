@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/small_indent"
+    android:background="@drawable/markup_background">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/keepLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/small_indent"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/keepString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_indent"
+            android:text="Комментарий:"
+            android:textColor="@color/text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/keepSaveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/half_small_indent"
+            android:layout_marginEnd="@dimen/small_indent"
+            android:layout_marginBottom="@dimen/small_indent"
+            android:background="@drawable/app_standart_button"
+            android:text="OK"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/keepTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_indent"
+            android:text="TextView"
+            android:textColor="@color/text_color"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/keepString"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/keepEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_indent"
+            android:layout_marginEnd="@dimen/small_indent"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/keepSaveButton"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.666" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/timeStatisticTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_indent"
+        android:layout_marginBottom="@dimen/small_indent"
+        android:text="@string/default_time"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/default_text_size"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/dateStatisticTextView"
+        app:layout_constraintEnd_toEndOf="@+id/dateStatisticTextView"
+        app:layout_constraintStart_toStartOf="@+id/dateStatisticTextView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <TextView
+        android:id="@+id/dateStatisticTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/small_indent"
+        android:layout_marginBottom="@dimen/default_indent"
+        android:text="@string/default_date"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/default_text_size"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/keepLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timeStatisticTextView"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/small_indent"
+        android:text="Количество пиков:"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/small_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/textView9"
+        app:layout_constraintStart_toStartOf="@+id/textView9"
+        app:layout_constraintTop_toTopOf="@+id/timeStatisticTextView" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_indent"
+        android:text="Средняя тоника:"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/small_text_size"
+        app:layout_constraintBottom_toBottomOf="@+id/dateStatisticTextView"
+        app:layout_constraintStart_toEndOf="@+id/dateStatisticTextView"
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+    <TextView
+        android:id="@+id/peakCountStatisticTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/half_small_indent"
+        android:text="100"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/small_text_size"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView8"
+        app:layout_constraintStart_toEndOf="@+id/textView8"
+        app:layout_constraintTop_toTopOf="@+id/textView8" />
+
+    <TextView
+        android:id="@+id/avgTonicStatisticTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="0000"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/small_text_size"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView9"
+        app:layout_constraintStart_toEndOf="@+id/textView8"
+        app:layout_constraintStart_toStartOf="@+id/peakCountStatisticTextView"
+        app:layout_constraintTop_toTopOf="@+id/textView9" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/colorLayoutStatisticTextView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/small_indent"
+        android:layout_marginEnd="@dimen/small_indent"
+        android:background="@drawable/round_background"
+        app:layout_constraintBottom_toTopOf="@+id/keepLayout"
+        app:layout_constraintEnd_toStartOf="@+id/keepButton"
+        app:layout_constraintStart_toEndOf="@+id/avgTonicStatisticTextView"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/sourceStatisticTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:text="@string/default_value"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/small_text_size"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/keepButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/half_small_indent"
+        app:layout_constraintBottom_toTopOf="@+id/keepLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_comment_24" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="testRunner" value="GRADLE" />
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="Embedded JDK" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/core-ble-device-scan-api" />
+            <option value="$PROJECT_DIR$/core-ble-device-scan-impl" />
+            <option value="$PROJECT_DIR$/core-bluetooth-communication-api" />
+            <option value="$PROJECT_DIR$/core-bluetooth-communication-impl" />
+            <option value="$PROJECT_DIR$/core-database-api" />
+            <option value="$PROJECT_DIR$/core-database-impl" />
+            <option value="$PROJECT_DIR$/custom-views" />
+            <option value="$PROJECT_DIR$/feature-item-graph-api" />
+            <option value="$PROJECT_DIR$/feature-item-graph-impl" />
+            <option value="$PROJECT_DIR$/feature-item-markup-api" />
+            <option value="$PROJECT_DIR$/feature-item-markup-impl" />
+            <option value="$PROJECT_DIR$/feature-item-phase-api" />
+            <option value="$PROJECT_DIR$/feature-item-phase-impl" />
+            <option value="$PROJECT_DIR$/feature-item-tonic-api" />
+            <option value="$PROJECT_DIR$/feature-item-tonic-impl" />
+            <option value="$PROJECT_DIR$/feature-scan-api" />
+            <option value="$PROJECT_DIR$/feature-scan-impl" />
+            <option value="$PROJECT_DIR$/feature-screen-analytic-impl" />
+            <option value="$PROJECT_DIR$/feature-screen-main-api" />
+            <option value="$PROJECT_DIR$/feature-screen-main-impl" />
+            <option value="$PROJECT_DIR$/feature-screen-setting-api" />
+            <option value="$PROJECT_DIR$/feature-screen-setting-impl" />
+            <option value="$PROJECT_DIR$/feature-screen-statistic-api" />
+            <option value="$PROJECT_DIR$/feature-screen-statistic-impl" />
+            <option value="$PROJECT_DIR$/menu" />
+            <option value="$PROJECT_DIR$/navigation" />
+            <option value="$PROJECT_DIR$/navigation-api" />
+            <option value="$PROJECT_DIR$/utils" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

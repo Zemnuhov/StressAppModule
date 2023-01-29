@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#ffccbc</color>
+    <color name="primary_light">#ABFF6B3D</color>
+    <color name="primary_dark">#cb9b8c</color>
+    <color name="secondary">#ffab91</color>
+    <color name="secondary_light">#ffddc1</color>
+    <color name="secondary_dark">#c97b63</color>
+    <color name="third_dark">#ff7043</color>
+    <color name="third">#ffa270</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="card_background">#FFFFFFFF</color>
+    <color name="graph_grid">#878787</color>
+
+    <color name="green_not_active">#dcedc8</color>
+    <color name="green_active">#81c784</color>
+    <color name="yellow_not_active">#fff9c4</color>
+    <color name="yellow_active">#ffee58</color>
+    <color name="red_not_active">#ffccbc</color>
+    <color name="red_active">#ff7043</color>
+
+    <color name="background_color">#EAEAEA</color>
+    <color name="text_color">#252525</color>
+
+    <color name="yellow_selected">#716A28</color>
+    <color name="green_selected">#416542</color>
+    <color name="red_selected">#78341F</color>
+
+    <color name="download_background">#A5A5A5</color>
+
+    <color name="calendar_picker_bg">#00FFFFFF</color>
+
+    <color name="calendar_day_unselected_bg">#00000000</color>
+    <color name="calendar_day_selected_bg">#ffab91</color>
+    <color name="calendar_day_range_selected_bg">#ffab91</color>
+
+    <!--Font color-->
+    <color name="calendar_day_disabled_font">#ffa270</color>
+    <color name="calendar_day_weekend_font">#ff0000</color>
+    <color name="calendar_day_selected_font">#FFFFFF</color>
+    <color name="calendar_day_normal_font">#333333</color>
+
+    <color name="calendar_month_font">#000000</color>
+    <color name="calendar_week_font">#333333</color>
+</resources>

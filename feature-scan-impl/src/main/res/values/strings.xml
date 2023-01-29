@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="device_name_title">Имя: </string>
+    <string name="mac_address_title">Адрес: </string>
+    <string name="watch">watch</string>
+</resources>

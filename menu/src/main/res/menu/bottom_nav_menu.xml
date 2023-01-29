@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/settingFragment"
+            android:icon="@drawable/ic_baseline_settings_24"
+            android:title="Настройки" />
+
+        <item
+            android:id="@+id/markupFragment"
+            android:icon="@drawable/ic_baseline_bookmark_24"
+            android:title="Разметка" />
+
+        <item
+            android:id="@+id/mainFragment"
+            android:icon="@drawable/icon_stress"
+            android:title="Главная" />
+
+        <item
+            android:id="@+id/analyticFragment"
+            android:icon="@drawable/ic_baseline_analytics_24"
+            android:title="Аналитика" />
+
+        <item
+            android:id="@+id/userAccountFragment"
+            android:icon="@drawable/ic_baseline_account_circle_24"
+            android:title="Пользователь" />
+    </group>
+</menu>

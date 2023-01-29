@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/half_small_indent"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/image_color_sources"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.5"
+        android:background="@drawable/round_background"
+        android:contentDescription="@string/color_marker"
+        android:src="@drawable/ic_baseline_stop_24"
+        app:layout_constraintBottom_toBottomOf="@+id/name_sources"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/name_sources"
+        app:tint="@color/primary" />
+
+    <TextView
+        android:id="@+id/name_sources"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/small_indent"
+        android:layout_marginEnd="@dimen/default_indent"
+        android:layout_weight="0.7"
+        android:gravity="center|start"
+        android:maxLines="1"
+        android:text="@string/default_title"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/small_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/count_sources_statistic"
+        app:layout_constraintStart_toEndOf="@+id/image_color_sources"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/count_sources_statistic"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1.7"
+        android:gravity="center|end"
+        android:text="@string/default_value"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/small_text_size"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/name_sources"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/name_sources" />
+</androidx.constraintlayout.widget.ConstraintLayout>

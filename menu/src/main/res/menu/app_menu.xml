@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title="Поиск"
+        android:id="@+id/menu_search"
+        android:icon="@drawable/icon_refresh"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="3"
+        />
+    <item
+        android:title="AppIcon"
+        android:id="@+id/menu_app_icon"
+        android:icon="@drawable/icon_stress"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="4"
+        />
+
+    <item
+        android:title="Отключить устройство"
+        android:id="@+id/menu_disconnect_device"
+        app:showAsAction="never"
+        android:orderInCategory="3"
+        />
+    <!--    TODO(Не забыть удалить)-->
+    <item
+        android:title="Запись"
+        android:id="@+id/recording"
+        app:showAsAction="never"
+        android:orderInCategory="4"
+        />
+</menu>

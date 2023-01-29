@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    android:elevation="20dp">
+
+
+    <LinearLayout
+        android:id="@+id/graph_fragment_in_main"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/default_indent"
+        android:layout_weight="1"
+        android:background="@drawable/item_background"
+        android:elevation="@dimen/default_elevation"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/guideline12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/current_and_avg_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/default_indent"
+        android:layout_marginEnd="@dimen/half_small_indent"
+        android:background="@drawable/item_background"
+        android:elevation="@dimen/default_elevation"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/guideline13"
+        app:layout_constraintEnd_toStartOf="@+id/guideline14"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline12">
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/peaks_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/half_small_indent"
+        android:layout_marginEnd="@dimen/default_indent"
+        android:background="@drawable/item_background"
+        android:elevation="@dimen/default_elevation"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/guideline13"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline14"
+        app:layout_constraintTop_toTopOf="@+id/guideline12"/>
+
+    <LinearLayout
+        android:id="@+id/statistic_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/default_indent"
+        android:layout_marginTop="@dimen/default_indent"
+        android:layout_marginEnd="@dimen/default_indent"
+        android:layout_marginBottom="@dimen/default_indent"
+        android:background="@drawable/item_background"
+        android:elevation="@dimen/default_elevation"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline13" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.65" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:elevation="@dimen/default_elevation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_stress" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/disconnectView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/small_indent"
+        android:layout_marginEnd="@dimen/small_indent"
+        android:background="@drawable/disconnect_notification_background"
+        android:elevation="20dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/guideline16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/disconnect_message"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.16161616" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="current_value_title">Текущее\nзначение</string>
+    <string name="average_value_title">Среднее\nзначение</string>
+    <string name="default_value">0</string>
+</resources>

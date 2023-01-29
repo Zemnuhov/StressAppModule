@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/default_indent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1.25"
+            android:gravity="center"
+            android:text="@string/phase_item_title"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/default_text_size" />
+
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/peaks_counter_graph"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/peaks_counter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1.25"
+            android:gravity="center"
+            android:text="@string/default_value"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/peak_text_size"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/time_range_phase"
+        android:layout_width="@dimen/range_size"
+        android:layout_height="@dimen/range_size"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="@dimen/small_indent"
+        android:layout_marginBottom="@dimen/small_indent"
+        android:gravity="end|bottom"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/default_text_size" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

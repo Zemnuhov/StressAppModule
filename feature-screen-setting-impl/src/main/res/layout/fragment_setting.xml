@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EAEAEA">
+
+
+    <TextView
+        tools:viewBindingIgnore = "true"
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_indent"
+        android:text="@string/sources"
+        android:textColor="@color/text_color"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        tools:viewBindingIgnore = "true"
+        android:id="@+id/sources_item"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/default_indent"
+        android:background="@drawable/shadow"
+        android:elevation="@dimen/default_elevation"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView">
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/causeRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/default_indent"
+            android:layout_marginTop="@dimen/default_indent"
+            android:layout_marginEnd="@dimen/default_indent"
+            android:layout_marginBottom="@dimen/small_indent"
+            app:layout_constraintBottom_toTopOf="@+id/causeEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_cause" />
+
+        <EditText
+            android:id="@+id/causeEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_indent"
+            android:layout_marginEnd="@dimen/small_indent"
+            android:layout_marginBottom="@dimen/default_indent"
+            android:autofillHints="source"
+            android:hint="@string/input_source"
+            android:inputType="textCapWords"
+            android:minHeight="48dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/addCauseButton"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/addCauseButton"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginEnd="@dimen/default_indent"
+            android:background="@drawable/app_standart_button"
+            android:text="@string/add"
+            app:layout_constraintBottom_toBottomOf="@+id/causeEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/causeEditText" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        tools:viewBindingIgnore = "true"
+        android:id="@+id/day_schedule"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/default_indent"
+        android:background="@drawable/shadow"
+        android:elevation="@dimen/default_elevation"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintVertical_bias="0.0">
+
+
+        <EditText
+            android:id="@+id/dayPlanEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_indent"
+            android:layout_marginEnd="@dimen/small_indent"
+            android:layout_marginBottom="@dimen/default_indent"
+            android:autofillHints="source"
+            android:hint="@string/plan_text"
+            android:inputType="textCapWords"
+            android:minHeight="48dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/addDayPlanButton"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/addDayPlanButton"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginEnd="@dimen/default_indent"
+            android:layout_marginBottom="@dimen/default_indent"
+            android:background="@drawable/app_standart_button"
+            android:text="@string/add"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/dayPlanRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/default_indent"
+            android:layout_marginTop="@dimen/default_indent"
+            android:layout_marginEnd="@dimen/default_indent"
+            android:layout_marginBottom="@dimen/small_indent"
+            app:layout_constraintBottom_toTopOf="@+id/dayPlanEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_day_plan" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        tools:viewBindingIgnore = "true"
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5005612" />
+
+    <TextView
+        tools:viewBindingIgnore = "true"
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="@dimen/default_indent"
+        android:layout_marginEnd="@dimen/default_indent"
+        android:text="@string/day_schedule"
+        android:textColor="@color/text_color"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline2" />
+</androidx.constraintlayout.widget.ConstraintLayout>

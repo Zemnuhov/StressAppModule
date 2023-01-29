@@ -1,0 +1,48 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        jcenter()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        jcenter()
+    }
+}
+rootProject.name = "ModuleStressApp"
+include ':app'
+include ':feature-scan-api'
+include ':feature-scan-impl'
+include ':core-ble-device-scan-impl'
+include ':core-ble-device-scan-api'
+include ':menu'
+include ':core-bluetooth-communication-api'
+include ':core-bluetooth-communication-impl'
+include ':core-database-impl'
+include ':core-database-api'
+include ':utils'
+include ':feature-item-tonic-impl'
+include ':feature-item-tonic-api'
+include ':feature-screen-main-api'
+include ':feature-screen-main-impl'
+include ':feature-item-phase-api'
+include ':feature-item-phase-impl'
+include ':feature-item-graph-api'
+include ':feature-item-graph-impl'
+include ':feature-item-markup-api'
+include ':feature-item-markup-impl'
+include ':navigation-api'
+include ':navigation'
+include ':feature-screen-statistic-api'
+include ':feature-screen-statistic-impl'
+include ':custom-views'
+include ':feature-screen-setting-api'
+include ':feature-screen-setting-impl'
+include ':feature-screen-analytic-impl'

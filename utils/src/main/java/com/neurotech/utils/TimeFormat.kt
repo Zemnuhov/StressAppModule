@@ -1,0 +1,13 @@
+package com.neurotech.utils
+
+
+
+object TimeFormat {
+    const val dateTimeIsoPattern = "yyyy-MM-dd HH:mm:ss.SSS"
+    const val dateIsoPattern = "yyyy-MM-dd"
+    const val dateIsoAndHourPattern = "yyyy-MM-dd HH"
+    const val timePattern = "HH:mm"
+    const val datePattern = "dd.MM.yyyy"
+    const val dateWithoutYearPattern = "dd.MM"
+}
+
