@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/markupFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EAEAEA"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/default_indent"
+        android:layout_marginTop="@dimen/default_indent"
+        android:layout_marginEnd="@dimen/default_indent"
+        android:layout_marginBottom="@dimen/default_indent"
+        android:layout_weight="1"
+        android:background="@drawable/shadow"
+        android:elevation="@dimen/default_elevation"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/markupRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/default_indent" />
+
+        <TextView
+            android:id="@+id/allMarkupsComplete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/black_shadow"
+            android:gravity="center"
+            android:text="@string/markup_is_ok"
+            android:textSize="@dimen/default_text_size" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/default_indent"
+        android:background="@drawable/app_standart_button"
+        android:elevation="@dimen/default_elevation"
+        android:text="@string/save_button_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout4"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout4" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sourceRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/default_indent"
+        android:padding="@dimen/small_indent"
+        app:layout_constraintBottom_toTopOf="@+id/saveButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/default_indent"
+        android:background="@drawable/shadow"
+        android:elevation="@dimen/default_elevation"
+        app:layout_constraintBottom_toTopOf="@+id/sourceRecyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout4"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout4">
+
+        <Button
+            android:id="@+id/timeSetButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/large_indent"
+            android:layout_marginTop="@dimen/default_indent"
+            android:layout_marginEnd="@dimen/large_indent"
+            android:layout_marginBottom="@dimen/default_indent"
+            android:background="@drawable/app_standart_button"
+            android:elevation="@dimen/default_elevation"
+            android:text="Отметить"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/endTime" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/large_indent"
+            android:text="Начало диапазона:"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/beginTime"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/beginTime" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Конец диапазона:"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/endTime"
+            app:layout_constraintStart_toStartOf="@+id/textView"
+            app:layout_constraintTop_toTopOf="@+id/endTime" />
+
+        <TextView
+            android:id="@+id/beginTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_indent"
+            android:layout_marginTop="@dimen/default_indent"
+            android:background="@drawable/app_standart_button"
+            android:elevation="@dimen/default_elevation"
+            android:padding="@dimen/default_indent"
+            android:text="00:00"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@+id/textView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/endTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_indent"
+            android:background="@drawable/app_standart_button"
+            android:elevation="@dimen/default_elevation"
+            android:padding="@dimen/default_indent"
+            android:text="00:00"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/beginTime"
+            app:layout_constraintStart_toStartOf="@+id/beginTime"
+            app:layout_constraintTop_toBottomOf="@+id/beginTime" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

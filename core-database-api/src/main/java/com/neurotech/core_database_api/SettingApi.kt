@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface SettingApi {
     suspend fun getDevice(): Device?
+    suspend fun rememberDevice(device: Device)
+    suspend fun removedDevice()
 
     suspend fun getCauses(): Flow<Causes>
     suspend fun addCause(cause: Cause)

@@ -93,7 +93,6 @@ class StatisticViewModel(
                 date = date.beginningOfMonth - 1.minute
                 updateData()
             }
-            else -> {}
         }
 
 
@@ -130,8 +129,8 @@ class StatisticViewModel(
             Interval.DAY ->{
                 job = scope.launch {
                     state = 1
-                    result.getResultsInInterval(date.beginningOfDay, date.endOfDay).collect {
-                        with(it.list){
+                    result.getResultsInInterval(date.beginningOfDay, date.endOfDay).collect { resultsTenMinute ->
+                        with(resultsTenMinute.list){
                             val resultTimes = this.map { it.time.toString("HH:mm") }
                             val resultMutableList = this.toMutableList()
                             xLabelOfDay.forEach {
@@ -172,8 +171,8 @@ class StatisticViewModel(
                     }
                     val endWeek = beginWeek + 7.day - 1.minute
                     _dateFlow.postValue("${beginWeek.toString(TimeFormat.datePattern)} - ${endWeek.toString(TimeFormat.datePattern)}")
-                    result.getResultHourByInterval(beginWeek,endWeek).collect {
-                        _results.postValue(it.list.map {
+                    result.getResultHourByInterval(beginWeek,endWeek).collect { resultsHour ->
+                        _results.postValue(resultsHour.list.map {
                             ResultStatistic(
                                 it.date,
                                 it.peaks,
@@ -189,8 +188,8 @@ class StatisticViewModel(
             Interval.MONTH -> {
                 state = 3
                 job = scope.launch {
-                    result.getMonthlyResults(date.beginningOfMonth,false).collect {
-                        _results.postValue(it.list.map {
+                    result.getMonthlyResults(date.beginningOfMonth,false).collect { resultsDay ->
+                        _results.postValue(resultsDay.list.map {
                             ResultStatistic(
                                 it.date,
                                 it.peaks,

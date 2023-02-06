@@ -1,17 +1,20 @@
 package com.neurotech.core_database_impl.main_database.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
+import com.neurotech.core_database_api.model.ResultHour
+import com.neurotech.core_database_api.model.ResultsTenMinute
 import com.neurotech.core_database_impl.main_database.entity.CountForCauseDB
+import com.neurotech.core_database_impl.main_database.entity.ResultDayEntity
+import com.neurotech.core_database_impl.main_database.entity.ResultHourEntity
 import com.neurotech.core_database_impl.main_database.entity.ResultTenMinuteEntity
+import com.neurotech.core_database_impl.main_database.model.UserParameterDB
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ResultTenMinuteDao {
 
     @Query("SELECT * FROM ResultTenMinuteEntity GROUP BY time")
-    fun getResult(): Flow<List<ResultTenMinuteEntity>>
+    fun getResult(): Flow<ResultTenMinuteEntity>
 
     @Query("SELECT * FROM ResultTenMinuteEntity WHERE time >= datetime('now','-1 hour','localtime')")
     fun getResultsInOneHour(): Flow<List<ResultTenMinuteEntity>>
@@ -25,9 +28,34 @@ interface ResultTenMinuteDao {
     @Query("UPDATE ResultTenMinuteEntity SET keep = :keep WHERE time = :time")
     fun setKeepByTime(keep: String?, time: String)
 
-    @Query("select stressCause, COUNT(*) as count from ResultTenMinuteEntity where datetime(time,'localtime') between datetime(:beginInterval, 'localtime') and datetime(:endInterval, 'localtime') group by stressCause ")
+    @Query("select stressCause, COUNT(*) as count from ResultTenMinuteEntity where datetime(time,'localtime') between datetime(:beginInterval, 'localtime') and datetime(:endInterval, 'localtime') and stressCause != null  group by stressCause ")
     fun getCountStressCauseInInterval(beginInterval: String, endInterval:String): Flow<List<CountForCauseDB>>
 
-    @Insert
+    @Query("SELECT strftime('%Y-%m-%d %H:00:00.000', time) AS date, SUM(phaseCount) AS peaks, AVG(phaseCount) AS peaksAvg, AVG(tonicAvg) AS tonic,s AS stressCause " +
+            "FROM ResultTenMinuteEntity " +
+            "JOIN (SELECT  day,s,max(count) " +
+            "FROM ResultTenMinuteEntity JOIN(SELECT strftime('%Y-%m-%d %H', time) AS day, stressCause AS s, count(stressCause) AS count FROM ResultTenMinuteEntity GROUP BY day, stressCause) GROUP BY day) ON day = strftime('%Y-%m-%d %H', time) " +
+            "WHERE date >= :beginInterval AND date <= :endInterval GROUP BY date")
+    fun getResultsHour(beginInterval: String, endInterval:String): List<ResultHourEntity>
+
+    @Query("SELECT date(time,'localtime') AS date, SUM(phaseCount) AS peaks, AVG(phaseCount) AS peaksAvg, AVG(tonicAvg) AS tonic,s AS stressCause " +
+            "FROM ResultTenMinuteEntity " +
+            "JOIN (SELECT  day,s,max(count) FROM ResultTenMinuteEntity JOIN(SELECT date(time) AS day, stressCause AS s, count(stressCause) AS count FROM ResultTenMinuteEntity GROUP BY day, stressCause) GROUP BY day) ON day = date(time,'localtime') " +
+            "WHERE date >= date(:beginInterval, 'localtime') AND date <= date(:endInterval, 'localtime') " +
+            "GROUP BY date")
+    fun getResultForTheDay(beginInterval: String, endInterval:String): List<ResultDayEntity>
+
+    @Query("SELECT * FROM ResultTenMinuteEntity WHERE phaseCount > :threshold and stressCause is NULL")
+    fun getResultsTenMinuteAboveThreshold(threshold: Int): Flow<List<ResultTenMinuteEntity>>
+
+    @Query("SELECT AVG(tonicAvg) AS maxTonic, AVG(phaseCount) AS maxPeaksInTenMinute, " +
+            "(SELECT AVG(peaks) FROM ResultHourEntity) AS maxHourInDay, " +
+            "(SELECT AVG(peaks) FROM ResultDayEntity) AS maxPeakInDay FROM ResultTenMinuteEntity")
+    fun getUserParameter(): Flow<UserParameterDB>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertResult(vararg resultEntity: ResultTenMinuteEntity)
+
+    @Update
+    fun updateResult(vararg resultEntity: ResultTenMinuteEntity)
 }

@@ -2,7 +2,6 @@ package com.neurotech.core_database_impl.implementation
 
 import com.cesarferreira.tempo.*
 import com.neurotech.core_database_api.ResultApi
-import com.neurotech.core_database_api.SettingApi
 import com.neurotech.core_database_api.model.*
 import com.neurotech.core_database_impl.di.DatabaseComponent
 import com.neurotech.core_database_impl.main_database.dao.ResultDayDao
@@ -10,6 +9,8 @@ import com.neurotech.core_database_impl.main_database.dao.ResultHourDao
 import com.neurotech.core_database_impl.main_database.dao.ResultTenMinuteDao
 import com.neurotech.core_database_impl.main_database.entity.CountForCauseDB
 import com.neurotech.core_database_impl.main_database.entity.ResultDayEntity
+import com.neurotech.core_database_impl.main_database.entity.ResultHourEntity
+import com.neurotech.core_database_impl.main_database.entity.ResultTenMinuteEntity
 import com.neurotech.utils.TimeFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -31,6 +32,52 @@ class ResultDB : ResultApi {
 
     init {
         DatabaseComponent.get().inject(this)
+    }
+
+    override suspend fun writeResultTenMinute(resultsTenMinute: ResultTenMinute) {
+        resultTenMinuteDao.insertResult(
+            ResultTenMinuteEntity(
+                resultsTenMinute.time.toString(TimeFormat.dateTimeIsoPattern),
+                resultsTenMinute.peakCount,
+                resultsTenMinute.tonicAvg,
+                resultsTenMinute.conditionAssessment,
+                resultsTenMinute.stressCause,
+                resultsTenMinute.keep
+            )
+        )
+    }
+
+    override suspend fun writeResultHour(resultsHour: ResultsHour) {
+        resultHourDao.insertOrUpdate(resultsHour.list.map {
+            ResultHourEntity(
+                it.date.toString(TimeFormat.dateTimeIsoPattern),
+                it.peaks,
+                it.peaksAvg,
+                it.tonic,
+                it.stressCause
+            )
+        }
+        )
+    }
+
+    override suspend fun writeResultDay(resultsDay: ResultsDay) {
+        resultDayDao.insertOrUpdate(resultsDay.list.map {
+            ResultDayEntity(
+                it.date.toString(TimeFormat.dateTimeIsoPattern),
+                it.peaks,
+                it.peaksAvg,
+                it.tonic,
+                it.stressCause
+            )
+        })
+    }
+
+    override suspend fun getResultTenMinute(): Flow<ResultTenMinute> {
+        return resultTenMinuteDao.getResult().map { it.mapToResultTenMinute() }
+    }
+
+    override suspend fun getResultHour(): Flow<ResultHour> {
+        TODO("Not yet implemented")
     }
 
     override suspend fun getResultTenMinuteInLastHour(): Flow<ResultsTenMinute> {
@@ -74,6 +121,24 @@ class ResultDB : ResultApi {
         TODO("Not yet implemented")
     }
 
+    override suspend fun updateResultTenMinute(resultsTenMinute: ResultsTenMinute) {
+        withContext(Dispatchers.IO){
+            resultTenMinuteDao.updateResult(
+                *resultsTenMinute.list.map {
+                    ResultTenMinuteEntity(
+                        it.time.toString(TimeFormat.dateTimeIsoPattern),
+                        it.peakCount,
+                        it.tonicAvg,
+                        it.conditionAssessment,
+                        it.stressCause,
+                        it.keep
+                    )
+                }.toTypedArray()
+            )
+        }
+
+    }
+
     override suspend fun getLastFiveValidDay(): Flow<ResultsDay> {
         return resultDayDao.getLastFiveValidDay().map {
             ResultsDay(
@@ -84,7 +149,7 @@ class ResultDB : ResultApi {
         }
     }
 
-    override suspend fun getMaxUserParameter(): UserParameters = withContext(Dispatchers.IO){
+    override suspend fun getMaxUserParameter(): UserParameters = withContext(Dispatchers.IO) {
         return@withContext resultDayDao.getMaxParameters().mapToDomain()
     }
 
@@ -124,6 +189,38 @@ class ResultDB : ResultApi {
         }
     }
 
+    override suspend fun getResultsTenMinuteAboveThreshold(threshold: Int): Flow<ResultsTenMinute> {
+        return resultTenMinuteDao.getResultsTenMinuteAboveThreshold(threshold).map {
+            ResultsTenMinute(
+                it.map { it.mapToResultTenMinute() }
+            )
+        }
+    }
+
+    override suspend fun getResultHourFromResultTenMinute(
+        beginInterval: Date,
+        endInterval: Date
+    ): ResultsHour {
+        return ResultsHour(
+            resultTenMinuteDao.getResultsHour(
+                beginInterval.toString(TimeFormat.dateTimeIsoPattern),
+                endInterval.toString(TimeFormat.dateTimeIsoPattern)
+            ).map { it.mapToResultHour() }
+        )
+
+
+    }
+
+    override suspend fun getResultDayFromResultTenMinute(
+        beginInterval: Date,
+        endInterval: Date
+    ): ResultsDay {
+        return ResultsDay(resultTenMinuteDao.getResultForTheDay(
+            beginInterval.toString(TimeFormat.dateTimeIsoPattern),
+            endInterval.toString(TimeFormat.dateTimeIsoPattern),
+        ).map {  it.mapToResultDay() })
+    }
+
     override suspend fun getMonthlyResults(month: Date, filToFull: Boolean): Flow<ResultsDay> {
         return flow {
             resultDayDao.getResultDayByInterval(
@@ -157,12 +254,12 @@ class ResultDB : ResultApi {
                             )
                         }
                     }
-                    emit(
-                        ResultsDay(
-                            listResultDay
-                        )
-                    )
                 }
+                emit(
+                    ResultsDay(
+                        listResultDay
+                    )
+                )
             }
         }
     }

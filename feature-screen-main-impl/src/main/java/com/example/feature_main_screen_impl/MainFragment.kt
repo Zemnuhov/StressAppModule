@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.core_foreground_service_api.ServiceApi
 import com.example.feature_item_graph_api.ItemGraphApi
 import com.example.feature_item_markup_api.ItemMarkupApi
 import com.example.feature_main_screen_impl.databinding.FragmentMainBinding
@@ -48,6 +49,9 @@ class MainFragment: Fragment(R.layout.fragment_main) {
 
     @Inject
     lateinit var navigationApi: NavigationApi
+
+    @Inject
+    lateinit var serviceApi: ServiceApi
 
     private val viewModel: MainScreenViewModel by viewModels{ factory.get() }
 
@@ -92,6 +96,7 @@ class MainFragment: Fragment(R.layout.fragment_main) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        serviceApi.bindService()
         connectionObserver()
         fillFragment()
         menuController()

@@ -66,6 +66,15 @@ dependencies {
     implementation project(path: ':feature-screen-setting-impl')
     implementation project(path: ':feature-screen-analytic-impl')
     implementation 'androidx.core:core-ktx:+'
+    implementation project(path: ':feature-notification-impl')
+    implementation project(path: ':core-foreground-service-impl')
+    implementation project(path: ':core-foreground-service-api')
+    implementation project(path: ':feature-notification-api')
+    implementation project(path: ':core-signal-control-impl')
+    implementation project(path: ':core-signal-control-api')
+    implementation project(path: ':core-database-control-impl')
+    implementation project(path: ':core-database-control-api')
+    implementation project(path: ':feature-screen-markup-impl')
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
     implementation 'androidx.navigation:navigation-fragment:2.5.3'

@@ -9,6 +9,6 @@ interface PhaseApi {
     suspend fun getPhaseCountInTenMinute(): Flow<Int>
     suspend fun getPhaseCountInHour(): Flow<Int>
     suspend fun getPhaseCountInDay(): Flow<Int>
-    suspend fun getPhaseCountInInterval(dateTime: Date): Flow<Int>
+    suspend fun getPhaseCountInInterval(beginDateTime: Date, endDateTime: Date): Int
     suspend fun writePhase(model: Phase)
 }

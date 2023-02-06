@@ -6,8 +6,11 @@ import com.neurotech.modulestressapp.di.AppComponent
 class StressApplication: Application() {
     override fun onCreate() {
         super.onCreate()
-        AppComponent.init(this)
-        AppComponent.provideDependencies()
+        if(!AppComponent.componentIsInit()){
+            AppComponent.init(this)
+            AppComponent.provideDependencies()
+        }
+
     }
 
 

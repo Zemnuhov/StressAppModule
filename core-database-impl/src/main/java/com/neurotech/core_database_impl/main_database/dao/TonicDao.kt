@@ -18,6 +18,9 @@ interface TonicDao {
     @Query("SELECT IFNULL(AVG(value),0) FROM TonicEntity WHERE time >= datetime('now','-1 day','localtime')")
     fun getOneDayAvg(): Flow<Int>
 
+    @Query("SELECT AVG(value) FROM TonicEntity WHERE time >= :beginDateTime AND time <= :endDateTime")
+    fun getTonicAverageInInterval(beginDateTime: String, endDateTime: String): Int
+
     @Insert
     fun insertTonicValue(vararg peak: TonicEntity)
 

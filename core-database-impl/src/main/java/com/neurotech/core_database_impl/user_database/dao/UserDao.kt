@@ -1,6 +1,7 @@
 package com.neurotech.core_database_impl.user_database.dao
 
 import androidx.room.*
+import com.neurotech.core_database_impl.main_database.model.UserParameterDB
 import com.neurotech.core_database_impl.user_database.entity.UserEntity
 import kotlinx.coroutines.flow.Flow
 

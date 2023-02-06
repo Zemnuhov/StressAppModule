@@ -17,7 +17,13 @@
             <option value="$PROJECT_DIR$/core-bluetooth-communication-api" />
             <option value="$PROJECT_DIR$/core-bluetooth-communication-impl" />
             <option value="$PROJECT_DIR$/core-database-api" />
+            <option value="$PROJECT_DIR$/core-database-control-api" />
+            <option value="$PROJECT_DIR$/core-database-control-impl" />
             <option value="$PROJECT_DIR$/core-database-impl" />
+            <option value="$PROJECT_DIR$/core-foreground-service-api" />
+            <option value="$PROJECT_DIR$/core-foreground-service-impl" />
+            <option value="$PROJECT_DIR$/core-signal-control-api" />
+            <option value="$PROJECT_DIR$/core-signal-control-impl" />
             <option value="$PROJECT_DIR$/custom-views" />
             <option value="$PROJECT_DIR$/feature-item-graph-api" />
             <option value="$PROJECT_DIR$/feature-item-graph-impl" />
@@ -34,6 +40,7 @@
             <option value="$PROJECT_DIR$/feature-screen-analytic-impl" />
             <option value="$PROJECT_DIR$/feature-screen-main-api" />
             <option value="$PROJECT_DIR$/feature-screen-main-impl" />
+            <option value="$PROJECT_DIR$/feature-screen-markup-impl" />
             <option value="$PROJECT_DIR$/feature-screen-setting-api" />
             <option value="$PROJECT_DIR$/feature-screen-setting-impl" />
             <option value="$PROJECT_DIR$/feature-screen-statistic-api" />

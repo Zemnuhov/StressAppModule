@@ -28,5 +28,9 @@
         android:id="@+id/analyticFragment"
         android:name="com.example.feature_screen_analitic_impl.AnalyticFragment"
         android:label="Аналитика" />
+    <fragment
+        android:id="@+id/markupFragment"
+        android:name="com.example.feature_screen_markup_impl.MarkupFragment"
+        android:label="Разметка" />
 
 </navigation>

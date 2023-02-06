@@ -42,6 +42,7 @@ class MainScreenViewModel(
     fun disconnectDevice(){
         viewModelScope.launch {
             bluetoothConnection.disconnectDevice()
+            setting.removedDevice()
         }
     }
 

@@ -1,5 +1,7 @@
 package com.neurotech.modulestressapp.di
 
+import com.example.core_foreground_service_api.ServiceApi
+import com.example.core_foreground_service_impl.ServiceImpl
 import com.example.feature_item_graph_api.ItemGraphApi
 import com.example.feature_item_graph_impl.ItemGraph
 import com.example.feature_item_markup_api.ItemMarkupApi
@@ -37,6 +39,12 @@ class MainScreenModule {
     @FeatureScope
     fun provideItemMarkupApi(): ItemMarkupApi{
         return ItemMarkup()
+    }
+
+    @Provides
+    @FeatureScope
+    fun provideServiceApi(): ServiceApi {
+        return ServiceImpl()
     }
 
 }

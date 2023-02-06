@@ -17,8 +17,8 @@ interface PhaseDao {
     @Query("SELECT COUNT(*) FROM PhaseEntity WHERE timeBegin >= datetime('now','-1 day','localtime')")
     fun getOneDayCount(): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM PhaseEntity WHERE datetime(timeBegin, 'localtime') >= datetime(:dateTime,'localtime')")
-    fun getPhaseInInterval(dateTime: String): Flow<Int>
+    @Query("SELECT COUNT(*) FROM PhaseEntity WHERE timeBegin >= :beginDateTime AND timeBegin <= :endDateTime")
+    fun getPhaseInInterval(beginDateTime: String, endDateTime: String): Int
 
     @Insert
     fun insertPhase(vararg peak: PhaseEntity)

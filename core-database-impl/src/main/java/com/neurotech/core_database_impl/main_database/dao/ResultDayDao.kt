@@ -1,9 +1,6 @@
 package com.neurotech.core_database_impl.main_database.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.neurotech.core_database_impl.main_database.entity.ResultDayEntity
 import com.neurotech.core_database_impl.main_database.model.UserParameterDB
 import kotlinx.coroutines.flow.Flow
@@ -30,10 +27,27 @@ interface ResultDayDao {
             "WHERE peaks > peaksAvg * 144 - 300 AND peaks < peaksAvg * 144 + 300")
     fun getMaxParameters(): UserParameterDB
 
-    @Insert
-    fun insertDayResult(vararg dayResult: ResultDayEntity)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertDayResult(dayResult: ResultDayEntity): Long
 
     @Update
-    fun updateDayResult(vararg dayResult: ResultDayEntity)
+    fun updateDayResult(dayResult: ResultDayEntity)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertDayResult(dayResult: List<ResultDayEntity>): List<Long>
+
+    @Update
+    fun updateDayResult(dayResult: List<ResultDayEntity>)
+
+    @Transaction
+    fun insertOrUpdate(objList: List<ResultDayEntity>) {
+        val insertResult = insertDayResult(objList)
+        val updateList = mutableListOf<ResultDayEntity>()
+
+        for (i in insertResult.indices) {
+            if (insertResult[i] == -1L) updateList.add(objList[i])
+        }
+
+        if (updateList.isNotEmpty()) updateDayResult(updateList)
+    }
 }

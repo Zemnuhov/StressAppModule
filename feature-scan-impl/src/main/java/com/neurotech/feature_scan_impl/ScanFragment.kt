@@ -26,6 +26,7 @@ import com.neurotech.core_ble_device_scan_api.Device
 import com.neurotech.core_bluetooth_comunication_api.ConnectionState
 import com.neurotech.feature_scan_impl.databinding.FragmentScanBinding
 import com.neurotech.feature_scan_impl.di.ScanComponent
+import com.neurotech.utils.StressLogger.log
 import dagger.Lazy
 import javax.inject.Inject
 import com.neurotech.shared_view_id.R as AppMenu
@@ -65,8 +66,7 @@ class ScanFragment: Fragment(R.layout.fragment_scan), ScanAdapter.ClickItemDevic
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        ScanComponent.init()
-        ScanComponent.get()?.inject(this)
+        ScanComponent.get().inject(this)
     }
 
     override fun onCreateView(
@@ -75,10 +75,14 @@ class ScanFragment: Fragment(R.layout.fragment_scan), ScanAdapter.ClickItemDevic
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentScanBinding.inflate(inflater, container, false)
+        log(this.toString())
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if(viewModel.deviceInMemory != null){
+            navigation.navigateScanToMain()
+        }
         binding.recyclerViewList.layoutManager = LinearLayoutManager(context)
         scanAdapter = ScanAdapter()
         scanAdapter?.callBack = this
@@ -104,10 +108,6 @@ class ScanFragment: Fragment(R.layout.fragment_scan), ScanAdapter.ClickItemDevic
         viewModel.connectionState.observe(viewLifecycleOwner){
             when(it){
                 ConnectionState.CONNECTED -> {
-//                    val request = NavDeepLinkRequest.Builder
-//                        .fromUri("android-app://com.example.feature_main_screen_impl.MainFragment".toUri())
-//                        .build()
-//                    findNavController().navigate(request)
                     navigation.navigateScanToMain()
 
                 }
@@ -198,10 +198,14 @@ class ScanFragment: Fragment(R.layout.fragment_scan), ScanAdapter.ClickItemDevic
 
     override fun onDestroyView() {
         super.onDestroyView()
-        ScanComponent.clear()
     }
 
     override fun clickItem(device: Device) {
         viewModel.connectToDevice(device.mac)
+        viewModel.connectionState.observe(viewLifecycleOwner){
+            if(it == ConnectionState.CONNECTED){
+                viewModel.rememberDevice(com.neurotech.core_database_api.model.Device(device.name, device.mac))
+            }
+        }
     }
 }

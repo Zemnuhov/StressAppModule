@@ -5,5 +5,5 @@ import android.app.Notification
 interface NotificationApi {
     suspend fun showDisconnectNotification()
     suspend fun showStressExcessNotification()
-    suspend fun getForegroundNotification(): Notification
+    fun getForegroundNotification(): Notification
 }

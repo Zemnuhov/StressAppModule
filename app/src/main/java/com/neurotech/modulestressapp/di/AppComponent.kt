@@ -32,6 +32,9 @@ interface AppComponent:
 
     companion object{
         private var component: AppComponent? = null
+
+        fun componentIsInit() = component != null
+
         fun init(application: Application){
             component = DaggerAppComponent.builder().application(application).build()
         }

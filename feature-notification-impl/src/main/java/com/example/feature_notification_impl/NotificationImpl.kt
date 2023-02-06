@@ -10,13 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.feature_notification_api.NotificationApi
+import com.example.feature_notification_impl.di.NotificationComponent
 import javax.inject.Inject
 
 
 class NotificationImpl: NotificationApi {
-
-    @Inject
-    lateinit var context: Context
 
     @Inject
     lateinit var activity: AppCompatActivity
@@ -31,21 +29,25 @@ class NotificationImpl: NotificationApi {
     private val warningContent = "Был обнаружен повышенный стресс"
     private val disconnectContent = "Произошёл разрыв с устройством"
 
+    init {
+        NotificationComponent.get().inject(this)
+    }
+
 
 
     @SuppressLint("MissingPermission")
     override suspend fun showDisconnectNotification() {
         val pendingIntent: PendingIntent =
-            Intent(context, activity.javaClass).let { notificationIntent ->
+            Intent(activity.applicationContext, activity.javaClass).let { notificationIntent ->
                 PendingIntent.getActivity(
-                    context.applicationContext,
+                    activity.applicationContext,
                     0,
                     notificationIntent,
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 )
             }
 
-        val builder = NotificationCompat.Builder(context, WARNING_CHANNEL_ID)
+        val builder = NotificationCompat.Builder(activity.applicationContext, WARNING_CHANNEL_ID)
             .setSmallIcon(R.drawable.icon_stress)
             .setContentTitle(titleNotification)
             .setContentText(disconnectContent)
@@ -58,7 +60,7 @@ class NotificationImpl: NotificationApi {
             createNotificationChannel(WARNING_CHANNEL_ID, WARNING_CHANNEL_ID, WARNING_CHANNEL_ID)
         }
 
-        with(NotificationManagerCompat.from(context)) {
+        with(NotificationManagerCompat.from(activity.applicationContext)) {
             cancel(4)
             notify(4, builder.build())
         }
@@ -69,11 +71,11 @@ class NotificationImpl: NotificationApi {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getForegroundNotification(): Notification {
+    override fun getForegroundNotification(): Notification {
         val pendingIntent: PendingIntent =
-            Intent(context, activity.javaClass).let { notificationIntent ->
+            Intent(activity.applicationContext, activity.javaClass).let { notificationIntent ->
                 PendingIntent.getActivity(
-                    context.applicationContext,
+                    activity.applicationContext.applicationContext,
                     0,
                     notificationIntent,
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -82,7 +84,7 @@ class NotificationImpl: NotificationApi {
 
         val notification: Notification =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Notification.Builder(context.applicationContext, FOREGROUND_CHANNEL_ID)
+                Notification.Builder(activity.applicationContext, FOREGROUND_CHANNEL_ID)
                     .setContentTitle(titleNotification)
                     .setContentText(foregroundContent)
                     .setSmallIcon(R.drawable.icon_stress)
@@ -90,7 +92,7 @@ class NotificationImpl: NotificationApi {
                     .setTicker(titleNotification)
                     .build()
             } else {
-                NotificationCompat.Builder(context)
+                NotificationCompat.Builder(activity.applicationContext)
                     .setContentTitle(titleNotification)
                     .setContentText(foregroundContent)
                     .setSmallIcon(R.drawable.icon_stress)
@@ -120,7 +122,7 @@ class NotificationImpl: NotificationApi {
             description = descriptionText
         }
         val notificationManager: NotificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            activity.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
     }
 }

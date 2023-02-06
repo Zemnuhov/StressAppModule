@@ -8,6 +8,7 @@ import com.neurotech.core_database_impl.setting_database.dao.DayPlanDao
 import com.neurotech.core_database_impl.setting_database.dao.DeviceDao
 import com.neurotech.core_database_impl.setting_database.entity.CauseEntity
 import com.neurotech.core_database_impl.setting_database.entity.DayPlanEntity
+import com.neurotech.core_database_impl.setting_database.entity.DeviceEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -41,14 +42,25 @@ class SettingDB: SettingApi {
     }
 
 
-    override suspend fun getDevice(): Device? {
-        //TODO
-//        val device = deviceDao.getDevice()
-//        if(device != null){
-//            return Device(name = device.name, mac = device.mac)
-//        }
-        return null
+    override suspend fun getDevice(): Device? = withContext(Dispatchers.IO) {
+        val device = deviceDao.getDevice()
+        if(device != null){
+            return@withContext Device(name = device.name, mac = device.mac)
+        }
+        return@withContext null
 
+    }
+
+    override suspend fun rememberDevice(device: Device) {
+        withContext(Dispatchers.IO){
+            deviceDao.insertDevice(DeviceEntity(device.mac, device.name))
+        }
+    }
+
+    override suspend fun removedDevice() {
+        withContext(Dispatchers.IO){
+            deviceDao.removedDevice()
+        }
     }
 
     override suspend fun getCauses(): Flow<Causes> {

@@ -5,11 +5,13 @@ import com.neurotech.core_database_api.UserApi
 import com.neurotech.core_database_api.model.User
 import com.neurotech.core_database_api.model.UserParameters
 import com.neurotech.core_database_impl.di.DatabaseComponent
+import com.neurotech.core_database_impl.main_database.dao.ResultTenMinuteDao
 import com.neurotech.core_database_impl.user_database.dao.UserDao
 import com.neurotech.core_database_impl.user_database.entity.UserEntity
 import com.neurotech.utils.TimeFormat
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.util.*
 import javax.inject.Inject
 
@@ -17,6 +19,9 @@ class UserDB: UserApi {
 
     @Inject
     lateinit var userDao: UserDao
+
+    @Inject
+    lateinit var resultTenMinuteDao: ResultTenMinuteDao
 
     init {
         DatabaseComponent.get().inject(this)
@@ -54,7 +59,9 @@ class UserDB: UserApi {
     }
 
     override suspend fun getUserParameters(): Flow<UserParameters> {
-        TODO("Not yet implemented")
+        return resultTenMinuteDao.getUserParameter().map {
+            it.mapToDomain()
+        }
     }
 
     override suspend fun setDateOfBirth(date: Date) {

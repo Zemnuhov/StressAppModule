@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#ffccbc</color>
+    <color name="primary_light">#ABFF6B3D</color>
+    <color name="primary_dark">#cb9b8c</color>
+    <color name="secondary">#ffab91</color>
+    <color name="secondary_light">#ffddc1</color>
+    <color name="secondary_dark">#c97b63</color>
+    <color name="third_dark">#ff7043</color>
+    <color name="third">#ffa270</color>
+
+    <color name="card_background">#FFFFFFFF</color>
+    <color name="text_color">#252525</color>
+
+
+    <color name="green_active">#81c784</color>
+    <color name="yellow_active">#ffee58</color>
+    <color name="red_active">#ff7043</color>
+</resources>

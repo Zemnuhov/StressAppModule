@@ -17,21 +17,21 @@ interface NavigationComponent {
     fun inject(appNavigation: AppNavigation)
 
     @Builder
-    interface NavigationBuilder{
+    interface NavigationBuilder {
         fun provideDependencies(dependencies: NavigationDependencies): NavigationBuilder
         fun build(): NavigationComponent
     }
 
-    companion object{
+    companion object {
         private var component: NavigationComponent? = null
 
-        fun get(): NavigationComponent{
-            if(component == null){
-                component = DaggerNavigationComponent
-                    .builder()
-                    .provideDependencies(NavigationDependenciesProvider.dependencies)
-                    .build()
-            }
+        fun get(): NavigationComponent {
+
+            component = DaggerNavigationComponent
+                .builder()
+                .provideDependencies(NavigationDependenciesProvider.dependencies)
+                .build()
+
             return component!!
         }
 
@@ -39,18 +39,19 @@ interface NavigationComponent {
 
 }
 
-interface NavigationDependencies{
+interface NavigationDependencies {
     val navigationHostFragment: NavHostFragment
     val activity: AppCompatActivity
     val viewID: ViewID
 }
 
-interface NavigationDependenciesProvider{
-    val dependencies:NavigationDependencies
-    companion object: NavigationDependenciesProvider by NavigationDependenciesStore
+interface NavigationDependenciesProvider {
+    val dependencies: NavigationDependencies
+
+    companion object : NavigationDependenciesProvider by NavigationDependenciesStore
 }
 
-object NavigationDependenciesStore: NavigationDependenciesProvider{
+object NavigationDependenciesStore : NavigationDependenciesProvider {
     override var dependencies: NavigationDependencies by notNull()
 }
 

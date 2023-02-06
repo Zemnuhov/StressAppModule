@@ -1,5 +1,6 @@
 package com.neurotech.modulestressapp.di
 
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.example.navigation.AppNavigation
@@ -21,14 +22,13 @@ class FeatureScanModule {
     }
 
     @Provides
-    @FeatureScope
     fun provideNavigation(): NavigationApi{
         return AppNavigation()
     }
 
     @Provides
-    @FeatureScope
     fun provideNavHostFragment(activity: AppCompatActivity): NavHostFragment{
+        Log.e("ZZZZZZZ",activity.toString())
         return activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
     }
 

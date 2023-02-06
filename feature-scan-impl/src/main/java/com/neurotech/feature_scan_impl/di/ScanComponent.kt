@@ -3,6 +3,7 @@ package com.neurotech.feature_scan_impl.di
 import com.example.navigation_api.NavigationApi
 import com.neurotech.core_ble_device_scan_api.BluetoothScanAPI
 import com.neurotech.core_bluetooth_comunication_api.BluetoothConnectionApi
+import com.neurotech.core_database_api.SettingApi
 import com.neurotech.feature_scan_impl.ScanFragment
 import dagger.Component
 import dagger.Component.Builder
@@ -26,17 +27,15 @@ interface ScanComponent {
 
     companion object{
         private var component: ScanComponent? = null
-        internal fun init() {
-            val dependencies = ScanDependenciesProvider.dependencies
-            component = DaggerScanComponent
-                .builder()
-                .provideDependencies(dependencies)
-                .build()
-        }
 
-        internal fun get(): ScanComponent?{
-            checkNotNull(component) { "ScanComponent is not init!" }
-            return component
+        internal fun get(): ScanComponent{
+            if(component == null){
+                component = DaggerScanComponent
+                    .builder()
+                    .provideDependencies(ScanDependenciesProvider.dependencies)
+                    .build()
+            }
+            return component!!
         }
 
         internal fun clear(){
@@ -49,6 +48,7 @@ interface ScanDependencies{
     val bluetoothScan: BluetoothScanAPI
     val bluetoothConnection: BluetoothConnectionApi
     val navigationApi: NavigationApi
+    val settingApi: SettingApi
 }
 
 interface ScanDependenciesProvider {

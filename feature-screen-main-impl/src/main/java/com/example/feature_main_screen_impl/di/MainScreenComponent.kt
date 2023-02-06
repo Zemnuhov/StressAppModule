@@ -1,5 +1,6 @@
 package com.example.feature_main_screen_impl.di
 
+import com.example.core_foreground_service_api.ServiceApi
 import com.example.feature_item_graph_api.ItemGraphApi
 import com.example.feature_item_markup_api.ItemMarkupApi
 import com.example.feature_main_screen_impl.MainFragment
@@ -51,6 +52,7 @@ interface MainScreenDependencies{
     val itemGraph: ItemGraphApi
     val itemMarkup: ItemMarkupApi
     val navigationApi: NavigationApi
+    val serviceApi: ServiceApi
 }
 
 interface MainScreenDependenciesProvider{

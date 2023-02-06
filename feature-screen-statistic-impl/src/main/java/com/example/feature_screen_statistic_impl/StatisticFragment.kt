@@ -21,6 +21,7 @@ import com.jjoe64.graphview.DefaultLabelFormatter
 import com.jjoe64.graphview.series.BarGraphSeries
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import com.neurotech.utils.StressLogger.log
 import dagger.Lazy
 import kotlinx.coroutines.*
 import java.util.*
@@ -118,6 +119,7 @@ class StatisticFragment : Fragment() {
     private fun buttonListeners() {
         CoroutineScope(Dispatchers.IO).launch {
             binding.switchButton.state.collect {
+                log(it.toString())
                 when (it) {
                     1 -> {
                         viewModel.setDayResults()

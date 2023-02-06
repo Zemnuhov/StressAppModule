@@ -1,7 +1,9 @@
 package com.example.navigation
 
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.withStateAtLeast
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -44,7 +46,6 @@ class AppNavigation: NavigationApi {
                 activity.setupActionBarWithNavController(navigationController,appBarConfiguration)
             }
         }
-
     }
 
 
