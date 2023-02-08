@@ -72,8 +72,8 @@ class ResultDB : ResultApi {
         })
     }
 
-    override suspend fun getResultTenMinute(): Flow<ResultTenMinute> {
-        return resultTenMinuteDao.getResult().map { it.mapToResultTenMinute() }
+    override suspend fun getResultTenMinute(): Flow<ResultTenMinute?> {
+        return resultTenMinuteDao.getResult().map { it?.mapToResultTenMinute() }
     }
 
     override suspend fun getResultHour(): Flow<ResultHour> {

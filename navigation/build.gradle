@@ -39,6 +39,7 @@ dependencies {
     implementation project(path: ':feature-screen-setting-impl')
     implementation project(path: ':feature-screen-analytic-impl')
     implementation project(path: ':feature-screen-markup-impl')
+    implementation project(path: ':feature-screen-user-impl')
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.0'

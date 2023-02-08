@@ -36,10 +36,14 @@ android {
 }
 
 dependencies {
+    implementation project(path: ':core-database-api')
+    implementation project(path: ':utils')
+    implementation project(path: ':feature-item-markup-api')
+    implementation project(path: ':feature-item-markup-api')
+    implementation project(path: ':navigation-api')
     implementation project(path: ':custom-views')
 
-    implementation 'com.jjoe64:graphview:4.2.2'
-    implementation 'com.github.cesarferreira:tempo:0.7.0'
+
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
@@ -47,13 +51,12 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
 
     implementation 'com.google.dagger:dagger:2.44.2'
-    implementation project(path: ':core-database-api')
-    implementation project(path: ':utils')
-    implementation project(path: ':feature-item-markup-api')
-    implementation project(path: ':feature-item-markup-api')
-    implementation project(path: ':navigation-api')
-    implementation 'androidx.core:core-ktx:+'
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
+
+    implementation 'com.jjoe64:graphview:4.2.2'
+    implementation 'com.github.cesarferreira:tempo:0.7.0'
+
+    implementation 'androidx.core:core-ktx:+'
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.0'

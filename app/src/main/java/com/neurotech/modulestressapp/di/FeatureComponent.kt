@@ -1,9 +1,13 @@
 package com.neurotech.modulestressapp.di
 
+import android.content.Intent
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import com.example.core_database_control_impl.di.DatabaseControlDependencies
 import com.example.core_database_control_impl.di.DatabaseControlDependenciesStore
+import com.example.core_firebase_auth_impl.di.FirebaseAuthDependencies
+import com.example.core_firebase_auth_impl.di.FirebaseAuthDependenciesStore
 import com.example.core_foreground_service_impl.di.ServiceDependencies
 import com.example.core_foreground_service_impl.di.ServiceDependenciesStore
 import com.example.core_signal_control_impl.SignalControlDependencies
@@ -26,6 +30,8 @@ import com.example.feature_screen_setting_impl.di.SettingDependencies
 import com.example.feature_screen_setting_impl.di.SettingDependenciesStore
 import com.example.feature_screen_statistic_impl.di.StatisticDependencies
 import com.example.feature_screen_statistic_impl.di.StatisticDependenciesStore
+import com.example.feature_screen_user_impl.di.UserScreenDependencies
+import com.example.feature_screen_user_impl.di.UserScreenDependenciesStore
 import com.example.navigation.di.NavigationDependencies
 import com.example.navigation.di.NavigationDependenciesStore
 import com.example.navigation_api.ViewID
@@ -62,6 +68,8 @@ interface FeatureComponent :
     SignalControlDependencies,
     DatabaseControlDependencies,
     MarkupComponentDependencies,
+    FirebaseAuthDependencies,
+    UserScreenDependencies,
     NavigationDependencies {
 
     fun inject(mainActivity: MainActivity)
@@ -104,6 +112,8 @@ interface FeatureComponent :
             SignalControlDependenciesStore.dependencies = component!!
             DatabaseControlDependenciesStore.dependencies = component!!
             MarkupComponentDependenciesStore.dependencies = component!!
+            FirebaseAuthDependenciesStore.dependencies = component!!
+            UserScreenDependenciesStore.dependencies = component!!
         }
     }
 }

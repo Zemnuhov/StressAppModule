@@ -1,0 +1,85 @@
+{
+  "project_info": {
+    "project_number": "1075379492394",
+    "firebase_url": "https://stressapp-a8d16-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "stressapp-a8d16",
+    "storage_bucket": "stressapp-a8d16.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075379492394:android:4483cadd30b2f5d07b5553",
+        "android_client_info": {
+          "package_name": "com.example.core_firebase_auth_impl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1075379492394-l2h9s01dcb5rhmqhmerd8oc119m1199r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.core_firebase_auth_impl",
+            "certificate_hash": "bc943104bec5846b0205d6a26e642daa2765ce72"
+          }
+        },
+        {
+          "client_id": "1075379492394-j4i7faaigs4vucb9mlvdeduprjgl36r1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC07bSOrHGU1tfbdiygsjDjjcOBC5tNmtI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1075379492394-j4i7faaigs4vucb9mlvdeduprjgl36r1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075379492394:android:645130a47ce656357b5553",
+        "android_client_info": {
+          "package_name": "com.neurotech.modulestressapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1075379492394-ldors148dh3v0fv36val4ml38rj1n7s9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.neurotech.modulestressapp",
+            "certificate_hash": "bc943104bec5846b0205d6a26e642daa2765ce72"
+          }
+        },
+        {
+          "client_id": "1075379492394-j4i7faaigs4vucb9mlvdeduprjgl36r1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC07bSOrHGU1tfbdiygsjDjjcOBC5tNmtI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1075379492394-j4i7faaigs4vucb9mlvdeduprjgl36r1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

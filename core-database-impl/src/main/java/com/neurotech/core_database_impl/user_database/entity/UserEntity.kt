@@ -28,7 +28,7 @@ data class UserEntity(
 ){
     fun mapToUser(): User {
         return User(
-            id,name,dateOfBirth?.toDate(TimeFormat.dateTimeIsoPattern),gender,tonicAvg,phaseNormal,phaseInHourNormal,phaseInDayNormal
+            id,name,dateOfBirth?.toDate(TimeFormat.dateIsoPattern),gender,tonicAvg,phaseNormal,phaseInHourNormal,phaseInDayNormal
         )
     }
 }

@@ -9,5 +9,7 @@ object TimeFormat {
     const val timePattern = "HH:mm"
     const val datePattern = "dd.MM.yyyy"
     const val dateWithoutYearPattern = "dd.MM"
+
+    const val firebaseDateTimePattern = "yyyy-MM-dd HH:mm:ss_SSS"
 }
 

@@ -64,6 +64,13 @@ class UserDB: UserApi {
         }
     }
 
+    override suspend fun getUserParametersByInterval(begin: Date, end: Date): Flow<UserParameters> {
+        return resultTenMinuteDao.getUserParameterInInterval(
+            begin.toString(TimeFormat.dateIsoPattern),
+            end.toString(TimeFormat.dateIsoPattern)
+        ).map { it.mapToDomain() }
+    }
+
     override suspend fun setDateOfBirth(date: Date) {
         userDao.setBirthDate(date.toString(TimeFormat.dateIsoPattern))
     }

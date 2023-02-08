@@ -32,5 +32,9 @@
         android:id="@+id/markupFragment"
         android:name="com.example.feature_screen_markup_impl.MarkupFragment"
         android:label="Разметка" />
+    <fragment
+        android:id="@+id/userFragment"
+        android:name="com.example.feature_screen_user_impl.UserFragment"
+        android:label="Пользователь" />
 
 </navigation>

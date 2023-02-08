@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -65,7 +66,7 @@ dependencies {
     implementation project(path: ':feature-screen-statistic-impl')
     implementation project(path: ':feature-screen-setting-impl')
     implementation project(path: ':feature-screen-analytic-impl')
-    implementation 'androidx.core:core-ktx:+'
+    implementation 'androidx.core:core-ktx:1.9.0'
     implementation project(path: ':feature-notification-impl')
     implementation project(path: ':core-foreground-service-impl')
     implementation project(path: ':core-foreground-service-api')
@@ -75,6 +76,16 @@ dependencies {
     implementation project(path: ':core-database-control-impl')
     implementation project(path: ':core-database-control-api')
     implementation project(path: ':feature-screen-markup-impl')
+    implementation project(path: ':core-firebase-auth-impl')
+    implementation project(path: ':feature-screen-user-impl')
+    implementation project(path: ':core-firebase-auth-api')
+
+    implementation platform('com.google.firebase:firebase-bom:31.2.0')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    implementation 'com.google.android.gms:play-services-basement:18.1.0'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.1.0'
+    implementation 'com.google.android.gms:play-services-auth:20.4.1'
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
     implementation 'androidx.navigation:navigation-fragment:2.5.3'
@@ -88,3 +99,5 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
+
+apply plugin: 'com.google.gms.google-services'

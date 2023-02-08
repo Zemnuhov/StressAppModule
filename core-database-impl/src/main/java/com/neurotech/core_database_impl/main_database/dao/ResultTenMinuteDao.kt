@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 interface ResultTenMinuteDao {
 
     @Query("SELECT * FROM ResultTenMinuteEntity GROUP BY time")
-    fun getResult(): Flow<ResultTenMinuteEntity>
+    fun getResult(): Flow<ResultTenMinuteEntity?>
 
     @Query("SELECT * FROM ResultTenMinuteEntity WHERE time >= datetime('now','-1 hour','localtime')")
     fun getResultsInOneHour(): Flow<List<ResultTenMinuteEntity>>
@@ -52,6 +52,15 @@ interface ResultTenMinuteDao {
             "(SELECT AVG(peaks) FROM ResultHourEntity) AS maxHourInDay, " +
             "(SELECT AVG(peaks) FROM ResultDayEntity) AS maxPeakInDay FROM ResultTenMinuteEntity")
     fun getUserParameter(): Flow<UserParameterDB>
+
+    @Query("SELECT" +
+            "   AVG(tonicAvg) AS maxTonic," +
+            "   AVG(phaseCount) AS maxPeaksInTenMinute," +
+            "   (SELECT AVG(peaks) FROM ResultHourEntity WHERE date >= strftime('%Y-%m-%d %H', :beginInterval)  AND date <= strftime('%Y-%m-%d %H', :endInterval) ) AS maxHourInDay," +
+            "   (SELECT AVG(peaks) FROM ResultDayEntity WHERE date >= strftime('%Y-%m-%d', :beginInterval)  AND date <= strftime('%Y-%m-%d', :endInterval)) AS maxPeakInDay " +
+            "FROM ResultTenMinuteEntity " +
+            "WHERE time >= :beginInterval  AND time <= :endInterval")
+    fun getUserParameterInInterval(beginInterval: String, endInterval:String): Flow<UserParameterDB>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertResult(vararg resultEntity: ResultTenMinuteEntity)

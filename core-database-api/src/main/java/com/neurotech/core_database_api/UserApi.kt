@@ -11,6 +11,7 @@ interface UserApi {
     suspend fun getUser(): User
     suspend fun registerUser(user: User)
     suspend fun getUserParameters(): Flow<UserParameters>
+    suspend fun getUserParametersByInterval(begin: Date, end: Date): Flow<UserParameters>
     suspend fun setDateOfBirth(date: Date)
     suspend fun setGender(gender: Boolean)
 }
