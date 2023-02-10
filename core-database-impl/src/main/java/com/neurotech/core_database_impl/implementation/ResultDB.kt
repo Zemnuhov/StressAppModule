@@ -103,6 +103,10 @@ class ResultDB : ResultApi {
         return resultTenMinuteDao.getResult().map { it?.mapToResultTenMinute() }
     }
 
+    override suspend fun getResultsTenMinute(): Flow<ResultsTenMinute> {
+        return resultTenMinuteDao.getResults().map { ResultsTenMinute(it.map { it.mapToResultTenMinute() }) }
+    }
+
     override suspend fun getResultHour(): Flow<ResultHour> {
         TODO("Not yet implemented")
     }

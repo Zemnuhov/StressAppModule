@@ -16,6 +16,7 @@ interface ResultApi {
     suspend fun getResultDayFromResultTenMinute(beginInterval: Date, endInterval: Date): ResultsDay
 
     suspend fun getResultTenMinute(): Flow<ResultTenMinute?>
+    suspend fun getResultsTenMinute(): Flow<ResultsTenMinute>
     suspend fun getResultHour(): Flow<ResultHour>
 
     suspend fun getCountForEachCause(causes: Causes): Flow<CountForEachCause>

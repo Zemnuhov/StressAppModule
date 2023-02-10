@@ -1,6 +1,7 @@
 package com.neurotech.core_database_impl.user_database.dao
 
 import androidx.room.*
+import com.neurotech.core_database_api.model.UserParameters
 import com.neurotech.core_database_impl.main_database.model.UserParameterDB
 import com.neurotech.core_database_impl.user_database.entity.UserEntity
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +11,20 @@ import kotlinx.coroutines.flow.Flow
 interface UserDao {
     @Insert
     fun addUser(userEntity: UserEntity)
+
+    @Transaction
+    fun registerUser(userEntity: UserEntity): Boolean {
+        unregisterUser()
+        addUser(userEntity)
+        return true
+    }
+
+    @Transaction
+    fun setUserParameters(userParameters: UserParameters): Boolean {
+
+        return true
+    }
+
 
     @Query("SELECT * FROM UserEntity")
     fun getUser(): UserEntity?
@@ -36,8 +51,8 @@ interface UserDao {
     fun updateUser(userEntity: UserEntity)
 
     @Transaction
-    fun insertUser(userEntity: UserEntity): Boolean{
-        if(countUser()==0){
+    fun insertUser(userEntity: UserEntity): Boolean {
+        if (countUser() == 0) {
             addUser(userEntity)
             return true
         }

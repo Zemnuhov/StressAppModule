@@ -14,7 +14,6 @@ data class ResultTenMinuteFirebase(
     val keep: String? = null
 ) {
     fun toResultEntity(): ResultTenMinute {
-        log(time.toString())
         return ResultTenMinute(
             time!!.toDate(TimeFormat.dateTimeIsoPattern),
             peakCount!!,

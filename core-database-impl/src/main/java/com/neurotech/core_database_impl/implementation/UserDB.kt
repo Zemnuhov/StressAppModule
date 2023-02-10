@@ -8,6 +8,7 @@ import com.neurotech.core_database_impl.di.DatabaseComponent
 import com.neurotech.core_database_impl.main_database.dao.ResultTenMinuteDao
 import com.neurotech.core_database_impl.user_database.dao.UserDao
 import com.neurotech.core_database_impl.user_database.entity.UserEntity
+import com.neurotech.utils.StressLogger.log
 import com.neurotech.utils.TimeFormat
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -44,7 +45,7 @@ class UserDB: UserApi {
 
 
     override suspend fun registerUser(user: User) {
-        userDao.insertUser(
+        userDao.registerUser(
             UserEntity(
                 user.id,
                 user.name,
@@ -56,6 +57,10 @@ class UserDB: UserApi {
                 user.phaseInDayNormal
             )
         )
+    }
+
+    suspend fun setUserParameters(userParameters: UserParameters){
+        userDao.setUserParameters(userParameters)
     }
 
     override suspend fun getUserParameters(): Flow<UserParameters> {

@@ -4,6 +4,7 @@ import com.example.core_database_control_impl.DatabaseController
 import com.neurotech.core_database_api.PhaseApi
 import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.TonicApi
+import com.neurotech.core_database_api.UserApi
 import dagger.Component
 import dagger.Component.Builder
 import javax.inject.Scope
@@ -40,6 +41,7 @@ interface DatabaseControlDependencies{
     val resultApi: ResultApi
     val phaseApi: PhaseApi
     val tonicApi: TonicApi
+    val userApi: UserApi
 }
 
 internal interface DatabaseControlDependenciesProvider{

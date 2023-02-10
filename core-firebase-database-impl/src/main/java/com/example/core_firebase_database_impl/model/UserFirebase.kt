@@ -23,9 +23,9 @@ data class UserFirebase(
             dateOfBirth?.toDate(TimeFormat.dateIsoPattern),
             gender,
             tonicAvg!!,
-            peakInDayNormal!!,
+            peakNormal!!,
             peakInHourNormal!!,
-            peakNormal!!
+            peakInDayNormal!!
         )
     }
 }

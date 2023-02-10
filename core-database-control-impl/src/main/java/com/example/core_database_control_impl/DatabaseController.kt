@@ -6,7 +6,9 @@ import com.example.core_database_control_impl.di.DatabaseControlComponent
 import com.neurotech.core_database_api.PhaseApi
 import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.TonicApi
+import com.neurotech.core_database_api.UserApi
 import com.neurotech.core_database_api.model.ResultTenMinute
+import com.neurotech.core_database_api.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -23,6 +25,9 @@ class DatabaseController : DatabaseControllerApi {
 
     @Inject
     lateinit var tonicApi: TonicApi
+
+    @Inject
+    lateinit var userApi: UserApi
 
     init {
         DatabaseControlComponent.get().inject(this)
@@ -55,7 +60,7 @@ class DatabaseController : DatabaseControllerApi {
             resultApi.getResultTenMinute().collect {
                 resultApi.writeResultHour(
                     resultApi.getResultHourFromResultTenMinute(
-                        (Tempo.now - 1.day),
+                        (Tempo.now - 1.year),
                         Tempo.now
                     )
                 )
@@ -76,4 +81,24 @@ class DatabaseController : DatabaseControllerApi {
             }
         }
     }
+
+    suspend fun controlUserData(){
+        withContext(Dispatchers.IO){
+            resultApi.getResultTenMinute().collect{
+
+            }
+
+            User("null",
+                "",
+                null,
+                null,
+                tonicAvg = 2000,
+                phaseNormal = 15,
+                phaseInHourNormal = 90,
+                phaseInDayNormal = 2100)
+
+        }
+    }
+
+
 }

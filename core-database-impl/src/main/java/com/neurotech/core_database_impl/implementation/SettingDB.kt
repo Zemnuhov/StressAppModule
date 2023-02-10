@@ -1,5 +1,6 @@
 package com.neurotech.core_database_impl.implementation
 
+import com.example.core_firebase_database_api.FirebaseDataApi
 import com.neurotech.core_database_api.SettingApi
 import com.neurotech.core_database_api.model.*
 import com.neurotech.core_database_impl.di.DatabaseComponent
@@ -27,6 +28,9 @@ class SettingDB: SettingApi {
 
     @Inject
     lateinit var dayPlanDao: DayPlanDao
+
+    @Inject
+    lateinit var firebaseDataApi: FirebaseDataApi
 
     init {
         DatabaseComponent.get().inject(this)
@@ -74,10 +78,12 @@ class SettingDB: SettingApi {
 
     override suspend fun addCause(cause: Cause) = withContext(Dispatchers.IO){
         causeDao.insertCause(CauseEntity(cause.name))
+        firebaseDataApi.writeCause(cause)
     }
 
     override suspend fun deleteCause(cause: Cause) = withContext(Dispatchers.IO){
         causeDao.deleteCause(CauseEntity(cause.name))
+        firebaseDataApi.removeCause(cause)
     }
 
     override suspend fun getDayPlans(): Flow<DayPlans> = dayPlanDao

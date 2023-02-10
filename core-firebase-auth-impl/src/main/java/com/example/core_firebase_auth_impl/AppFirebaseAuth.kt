@@ -24,10 +24,14 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.neurotech.core_database_api.ResultApi
+import com.neurotech.core_database_api.SettingApi
 import com.neurotech.core_database_api.UserApi
+import com.neurotech.core_database_api.model.Cause
+import com.neurotech.core_database_api.model.Causes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -42,6 +46,9 @@ class AppFirebaseAuth : FirebaseAuthApi {
 
     @Inject
     lateinit var userApi: UserApi
+
+    @Inject
+    lateinit var settingApi: SettingApi
 
     @Inject
     lateinit var resultApi: ResultApi
@@ -71,6 +78,11 @@ class AppFirebaseAuth : FirebaseAuthApi {
         withContext(Dispatchers.IO){
             val firebaseResultsTenMinute = firebaseDataApi.readTenMinuteResults()
             resultApi.writeResultsTenMinute(firebaseResultsTenMinute)
+
+            firebaseDataApi.writeCauses(settingApi.getCauses().first())
+            firebaseDataApi.getCauses().values.forEach{
+                settingApi.addCause(it)
+            }
         }
     }
 
