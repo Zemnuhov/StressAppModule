@@ -1,6 +1,7 @@
 package com.neurotech.core_database_impl.implementation
 
 import com.cesarferreira.tempo.*
+import com.example.core_firebase_database_api.FirebaseDataApi
 import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.model.*
 import com.neurotech.core_database_impl.di.DatabaseComponent
@@ -29,35 +30,61 @@ class ResultDB : ResultApi {
     @Inject
     lateinit var resultDayDao: ResultDayDao
 
+    @Inject
+    lateinit var firebaseData: FirebaseDataApi
+
 
     init {
         DatabaseComponent.get().inject(this)
     }
 
-    override suspend fun writeResultTenMinute(resultsTenMinute: ResultTenMinute) {
-        resultTenMinuteDao.insertResult(
-            ResultTenMinuteEntity(
-                resultsTenMinute.time.toString(TimeFormat.dateTimeIsoPattern),
-                resultsTenMinute.peakCount,
-                resultsTenMinute.tonicAvg,
-                resultsTenMinute.conditionAssessment,
-                resultsTenMinute.stressCause,
-                resultsTenMinute.keep
+    override suspend fun writeResultTenMinute(resultTenMinute: ResultTenMinute) {
+        withContext(Dispatchers.IO){
+            resultTenMinuteDao.insertResult(
+                ResultTenMinuteEntity(
+                    resultTenMinute.time.toString(TimeFormat.dateTimeIsoPattern),
+                    resultTenMinute.peakCount,
+                    resultTenMinute.tonicAvg,
+                    resultTenMinute.conditionAssessment,
+                    resultTenMinute.stressCause,
+                    resultTenMinute.keep
+                )
             )
-        )
+
+            firebaseData.writeTenMinuteResult(resultTenMinute)
+        }
+    }
+
+    override suspend fun writeResultsTenMinute(resultsTenMinute: ResultsTenMinute) {
+        withContext(Dispatchers.IO){
+            resultTenMinuteDao.insertResult(
+                *resultsTenMinute.list.map {
+                    ResultTenMinuteEntity(
+                        it.time.toString(TimeFormat.dateTimeIsoPattern),
+                        it.peakCount,
+                        it.tonicAvg,
+                        it.conditionAssessment,
+                        it.stressCause,
+                        it.keep
+                    )
+                }.toTypedArray()
+            )
+        }
     }
 
     override suspend fun writeResultHour(resultsHour: ResultsHour) {
-        resultHourDao.insertOrUpdate(resultsHour.list.map {
-            ResultHourEntity(
-                it.date.toString(TimeFormat.dateTimeIsoPattern),
-                it.peaks,
-                it.peaksAvg,
-                it.tonic,
-                it.stressCause
+        withContext(Dispatchers.IO){
+            resultHourDao.insertOrUpdate(resultsHour.list.map {
+                ResultHourEntity(
+                    it.date.toString(TimeFormat.dateTimeIsoPattern),
+                    it.peaks,
+                    it.peaksAvg,
+                    it.tonic,
+                    it.stressCause
+                )
+            }
             )
         }
-        )
     }
 
     override suspend fun writeResultDay(resultsDay: ResultsDay) {
@@ -122,7 +149,7 @@ class ResultDB : ResultApi {
     }
 
     override suspend fun updateResultTenMinute(resultsTenMinute: ResultsTenMinute) {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             resultTenMinuteDao.updateResult(
                 *resultsTenMinute.list.map {
                     ResultTenMinuteEntity(
@@ -135,6 +162,8 @@ class ResultDB : ResultApi {
                     )
                 }.toTypedArray()
             )
+
+            firebaseData.writeTenMinuteResults(resultsTenMinute)
         }
 
     }
@@ -218,7 +247,7 @@ class ResultDB : ResultApi {
         return ResultsDay(resultTenMinuteDao.getResultForTheDay(
             beginInterval.toString(TimeFormat.dateTimeIsoPattern),
             endInterval.toString(TimeFormat.dateTimeIsoPattern),
-        ).map {  it.mapToResultDay() })
+        ).map { it.mapToResultDay() })
     }
 
     override suspend fun getMonthlyResults(month: Date, filToFull: Boolean): Flow<ResultsDay> {

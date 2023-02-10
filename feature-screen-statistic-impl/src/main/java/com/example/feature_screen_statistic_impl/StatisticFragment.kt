@@ -163,6 +163,7 @@ class StatisticFragment : Fragment() {
             2 -> viewModel.user.phaseInHourNormal
             else -> viewModel.user.phaseInDayNormal
         }
+        log(normal.toString())
         barSeries.setValueDependentColor { data: DataPoint ->
             if (data.x != xValue) {
                 if (data.y < normal) {
@@ -255,6 +256,7 @@ class StatisticFragment : Fragment() {
                 2 -> viewModel.user.phaseInHourNormal
                 else -> viewModel.user.phaseInDayNormal
             }
+            log(normal.toString())
             setValueDependentColor { data: DataPoint ->
                 if (data.y < normal) {
                     return@setValueDependentColor ContextCompat.getColor(

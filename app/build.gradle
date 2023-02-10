@@ -86,6 +86,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-basement:18.1.0'
     implementation 'com.google.firebase:firebase-auth-ktx:21.1.0'
     implementation 'com.google.android.gms:play-services-auth:20.4.1'
+    implementation project(path: ':core-firebase-database-impl')
+    implementation project(path: ':core-firebase-database-api')
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
     implementation 'androidx.navigation:navigation-fragment:2.5.3'

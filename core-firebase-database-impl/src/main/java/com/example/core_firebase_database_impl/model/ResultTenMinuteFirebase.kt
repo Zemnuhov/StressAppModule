@@ -2,6 +2,7 @@ package com.example.core_firebase_database_impl.model
 
 import com.cesarferreira.tempo.toDate
 import com.neurotech.core_database_api.model.ResultTenMinute
+import com.neurotech.utils.StressLogger.log
 import com.neurotech.utils.TimeFormat
 
 data class ResultTenMinuteFirebase(
@@ -13,8 +14,9 @@ data class ResultTenMinuteFirebase(
     val keep: String? = null
 ) {
     fun toResultEntity(): ResultTenMinute {
+        log(time.toString())
         return ResultTenMinute(
-            time!!.toDate(TimeFormat.firebaseDateTimePattern),
+            time!!.toDate(TimeFormat.dateTimeIsoPattern),
             peakCount!!,
             tonicAvg!!,
             conditionAssessment!!,

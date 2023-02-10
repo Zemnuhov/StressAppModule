@@ -1,5 +1,6 @@
 package com.neurotech.modulestressapp.di
 
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
@@ -38,6 +39,8 @@ import com.example.navigation_api.ViewID
 import com.neurotech.core_bluetooth_comunication_api.BluetoothConnectionApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothWriterApi
+import com.neurotech.core_database_impl.di.DatabaseComponentDependenciesStore
+import com.neurotech.core_database_impl.di.DatabaseDependencies
 import com.neurotech.feature_scan_impl.di.ScanDependencies
 import com.neurotech.feature_scan_impl.di.ScanDependenciesStore
 import com.neurotech.feature_tonic_info_impl.di.ItemTonicDependencies
@@ -70,6 +73,7 @@ interface FeatureComponent :
     MarkupComponentDependencies,
     FirebaseAuthDependencies,
     UserScreenDependencies,
+    DatabaseDependencies,
     NavigationDependencies {
 
     fun inject(mainActivity: MainActivity)
@@ -114,6 +118,7 @@ interface FeatureComponent :
             MarkupComponentDependenciesStore.dependencies = component!!
             FirebaseAuthDependenciesStore.dependencies = component!!
             UserScreenDependenciesStore.dependencies = component!!
+            DatabaseComponentDependenciesStore.dependencies = component!!
         }
     }
 }

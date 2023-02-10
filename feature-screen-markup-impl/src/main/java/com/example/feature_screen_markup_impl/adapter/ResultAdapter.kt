@@ -62,7 +62,6 @@ class ResultItemCallBack : DiffUtil.ItemCallback<ResultAdapterModel>() {
         oldItem: ResultAdapterModel,
         newItem: ResultAdapterModel
     ): Boolean {
-        log("areItemsTheSame    ${oldItem == newItem}")
         return oldItem == newItem
     }
 
@@ -70,7 +69,6 @@ class ResultItemCallBack : DiffUtil.ItemCallback<ResultAdapterModel>() {
         oldItem: ResultAdapterModel,
         newItem: ResultAdapterModel
     ): Boolean {
-        log("areContentsTheSame    ${oldItem == newItem}")
         return oldItem == newItem
     }
 

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.example.core_firebase_auth.FirebaseAuthApi
 import com.example.core_firebase_auth_impl.di.FirebaseAuthComponent
 import com.example.core_firebase_auth_impl.model.UserFirebase
+import com.example.core_firebase_database_api.FirebaseDataApi
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -22,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.UserApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,15 +37,18 @@ class AppFirebaseAuth : FirebaseAuthApi {
     @Inject
     lateinit var firebaseAuth: FirebaseAuth
 
-    private val firebaseDatabase: FirebaseDatabase = Firebase.database
-
     @Inject
     lateinit var activity: AppCompatActivity
 
     @Inject
     lateinit var userApi: UserApi
 
-    private val databaseReference: DatabaseReference by lazy { firebaseDatabase.reference }
+    @Inject
+    lateinit var resultApi: ResultApi
+
+    @Inject
+    lateinit var firebaseDataApi: FirebaseDataApi
+
 
     override val user = MutableStateFlow<FirebaseUser?>(null)
     var launcher: ActivityResultLauncher<Intent>? = null
@@ -55,15 +60,17 @@ class AppFirebaseAuth : FirebaseAuthApi {
         user.value = firebaseAuth.currentUser
     }
 
-    suspend fun registerUserInLocalDB() {
-        databaseReference.child("users").child(firebaseAuth.currentUser!!.uid).get()
-            .addOnSuccessListener {
-                val userData = it.getValue<UserFirebase>()
-                CoroutineScope(Dispatchers.IO).launch {
-                    userApi.registerUser(userData!!.toUserEntity())
-                }
-            }.addOnFailureListener {
-            Log.e("Firebase read error: ", "$it")
+    private suspend fun registerUserInLocalDB() {
+        val firebaseUser = firebaseDataApi.getUserFromFirebase()
+        if(firebaseUser != null){
+            userApi.registerUser(firebaseUser)
+        }
+    }
+
+    private suspend fun synchronizeData(){
+        withContext(Dispatchers.IO){
+            val firebaseResultsTenMinute = firebaseDataApi.readTenMinuteResults()
+            resultApi.writeResultsTenMinute(firebaseResultsTenMinute)
         }
     }
 
@@ -95,6 +102,7 @@ class AppFirebaseAuth : FirebaseAuthApi {
                     Log.d("TAG", "signInWithCredential:success")
                     CoroutineScope(Dispatchers.IO).launch {
                         registerUserInLocalDB()
+                        synchronizeData()
                     }
                 } else {
                     Log.w("TAG", "signInWithCredential:failure", task.exception)

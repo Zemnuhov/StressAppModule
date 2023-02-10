@@ -5,7 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import java.util.*
 
 interface ResultApi {
-    suspend fun writeResultTenMinute(resultsTenMinute: ResultTenMinute)
+    suspend fun writeResultTenMinute(resultTenMinute: ResultTenMinute)
+    suspend fun writeResultsTenMinute(resultsTenMinute: ResultsTenMinute)
     suspend fun writeResultHour(resultsHour: ResultsHour)
     suspend fun writeResultDay(resultsDay: ResultsDay)
     suspend fun setKeepByTime(keep: String?, time: Date)

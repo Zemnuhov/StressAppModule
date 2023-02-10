@@ -3,10 +3,14 @@ package com.example.core_firebase_database_impl
 import android.util.Log
 import com.cesarferreira.tempo.toString
 import com.example.core_firebase_auth.FirebaseAuthApi
+import com.example.core_firebase_database_api.FirebaseDataApi
+import com.example.core_firebase_database_impl.di.FirebaseDataComponent
 import com.example.core_firebase_database_impl.model.ResultTenMinuteFirebase
 import com.example.core_firebase_database_impl.model.UserFirebase
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
 import com.neurotech.core_database_api.model.ResultTenMinute
 import com.neurotech.core_database_api.model.ResultsTenMinute
 import com.neurotech.core_database_api.model.User
@@ -16,25 +20,23 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirebaseData {
+class FirebaseData: FirebaseDataApi {
 
     @Inject
     lateinit var firebaseDatabase: FirebaseDatabase
 
-    @Inject
-    lateinit var firebaseAuthApi: FirebaseAuthApi
 
     private val databaseReference: DatabaseReference by lazy { firebaseDatabase.reference }
-    private val firebaseUser by lazy { runBlocking { firebaseAuthApi.user.first() }  }
+    private val firebaseUser get() = runBlocking { Firebase.auth.currentUser }
 
 
 
     private val scope = CoroutineScope(Dispatchers.IO)
     init {
-
+        FirebaseDataComponent.get().inject(this)
     }
 
-    suspend fun getUserFromFirebase(): User? = withContext(Dispatchers.IO) {
+    override suspend fun getUserFromFirebase(): User? = withContext(Dispatchers.IO) {
         return@withContext databaseReference
             .child("users")
             .child(firebaseUser?.uid ?: "")
@@ -42,33 +44,43 @@ class FirebaseData {
             .await().getValue<UserFirebase>()?.toUserEntity()
     }
 
-    suspend fun setUser(user: User) = withContext(Dispatchers.IO) {
-        databaseReference.child("users").child(user.id).setValue(user)
-    }
-
-    suspend fun writeTenMinuteResult(result: ResultTenMinute) = withContext(Dispatchers.IO) {
-        if (firebaseUser != null) {
-            val key = result.time.toString(TimeFormat.firebaseDateTimePattern)
-            databaseReference.child("tenMinutesData").child(firebaseUser!!.uid).child(key).setValue(result)
+    override suspend fun setUser(user: User) {
+        withContext(Dispatchers.IO) {
+            databaseReference.child("users").child(user.id).setValue(user)
         }
     }
 
-    suspend fun writeTenMinuteResults(results: ResultsTenMinute) = withContext(Dispatchers.IO) {
-        scope.launch {
-            if (firebaseUser != null) {
-                results.list.forEach {
-                    val key = it.time.toString(TimeFormat.firebaseDateTimePattern)
-                    databaseReference.child("tenMinutesData")
-                        .child(firebaseUser!!.uid)
-                        .child(key)
-                        .setValue(it)
+    override suspend fun writeTenMinuteResult(result: ResultTenMinute) = withContext(Dispatchers.IO) {
+        if (firebaseUser != null) {
+            val key = result.time.toString(TimeFormat.firebaseDateTimePattern)
+            databaseReference
+                .child("tenMinutesData")
+                .child(firebaseUser!!.uid)
+                .child(key)
+                .setValue(
+                    mapToResultTenMinuteFirebase(result)
+                )
+        }
+    }
+
+    override suspend fun writeTenMinuteResults(results: ResultsTenMinute) {
+        withContext(Dispatchers.IO) {
+            scope.launch {
+                if (firebaseUser != null) {
+                    results.list.forEach {
+                        val key = it.time.toString(TimeFormat.firebaseDateTimePattern)
+                        databaseReference.child("tenMinutesData")
+                            .child(firebaseUser!!.uid)
+                            .child(key)
+                            .setValue(mapToResultTenMinuteFirebase(it))
+                    }
                 }
             }
         }
     }
 
     //TODO(Попробовать с JOB)
-    suspend fun readTenMinuteResults(): ResultsTenMinute = withContext(Dispatchers.IO) {
+    override suspend fun readTenMinuteResults(): ResultsTenMinute = withContext(Dispatchers.IO) {
         val resultList = mutableListOf<ResultTenMinute>()
         var isRead = false
         if (firebaseUser != null) {
@@ -101,6 +113,17 @@ class FirebaseData {
             }
             return@async ResultsTenMinute(resultList)
         }.await()
+    }
+
+    private fun mapToResultTenMinuteFirebase(result: ResultTenMinute): ResultTenMinuteFirebase{
+        return ResultTenMinuteFirebase(
+            result.time.toString(TimeFormat.dateTimeIsoPattern),
+            result.peakCount,
+            result.tonicAvg,
+            result.conditionAssessment,
+            result.stressCause,
+            result.keep
+        )
     }
 
 }

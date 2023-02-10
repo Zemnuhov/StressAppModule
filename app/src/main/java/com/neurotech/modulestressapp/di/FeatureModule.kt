@@ -10,6 +10,8 @@ import com.example.core_database_control_api.DatabaseControllerApi
 import com.example.core_database_control_impl.DatabaseController
 import com.example.core_firebase_auth.FirebaseAuthApi
 import com.example.core_firebase_auth_impl.AppFirebaseAuth
+import com.example.core_firebase_database_api.FirebaseDataApi
+import com.example.core_firebase_database_impl.FirebaseData
 import com.example.core_signal_control_api.SignalControlApi
 import com.example.core_signal_control_impl.SignalControlImpl
 import com.example.feature_notification_api.NotificationApi
@@ -54,6 +56,12 @@ class FeatureModule {
     @FeatureScope
     fun provideAppFirebaseAuth(): FirebaseAuthApi {
         return AppFirebaseAuth()
+    }
+
+    @Provides
+    @FeatureScope
+    fun provideFirebaseData(): FirebaseDataApi {
+        return FirebaseData()
     }
 
 }

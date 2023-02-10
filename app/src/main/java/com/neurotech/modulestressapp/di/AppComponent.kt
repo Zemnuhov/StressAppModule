@@ -18,8 +18,7 @@ import javax.inject.Singleton
 @Component(modules = [AppModule::class, CoreModule::class])
 @Singleton
 interface AppComponent:
-    BleCommunicationDependencies,
-    DatabaseDependencies{
+    BleCommunicationDependencies{
 
     fun inject(mainActivity: MainActivity)
 
@@ -48,7 +47,6 @@ interface AppComponent:
 
         fun provideDependencies(){
             BleCommunicationDependenciesStore.dependencies = get()
-            DatabaseComponentDependenciesStore.dependencies = get()
         }
     }
 }

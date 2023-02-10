@@ -1,6 +1,7 @@
 package com.neurotech.core_database_impl.di
 
 import android.content.Context
+import com.example.core_firebase_database_api.FirebaseDataApi
 import com.neurotech.core_database_impl.implementation.*
 import dagger.Component
 import dagger.Component.Builder
@@ -50,6 +51,7 @@ internal interface DatabaseComponent {
 
 interface DatabaseDependencies{
     val context: Context
+    val firebaseDataApi: FirebaseDataApi
 }
 
 internal interface DatabaseComponentDependenciesProvider{

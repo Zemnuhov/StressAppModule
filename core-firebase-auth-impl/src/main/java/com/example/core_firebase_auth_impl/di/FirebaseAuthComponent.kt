@@ -4,7 +4,9 @@ import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import com.example.core_firebase_auth_impl.AppFirebaseAuth
+import com.example.core_firebase_database_api.FirebaseDataApi
 import com.google.firebase.database.FirebaseDatabase
+import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.UserApi
 import dagger.Component
 import dagger.Component.Builder
@@ -40,6 +42,8 @@ internal interface FirebaseAuthComponent {
 interface FirebaseAuthDependencies{
     val activity: AppCompatActivity
     val userApi: UserApi
+    val resultApi: ResultApi
+    val firebaseData: FirebaseDataApi
 }
 
 interface FirebaseAuthDependenciesProvider{

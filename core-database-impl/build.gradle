@@ -37,6 +37,7 @@ dependencies {
 
     implementation 'com.github.cesarferreira:tempo:0.7.0'
     implementation 'androidx.core:core-ktx:+'
+    implementation project(path: ':core-firebase-database-api')
 
     def room_version = "2.5.0"
     implementation "androidx.room:room-runtime:$room_version"

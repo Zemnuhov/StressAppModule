@@ -60,7 +60,6 @@ class CauseItemCallBack : DiffUtil.ItemCallback<Cause>() {
         oldItem: Cause,
         newItem: Cause
     ): Boolean {
-        log("areItemsTheSame    ${oldItem == newItem}")
         return oldItem == newItem
     }
 
@@ -68,7 +67,6 @@ class CauseItemCallBack : DiffUtil.ItemCallback<Cause>() {
         oldItem: Cause,
         newItem: Cause
     ): Boolean {
-        log("areContentsTheSame    ${oldItem == newItem}")
         return oldItem == newItem
     }
 
