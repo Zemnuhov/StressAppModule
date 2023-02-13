@@ -39,11 +39,13 @@ class TonicDB: TonicApi {
     }
 
     override suspend fun writeTonic(tonic: Tonic) = withContext(Dispatchers.IO){
-        tonicDao.insertTonicValue(
-            TonicEntity(
-                tonic.time.toString(TimeFormat.dateTimeIsoPattern),
-                tonic.value
+        if(tonic.value != 0){
+            tonicDao.insertTonicValue(
+                TonicEntity(
+                    tonic.time.toString(TimeFormat.dateTimeIsoPattern),
+                    tonic.value
+                )
             )
-        )
+        }
     }
 }

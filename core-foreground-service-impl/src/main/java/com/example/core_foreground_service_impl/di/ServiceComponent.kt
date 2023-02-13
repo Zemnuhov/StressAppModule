@@ -1,6 +1,7 @@
 package com.example.core_foreground_service_impl.di
 
 import android.content.Context
+import androidx.work.WorkManager
 import com.example.core_database_control_api.DatabaseControllerApi
 import com.example.core_foreground_service_impl.ServiceImpl
 import com.example.core_foreground_service_impl.StressAppService
@@ -49,6 +50,7 @@ interface ServiceDependencies{
     val notificationApi: NotificationApi
     val signalController: SignalControlApi
     val databaseController: DatabaseControllerApi
+    val workManager: WorkManager
 }
 
 interface ServiceDependenciesProvider{

@@ -21,9 +21,32 @@ interface UserDao {
 
     @Transaction
     fun setUserParameters(userParameters: UserParameters): Boolean {
-
+        if(countUser() == 0){
+            insertUser(
+                UserEntity(
+                    "null",
+                    "",
+                    null,
+                    null,
+                    tonicAvg = userParameters.tonic,
+                    phaseNormal = userParameters.tenMinutePhase,
+                    phaseInHourNormal = userParameters.hourPhase,
+                    phaseInDayNormal = userParameters.dayPhase
+                )
+            )
+        }else{
+            setParameters(
+                tonicAvg = userParameters.tonic,
+                phaseNormal = userParameters.tenMinutePhase,
+                phaseInHourNormal = userParameters.hourPhase,
+                phaseInDayNormal = userParameters.dayPhase
+            )
+        }
         return true
     }
+
+    @Query("UPDATE UserEntity SET tonicAvg = :tonicAvg, phaseNormal = :phaseNormal, phaseInHourNormal = :phaseInHourNormal, phaseInDayNormal = :phaseInDayNormal")
+    fun setParameters(tonicAvg: Int, phaseNormal: Int, phaseInHourNormal: Int, phaseInDayNormal: Int)
 
 
     @Query("SELECT * FROM UserEntity")

@@ -59,7 +59,7 @@ class UserDB: UserApi {
         )
     }
 
-    suspend fun setUserParameters(userParameters: UserParameters){
+    override suspend fun setUserParameters(userParameters: UserParameters){
         userDao.setUserParameters(userParameters)
     }
 

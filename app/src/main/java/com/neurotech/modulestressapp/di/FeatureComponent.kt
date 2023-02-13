@@ -9,6 +9,8 @@ import com.example.core_database_control_impl.di.DatabaseControlDependencies
 import com.example.core_database_control_impl.di.DatabaseControlDependenciesStore
 import com.example.core_firebase_auth_impl.di.FirebaseAuthDependencies
 import com.example.core_firebase_auth_impl.di.FirebaseAuthDependenciesStore
+import com.example.core_firebase_controller_impl.di.FirebaseControllerDependencies
+import com.example.core_firebase_controller_impl.di.FirebaseControllerDependenciesStore
 import com.example.core_foreground_service_impl.di.ServiceDependencies
 import com.example.core_foreground_service_impl.di.ServiceDependenciesStore
 import com.example.core_signal_control_impl.SignalControlDependencies
@@ -74,6 +76,7 @@ interface FeatureComponent :
     FirebaseAuthDependencies,
     UserScreenDependencies,
     DatabaseDependencies,
+    FirebaseControllerDependencies,
     NavigationDependencies {
 
     fun inject(mainActivity: MainActivity)
@@ -119,6 +122,7 @@ interface FeatureComponent :
             FirebaseAuthDependenciesStore.dependencies = component!!
             UserScreenDependenciesStore.dependencies = component!!
             DatabaseComponentDependenciesStore.dependencies = component!!
+            FirebaseControllerDependenciesStore.dependencies = component!!
         }
     }
 }

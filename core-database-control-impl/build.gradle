@@ -35,6 +35,7 @@ dependencies {
 
     implementation 'com.google.dagger:dagger:2.44.2'
     implementation project(path: ':core-database-api')
+    implementation project(path: ':core-firebase-database-api')
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
     implementation 'com.github.cesarferreira:tempo:0.7.0'

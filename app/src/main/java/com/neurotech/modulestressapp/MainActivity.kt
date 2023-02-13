@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), FeatureComponentDependencies {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         binding.bottomNavigationView.isVisible = false
-            }
+    }
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

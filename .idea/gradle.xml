@@ -22,6 +22,8 @@
             <option value="$PROJECT_DIR$/core-database-impl" />
             <option value="$PROJECT_DIR$/core-firebase-auth-api" />
             <option value="$PROJECT_DIR$/core-firebase-auth-impl" />
+            <option value="$PROJECT_DIR$/core-firebase-controller-api" />
+            <option value="$PROJECT_DIR$/core-firebase-controller-impl" />
             <option value="$PROJECT_DIR$/core-firebase-database-api" />
             <option value="$PROJECT_DIR$/core-firebase-database-impl" />
             <option value="$PROJECT_DIR$/core-foreground-service-api" />

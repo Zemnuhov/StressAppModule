@@ -5,7 +5,12 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.core_database_control_api.DatabaseControllerApi
+import com.example.core_firebase_controller_impl.FirebaseController
 import com.example.core_foreground_service_impl.di.ServiceComponent
 import com.example.core_signal_control_api.SignalControlApi
 import com.example.feature_notification_api.NotificationApi
@@ -13,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class StressAppService: Service() {
@@ -30,6 +36,9 @@ class StressAppService: Service() {
     @Inject
     lateinit var databaseControllerApi: DatabaseControllerApi
 
+    @Inject
+    lateinit var workManager: WorkManager
+
     private val binder = LocalBinder()
 
 
@@ -43,6 +52,20 @@ class StressAppService: Service() {
             launch { databaseControllerApi.controlResultTenMinute() }
             launch { databaseControllerApi.controlResultHour() }
             launch { databaseControllerApi.controlResultDay() }
+            launch { databaseControllerApi.controlUserData() }
+            launch {
+                val dbControlRequest =
+                    PeriodicWorkRequestBuilder<FirebaseController>(1, TimeUnit.DAYS)
+                        .addTag("db_control")
+                        .setConstraints(
+                            Constraints.Builder()
+                                .setRequiredNetworkType(NetworkType.CONNECTED)
+                                .build()
+                        )
+                        .build()
+                workManager.cancelAllWorkByTag("db_control")
+                workManager.enqueue(dbControlRequest)
+            }
         }
 
     }

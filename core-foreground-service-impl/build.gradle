@@ -38,6 +38,8 @@ dependencies {
     implementation 'com.google.dagger:dagger:2.44.2'
     implementation project(path: ':core-signal-control-api')
     implementation project(path: ':core-database-control-api')
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
+    implementation project(path: ':core-firebase-controller-impl')
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
     implementation 'androidx.core:core-ktx:1.9.0'

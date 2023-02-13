@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -83,11 +84,19 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:31.2.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
+
+    implementation platform('com.google.firebase:firebase-bom:31.2.0')
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
     implementation 'com.google.android.gms:play-services-basement:18.1.0'
     implementation 'com.google.firebase:firebase-auth-ktx:21.1.0'
     implementation 'com.google.android.gms:play-services-auth:20.4.1'
     implementation project(path: ':core-firebase-database-impl')
     implementation project(path: ':core-firebase-database-api')
+    implementation project(path: ':core-firebase-controller-impl')
+    implementation project(path: ':core-firebase-controller-api')
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
     implementation 'androidx.navigation:navigation-fragment:2.5.3'

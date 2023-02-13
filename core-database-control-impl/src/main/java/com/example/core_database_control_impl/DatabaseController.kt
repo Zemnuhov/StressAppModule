@@ -3,15 +3,18 @@ package com.example.core_database_control_impl
 import com.cesarferreira.tempo.*
 import com.example.core_database_control_api.DatabaseControllerApi
 import com.example.core_database_control_impl.di.DatabaseControlComponent
+import com.example.core_firebase_database_api.FirebaseDataApi
 import com.neurotech.core_database_api.PhaseApi
 import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.TonicApi
 import com.neurotech.core_database_api.UserApi
 import com.neurotech.core_database_api.model.ResultTenMinute
 import com.neurotech.core_database_api.model.User
+import com.neurotech.core_database_api.model.UserParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -29,6 +32,9 @@ class DatabaseController : DatabaseControllerApi {
     @Inject
     lateinit var userApi: UserApi
 
+    @Inject
+    lateinit var firebaseData: FirebaseDataApi
+
     init {
         DatabaseControlComponent.get().inject(this)
     }
@@ -39,16 +45,19 @@ class DatabaseController : DatabaseControllerApi {
             while (true) {
                 val time = Tempo.now.beginningOfMinute
                 if (time.toString("mm").toInt() % 10 == 0) {
-                    resultApi.writeResultTenMinute(
-                        ResultTenMinute(
-                            time,
-                            phaseApi.getPhaseCountInInterval(time - 10.minute, time),
-                            tonicApi.getTenMinuteAverageInInterval(time - 10.minute, time),
-                            1,
-                            null,
-                            null
+                    val tonic = tonicApi.getTenMinuteAverageInInterval(time - 10.minute, time)
+                    if(tonic != 0){
+                        resultApi.writeResultTenMinute(
+                            ResultTenMinute(
+                                time,
+                                phaseApi.getPhaseCountInInterval(time - 10.minute, time),
+                                tonic,
+                                1,
+                                null,
+                                null
+                            )
                         )
-                    )
+                    }
                 }
                 delay(60000)
             }
@@ -82,21 +91,20 @@ class DatabaseController : DatabaseControllerApi {
         }
     }
 
-    suspend fun controlUserData(){
+    override suspend fun controlUserData(){
         withContext(Dispatchers.IO){
             resultApi.getResultTenMinute().collect{
-
+                val params = userApi.getUserParameters().first()
+                userApi.setUserParameters(
+                    UserParameters(
+                        (params.tonic * 0.8).toInt(),
+                        (params.tenMinutePhase * 0.8).toInt(),
+                        (params.hourPhase * 0.8).toInt(),
+                        (params.dayPhase * 0.8).toInt(),
+                    )
+                )
+                firebaseData.setUser(userApi.getUser())
             }
-
-            User("null",
-                "",
-                null,
-                null,
-                tonicAvg = 2000,
-                phaseNormal = 15,
-                phaseInHourNormal = 90,
-                phaseInDayNormal = 2100)
-
         }
     }
 

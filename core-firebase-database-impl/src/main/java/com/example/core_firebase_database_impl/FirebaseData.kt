@@ -26,7 +26,7 @@ class FirebaseData : FirebaseDataApi {
 
 
     private val databaseReference: DatabaseReference by lazy { firebaseDatabase.reference }
-    private val firebaseUser get() = runBlocking { Firebase.auth.currentUser }
+    private val firebaseUser get() = Firebase.auth.currentUser
 
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -45,7 +45,22 @@ class FirebaseData : FirebaseDataApi {
 
     override suspend fun setUser(user: User) {
         withContext(Dispatchers.IO) {
-            databaseReference.child("users").child(user.id).setValue(user)
+            val firebaseUser = firebaseUser
+            if (firebaseUser != null && firebaseUser.uid == user.id) {
+                databaseReference.child("users").child(user.id).setValue(
+                    UserFirebase(
+                        user.id,
+                        user.name,
+                        user.dateOfBirth?.toString(TimeFormat.dateIsoPattern),
+                        user.gender,
+                        user.tonicAvg,
+                        user.phaseInDayNormal,
+                        user.phaseInHourNormal,
+                        user.phaseNormal
+                    )
+                )
+            }
+
         }
     }
 
@@ -84,14 +99,14 @@ class FirebaseData : FirebaseDataApi {
         var isRead = false
         var causeList = emptyList<Cause>()
         if (firebaseUser != null) {
-             databaseReference
+            databaseReference
                 .child("causes")
                 .child(firebaseUser!!.uid)
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                         causeList = snapshot.children.mapNotNull {
-                             it.getValue<CauseFirebase>()?.mapToCause()
-                         }
+                        causeList = snapshot.children.mapNotNull {
+                            it.getValue<CauseFirebase>()?.mapToCause()
+                        }
                         isRead = true
                     }
 
@@ -113,13 +128,15 @@ class FirebaseData : FirebaseDataApi {
 
 
     override suspend fun writeCause(cause: Cause) {
-        databaseReference.child("causes").child(firebaseUser!!.uid).child(cause.name).setValue(cause)
+        databaseReference.child("causes").child(firebaseUser!!.uid).child(cause.name)
+            .setValue(cause)
     }
 
     override suspend fun writeCauses(causes: Causes) {
-        withContext(Dispatchers.IO){
-            causes.values.forEach{
-                databaseReference.child("causes").child(firebaseUser!!.uid).child(it.name).setValue(it)
+        withContext(Dispatchers.IO) {
+            causes.values.forEach {
+                databaseReference.child("causes").child(firebaseUser!!.uid).child(it.name)
+                    .setValue(it)
             }
         }
     }

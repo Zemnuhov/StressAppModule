@@ -1,6 +1,7 @@
 package com.example.core_database_control_impl.di
 
 import com.example.core_database_control_impl.DatabaseController
+import com.example.core_firebase_database_api.FirebaseDataApi
 import com.neurotech.core_database_api.PhaseApi
 import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.TonicApi
@@ -42,6 +43,7 @@ interface DatabaseControlDependencies{
     val phaseApi: PhaseApi
     val tonicApi: TonicApi
     val userApi: UserApi
+    val firebaseDataApi: FirebaseDataApi
 }
 
 internal interface DatabaseControlDependenciesProvider{
