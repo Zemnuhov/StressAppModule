@@ -1,9 +1,5 @@
 package com.neurotech.modulestressapp.di
 
-import android.content.Context
-import android.content.Intent
-import android.util.Log
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import com.example.core_database_control_impl.di.DatabaseControlDependencies
 import com.example.core_database_control_impl.di.DatabaseControlDependenciesStore
@@ -13,6 +9,8 @@ import com.example.core_firebase_controller_impl.di.FirebaseControllerDependenci
 import com.example.core_firebase_controller_impl.di.FirebaseControllerDependenciesStore
 import com.example.core_foreground_service_impl.di.ServiceDependencies
 import com.example.core_foreground_service_impl.di.ServiceDependenciesStore
+import com.example.core_notification_controller_impl.di.NotificationControllerDependencies
+import com.example.core_notification_controller_impl.di.NotificationControllerDependenciesStore
 import com.example.core_signal_control_impl.SignalControlDependencies
 import com.example.core_signal_control_impl.SignalControlDependenciesStore
 import com.example.feature_item_graph_impl.ItemGraphDependencies
@@ -27,8 +25,12 @@ import com.example.feature_phase_info_impl.di.ItemPhaseDependencies
 import com.example.feature_phase_info_impl.di.PhaseInfoDependenciesStore
 import com.example.feature_screen_analitic_impl.di.AnalyticDependencies
 import com.example.feature_screen_analitic_impl.di.AnalyticDependenciesStore
+import com.example.feature_screen_editing_day_plan_impl.di.EditingDayPlanDependencies
+import com.example.feature_screen_editing_day_plan_impl.di.EditingDayPlanDependenciesStore
 import com.example.feature_screen_markup_impl.di.MarkupComponentDependencies
 import com.example.feature_screen_markup_impl.di.MarkupComponentDependenciesStore
+import com.example.feature_screen_relax_impl.di.RelaxDependencies
+import com.example.feature_screen_relax_impl.di.RelaxDependenciesStore
 import com.example.feature_screen_setting_impl.di.SettingDependencies
 import com.example.feature_screen_setting_impl.di.SettingDependenciesStore
 import com.example.feature_screen_statistic_impl.di.StatisticDependencies
@@ -77,9 +79,12 @@ interface FeatureComponent :
     UserScreenDependencies,
     DatabaseDependencies,
     FirebaseControllerDependencies,
+    RelaxDependencies,
+    EditingDayPlanDependencies,
+    NotificationControllerDependencies,
     NavigationDependencies {
 
-    fun inject(mainActivity: MainActivity)
+
     @Builder
     interface FeatureComponentBuilder {
         fun provideDependencies(dependencies: FeatureComponentDependencies): FeatureComponentBuilder
@@ -88,14 +93,16 @@ interface FeatureComponent :
 
     companion object {
         private var component: FeatureComponent? = null
-
-        fun componentIsInit() = component != null
+        private var activity: AppCompatActivity? = null
 
         fun init() {
+            component = null
+            activity?.finish()
             component = DaggerFeatureComponent
                 .builder()
                 .provideDependencies(FeatureComponentDependenciesProvider.dependencies)
                 .build()
+            activity = FeatureComponentDependenciesProvider.dependencies.activity
         }
 
         fun clear(){
@@ -123,6 +130,9 @@ interface FeatureComponent :
             UserScreenDependenciesStore.dependencies = component!!
             DatabaseComponentDependenciesStore.dependencies = component!!
             FirebaseControllerDependenciesStore.dependencies = component!!
+            RelaxDependenciesStore.dependencies = component!!
+            EditingDayPlanDependenciesStore.dependencies = component!!
+            NotificationControllerDependenciesStore.dependencies = component!!
         }
     }
 }
@@ -145,6 +155,6 @@ object FeatureComponentDependenciesStore : FeatureComponentDependenciesProvider 
     override var dependencies: FeatureComponentDependencies by notNull()
 }
 
-
 @Scope
+@Retention(AnnotationRetention.RUNTIME)
 annotation class FeatureScope

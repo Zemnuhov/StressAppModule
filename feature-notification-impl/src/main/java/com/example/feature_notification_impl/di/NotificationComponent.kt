@@ -3,6 +3,9 @@ package com.example.feature_notification_impl.di
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import com.example.feature_notification_impl.NotificationImpl
+import com.example.feature_notification_impl.NotificationReceiver
+import com.neurotech.core_database_api.ResultApi
+import com.neurotech.core_database_api.SettingApi
 import dagger.Component
 import dagger.Component.Builder
 import javax.inject.Scope
@@ -12,6 +15,8 @@ import kotlin.properties.Delegates.notNull
 @NotificationScope
 interface NotificationComponent {
     fun inject(notificationImpl: NotificationImpl)
+    fun inject(notificationImpl: NotificationReceiver)
+
     @Builder
     interface NotificationComponentBuilder{
         fun provideDependencies(dependencies: NotificationDependencies): NotificationComponentBuilder
@@ -40,6 +45,8 @@ interface NotificationComponent {
 interface NotificationDependencies{
     val context: Context
     val activity: AppCompatActivity
+    val settingApi: SettingApi
+    val resultApi: ResultApi
 }
 
 interface NotificationDependenciesProvider{

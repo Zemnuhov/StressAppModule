@@ -9,7 +9,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        minSdk 26
+        minSdk 23
         targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -40,13 +40,16 @@ dependencies {
     implementation project(path: ':feature-screen-analytic-impl')
     implementation project(path: ':feature-screen-markup-impl')
     implementation project(path: ':feature-screen-user-impl')
+    implementation project(path: ':feature-screen-relax-impl')
+    implementation project(path: ':feature-screen-editing-day-plan-impl')
 
     implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.0'
-    implementation 'com.google.android.material:material:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.8.0'
 
     implementation 'com.google.dagger:dagger:2.44.2'
-    implementation 'androidx.core:core-ktx:+'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation project(path: ':core-database-api')
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'

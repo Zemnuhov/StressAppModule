@@ -1,5 +1,6 @@
 package com.example.core_database_control_impl
 
+import android.content.Context
 import com.cesarferreira.tempo.*
 import com.example.core_database_control_api.DatabaseControllerApi
 import com.example.core_database_control_impl.di.DatabaseControlComponent
@@ -9,13 +10,9 @@ import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.TonicApi
 import com.neurotech.core_database_api.UserApi
 import com.neurotech.core_database_api.model.ResultTenMinute
-import com.neurotech.core_database_api.model.User
 import com.neurotech.core_database_api.model.UserParameters
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class DatabaseController : DatabaseControllerApi {
@@ -35,13 +32,16 @@ class DatabaseController : DatabaseControllerApi {
     @Inject
     lateinit var firebaseData: FirebaseDataApi
 
+    @Inject
+    lateinit var context: Context
+
     init {
         DatabaseControlComponent.get().inject(this)
     }
 
-
+    @OptIn(DelicateCoroutinesApi::class)
     override suspend fun controlResultTenMinute() {
-        withContext(Dispatchers.IO) {
+        CoroutineScope(newSingleThreadContext("TimeThread")).launch {
             while (true) {
                 val time = Tempo.now.beginningOfMinute
                 if (time.toString("mm").toInt() % 10 == 0) {
@@ -59,7 +59,7 @@ class DatabaseController : DatabaseControllerApi {
                         )
                     }
                 }
-                delay(60000)
+                delay(10000)
             }
         }
     }
@@ -74,7 +74,6 @@ class DatabaseController : DatabaseControllerApi {
                     )
                 )
             }
-
         }
     }
 
@@ -107,6 +106,4 @@ class DatabaseController : DatabaseControllerApi {
             }
         }
     }
-
-
 }

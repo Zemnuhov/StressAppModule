@@ -13,6 +13,7 @@ import com.example.feature_screen_setting_impl.adapter.CauseAdapter
 import com.example.feature_screen_setting_impl.adapter.DayPlanAdapter
 import com.example.feature_screen_setting_impl.databinding.FragmentSettingBinding
 import com.example.feature_screen_setting_impl.di.SettingComponent
+import com.example.navigation_api.NavigationApi
 import com.neurotech.core_database_api.model.Cause
 import com.neurotech.core_database_api.model.Causes
 import com.neurotech.core_database_api.model.DayPlan
@@ -23,6 +24,9 @@ class SettingFragment :
     Fragment(R.layout.fragment_setting),
     CauseAdapter.CauseAdapterCallback,
     DayPlanAdapter.DayPlanAdapterCallback {
+
+    @Inject
+    lateinit var navigation: NavigationApi
 
     @Inject
     lateinit var factory: Lazy<SettingViewModel.Factory>
@@ -106,5 +110,9 @@ class SettingFragment :
 
     override fun deleteDayPlan(dayPlan: DayPlan) {
         viewModel.deleteDayPlan(dayPlan)
+    }
+
+    override fun clickToDayPlan(dayPlan: DayPlan) {
+        navigation.navigateSettingToEditingDayPlan(dayPlan.planId)
     }
 }

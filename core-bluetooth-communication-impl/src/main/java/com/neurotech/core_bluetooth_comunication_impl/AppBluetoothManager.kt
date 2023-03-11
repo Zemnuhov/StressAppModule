@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattService
 import android.content.Context
+import com.cesarferreira.tempo.toDate
 import com.neurotech.core_bluetooth_comunication_impl.ListUUID.dataServiceUUID
 import com.neurotech.core_bluetooth_comunication_impl.ListUUID.dateUUID
 import com.neurotech.core_bluetooth_comunication_impl.ListUUID.memoryCharacteristicUUID
@@ -22,6 +23,7 @@ import com.neurotech.core_bluetooth_comunication_impl.ListUUID.tonicFlowUUID
 import com.neurotech.core_bluetooth_comunication_impl.model.PhaseEntityFromDevice
 import com.neurotech.data.modules.bluetooth.data.filters.ExpRunningAverage
 import com.neurotech.utils.StressLogger.log
+import com.neurotech.utils.TimeFormat
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -66,9 +68,84 @@ class AppBluetoothManager(
     val memoryStateFlow: Flow<Int> get() = _memoryStateFlow
     val memoryTonicFlow: Flow<Int> get() = _memoryTonicFlow
 
-    override fun getGattCallback(): BleManagerGattCallback {
-        return MyGattCallbackImpl()
+    override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
+        val settingService = gatt.getService(settingServiceUUID)
+        val dataService = gatt.getService(dataServiceUUID)
+        val memoryService = gatt.getService(memoryServiceUUID)
+        var settingCharacteristicResult = false
+        var dataCharacteristicResult = false
+        var memoryCharacteristicResult = false
+        if (settingService != null && dataService != null && memoryService != null) {
+            settingCharacteristicResult = settingCharacteristicInit(settingService)
+            dataCharacteristicResult = dataCharacteristicInit(dataService)
+            memoryCharacteristicResult = memoryCharacteristicInit(memoryService)
+        }
+        return settingCharacteristicResult && dataCharacteristicResult && memoryCharacteristicResult
     }
+
+    private fun settingCharacteristicInit(settingService: BluetoothGattService): Boolean{
+        notifyStateCharacteristic = settingService.getCharacteristic(notifyStateCharacteristicUUID)
+        return notifyStateCharacteristic != null
+    }
+
+    private fun memoryCharacteristicInit(memoryService: BluetoothGattService): Boolean {
+        memoryCharacteristic = memoryService.getCharacteristic(memoryCharacteristicUUID)
+        memoryTimeBeginCharacteristic = memoryService.getCharacteristic(
+            memoryTimeBeginCharacteristicUUID
+        )
+        memoryTimeEndCharacteristic = memoryService.getCharacteristic(
+            memoryTimeEndCharacteristicUUID
+        )
+        memoryDateEndCharacteristic = memoryService.getCharacteristic(
+            memoryDateEndCharacteristicUUID
+        )
+        memoryMaxPeakValueCharacteristic = memoryService.getCharacteristic(
+            memoryMaxPeakValueCharacteristicUUID
+        )
+        memoryTonicCharacteristic = memoryService.getCharacteristic(
+            memoryTonicCharacteristicUUID
+        )
+        return memoryCharacteristic != null &&
+                memoryTimeBeginCharacteristic != null &&
+                memoryTimeEndCharacteristic != null &&
+                memoryDateEndCharacteristic != null &&
+                memoryMaxPeakValueCharacteristic != null &&
+                memoryTonicCharacteristic != null
+    }
+
+    private fun dataCharacteristicInit(dataService: BluetoothGattService): Boolean {
+        phaseFlowCharacteristic = dataService.getCharacteristic(phaseFlowUUID)
+        tonicFlowCharacteristic = dataService.getCharacteristic(tonicFlowUUID)
+        timeCharacteristic = dataService.getCharacteristic(timeUUID)
+        dateCharacteristic = dataService.getCharacteristic(dateUUID)
+
+        log("$phaseFlowCharacteristic -- $tonicFlowCharacteristic -- $timeCharacteristic -- $dateCharacteristic")
+        return phaseFlowCharacteristic != null &&
+                tonicFlowCharacteristic != null &&
+                timeCharacteristic != null &&
+                dateCharacteristic != null
+    }
+
+    override fun initialize() {
+        requestMtu(517).enqueue()
+    }
+
+    override fun onServicesInvalidated() {
+        notifyStateCharacteristic = null
+
+        phaseFlowCharacteristic = null
+        tonicFlowCharacteristic = null
+        timeCharacteristic = null
+        dateCharacteristic = null
+        characteristicServiceCharacteristic = null
+        memoryCharacteristic = null
+        memoryTimeBeginCharacteristic = null
+        memoryTimeEndCharacteristic = null
+        memoryDateEndCharacteristic = null
+        memoryMaxPeakValueCharacteristic = null
+        memoryTonicCharacteristic = null
+    }
+
 
     init {
         scope.launch(Dispatchers.IO) {
@@ -82,100 +159,23 @@ class AppBluetoothManager(
 
     }
 
-    private inner class MyGattCallbackImpl : BleManagerGattCallback() {
-        override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
-            val settingService = gatt.getService(settingServiceUUID)
-            val dataService = gatt.getService(dataServiceUUID)
-            val memoryService = gatt.getService(memoryServiceUUID)
-            var settingCharacteristicResult = false
-            var dataCharacteristicResult = false
-            var memoryCharacteristicResult = false
-            if (settingService != null && dataService != null && memoryService != null) {
-                settingCharacteristicResult = settingCharacteristicInit(settingService)
-                dataCharacteristicResult = dataCharacteristicInit(dataService)
-                memoryCharacteristicResult = memoryCharacteristicInit(memoryService)
-            }
-            return settingCharacteristicResult && dataCharacteristicResult && memoryCharacteristicResult
+    suspend fun connectToDevice(device: BluetoothDevice) = coroutineScope{
+        launch(Dispatchers.IO) {
+            connect(device)
+                .retry(3, 250)
+                .timeout(15_000)
+                .useAutoConnect(true)
+                .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK or PhyRequest.PHY_LE_2M_MASK or PhyRequest.PHY_LE_CODED_MASK)
+                .timeout(15_000)
+                .invalid { log("Invalid connect to device") }
+                .done{connectDevice ->
+                    log("Connect to device: ${connectDevice.address}")
+                }
+                .fail{connectDevice, status ->
+                    log("Error connect to device: ${connectDevice.address}  Code: $status")
+                }
+                .await()
         }
-
-        fun settingCharacteristicInit(settingService: BluetoothGattService): Boolean{
-            notifyStateCharacteristic = settingService.getCharacteristic(notifyStateCharacteristicUUID)
-            return notifyStateCharacteristic != null
-        }
-
-        fun memoryCharacteristicInit(memoryService: BluetoothGattService): Boolean {
-            memoryCharacteristic = memoryService.getCharacteristic(memoryCharacteristicUUID)
-            memoryTimeBeginCharacteristic = memoryService.getCharacteristic(
-                memoryTimeBeginCharacteristicUUID
-            )
-            memoryTimeEndCharacteristic = memoryService.getCharacteristic(
-                memoryTimeEndCharacteristicUUID
-            )
-            memoryDateEndCharacteristic = memoryService.getCharacteristic(
-                memoryDateEndCharacteristicUUID
-            )
-            memoryMaxPeakValueCharacteristic = memoryService.getCharacteristic(
-                memoryMaxPeakValueCharacteristicUUID
-            )
-            memoryTonicCharacteristic = memoryService.getCharacteristic(
-                memoryTonicCharacteristicUUID
-            )
-            return memoryCharacteristic != null &&
-                    memoryTimeBeginCharacteristic != null &&
-                    memoryTimeEndCharacteristic != null &&
-                    memoryDateEndCharacteristic != null &&
-                    memoryMaxPeakValueCharacteristic != null &&
-                    memoryTonicCharacteristic != null
-        }
-
-        fun dataCharacteristicInit(dataService: BluetoothGattService): Boolean {
-            phaseFlowCharacteristic = dataService.getCharacteristic(phaseFlowUUID)
-            tonicFlowCharacteristic = dataService.getCharacteristic(tonicFlowUUID)
-            timeCharacteristic = dataService.getCharacteristic(timeUUID)
-            dateCharacteristic = dataService.getCharacteristic(dateUUID)
-
-            log("$phaseFlowCharacteristic -- $tonicFlowCharacteristic -- $timeCharacteristic -- $dateCharacteristic")
-            return phaseFlowCharacteristic != null &&
-                    tonicFlowCharacteristic != null &&
-                    timeCharacteristic != null &&
-                    dateCharacteristic != null
-        }
-
-        override fun initialize() {
-            requestMtu(517).enqueue()
-        }
-
-        override fun onServicesInvalidated() {
-            notifyStateCharacteristic = null
-
-            phaseFlowCharacteristic = null
-            tonicFlowCharacteristic = null
-            timeCharacteristic = null
-            dateCharacteristic = null
-            characteristicServiceCharacteristic = null
-            memoryCharacteristic = null
-            memoryTimeBeginCharacteristic = null
-            memoryTimeEndCharacteristic = null
-            memoryDateEndCharacteristic = null
-            memoryMaxPeakValueCharacteristic = null
-            memoryTonicCharacteristic = null
-        }
-    }
-
-    fun connectToDevice(device: BluetoothDevice) {
-        connect(device)
-            .retry(3, 100)
-            .timeout(15_000)
-            .useAutoConnect(true)
-            .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK or PhyRequest.PHY_LE_2M_MASK or PhyRequest.PHY_LE_CODED_MASK)
-            .timeout(15_000)
-            .done{connectDevice ->
-                log("Connect to device: ${connectDevice.address}")
-            }
-            .fail{connectDevice, status ->
-                log("Error connect to device: ${connectDevice.address}  Code: $status")
-            }
-            .enqueue()
     }
 
 
@@ -242,6 +242,8 @@ class AppBluetoothManager(
                     }"
                 )
             }
+            .invalid { log("Invalid read Memory Time Value") }
+            .fail { device, status -> log("Fail read Memory Time Value in ${device.address}. Status $status") }
             .suspend()
         val timeEndRequest = readCharacteristic(memoryTimeEndCharacteristic)
             .with { device, data ->
@@ -255,6 +257,8 @@ class AppBluetoothManager(
                     }"
                 )
             }
+            .invalid { log("Invalid read Memory Time Value") }
+            .fail { device, status -> log("Fail read Memory Time Value in ${device.address}. Status $status") }
             .suspend()
         val dateRequest = readCharacteristic(memoryDateEndCharacteristic)
             .with { device, data ->
@@ -281,21 +285,24 @@ class AppBluetoothManager(
                     }"
                 )
             }
+            .invalid { log("Invalid read Memory Time Value") }
+            .fail { device, status -> log("Fail read Memory Max Value in ${device.address}. Status $status") }
             .suspend()
 
-        var timeBegin = timeBeginRequest.value?.let { String(it) }
-        var timeEnd = timeEndRequest.value?.let { String(it) }
+        val timeBegin = timeBeginRequest.value?.let { String(it) }
+        val timeEnd = timeEndRequest.value?.let { String(it) }
         val max = maxRequest.value?.let { ByteBuffer.wrap(it).int }
         val date = dateRequest.value?.let { String(it) }
-        if (timeBegin != null && timeEnd != null && max != null) {
-            timeBegin = "$date $timeBegin"
-            timeEnd = "$date $timeEnd"
-            return PhaseEntityFromDevice(timeBegin, timeEnd, max.toDouble())
+        return try{
+            val dateTimeBegin = "$date $timeBegin".toDate(TimeFormat.dateTimeIsoPattern)
+            val dateTimeEnd = "$date $timeEnd".toDate(TimeFormat.dateTimeIsoPattern)
+            PhaseEntityFromDevice(dateTimeBegin, dateTimeEnd, max!!.toDouble())
+        }catch (e: java.lang.Exception){
+            null
         }
-        return null
     }
 
-    private fun writeMemoryFlag() {
+    fun writeMemoryFlag() {
         val byteValue = ByteBuffer.allocate(4).putInt(1).array()
         byteValue.reverse()
         writeCharacteristic(

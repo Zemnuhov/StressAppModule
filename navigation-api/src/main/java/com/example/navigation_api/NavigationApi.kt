@@ -4,4 +4,6 @@ interface NavigationApi {
     fun navigateScanToMain()
     fun navigateMainToScan()
     fun navigateMainToStatistic()
+    fun navigateMainToRelax()
+    fun navigateSettingToEditingDayPlan(dayPlanId: Int)
 }

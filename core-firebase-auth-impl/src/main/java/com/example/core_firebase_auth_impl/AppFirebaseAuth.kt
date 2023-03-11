@@ -60,7 +60,7 @@ class AppFirebaseAuth : FirebaseAuthApi {
     override val user = MutableStateFlow<FirebaseUser?>(null)
     var launcher: ActivityResultLauncher<Intent>? = null
 
-    lateinit var currentFragment: Fragment
+    private lateinit var currentFragment: Fragment
 
     init {
         FirebaseAuthComponent.get().inject(this)
@@ -82,6 +82,11 @@ class AppFirebaseAuth : FirebaseAuthApi {
             firebaseDataApi.writeCauses(settingApi.getCauses().first())
             firebaseDataApi.getCauses().values.forEach{
                 settingApi.addCause(it)
+            }
+
+            firebaseDataApi.writeDayPlans(settingApi.getDayPlans().first())
+            firebaseDataApi.getDayPlans().values.forEach{
+                settingApi.addDayPlan(it, false)
             }
         }
     }

@@ -20,6 +20,9 @@ interface PhaseDao {
     @Query("SELECT COUNT(*) FROM PhaseEntity WHERE timeBegin >= :beginDateTime AND timeBegin <= :endDateTime")
     fun getPhaseInInterval(beginDateTime: String, endDateTime: String): Int
 
+    @Query("SELECT COUNT(*) FROM PhaseEntity WHERE timeBegin >= :dateTime")
+    fun getPhaseFromNow(dateTime: String): Flow<Int>
+
     @Insert
     fun insertPhase(vararg peak: PhaseEntity)
 

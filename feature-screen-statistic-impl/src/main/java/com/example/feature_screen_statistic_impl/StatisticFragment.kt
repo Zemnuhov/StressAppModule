@@ -26,8 +26,9 @@ import dagger.Lazy
 import kotlinx.coroutines.*
 import java.util.*
 import javax.inject.Inject
+import com.example.values.R as values
 
-class StatisticFragment : Fragment() {
+class StatisticFragment : Fragment(), StatisticAdapter.Callback {
 
     @Inject
     lateinit var factory: Lazy<StatisticViewModel.Factory>
@@ -70,6 +71,7 @@ class StatisticFragment : Fragment() {
             .commit()
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         adapter = StatisticAdapter()
+        adapter?.callback = this
         adapter?.normalValue = viewModel.user.phaseNormal
         binding.recyclerView.adapter = adapter
         barSeries.dataWidth = 550000.0
@@ -101,9 +103,23 @@ class StatisticFragment : Fragment() {
                     val peaks = result.peakCount.toDouble()
                     val bar = DataPoint(time, peaks)
                     barSeries.appendData(bar, true, 10000)
-                    val tonic = result.tonicAvg.toDouble()
+                    val newBegin = when(viewModel.state){
+                        1-> 50.0
+                        2-> 200.0
+                        else -> 3000.0
+                    }
+                    val tonic = mapValue(
+                        result.tonicAvg.toDouble(),
+                        0.0,
+                        10000.0,
+                        newBegin,
+                        newBegin * 2
+                    )
                     val point =
-                        DataPoint(time, mapValue(tonic, resultModel.maxOf { it.peakCount } - 5))
+                        DataPoint(
+                            time,
+                            tonic
+                        )
                     tonicSeries.appendData(point, true, 10000)
                 }
             runBlocking {
@@ -169,31 +185,31 @@ class StatisticFragment : Fragment() {
                 if (data.y < normal) {
                     return@setValueDependentColor ContextCompat.getColor(
                         requireContext(),
-                        R.color.green_active
+                        values.color.green_active
                     )
                 }
                 if (normal <= data.y && data.y <= (normal * 2)) {
                     return@setValueDependentColor ContextCompat
-                        .getColor(requireContext(), R.color.yellow_active)
+                        .getColor(requireContext(), values.color.yellow_active)
                 }
                 return@setValueDependentColor ContextCompat.getColor(
                     requireContext(),
-                    R.color.red_active
+                    values.color.red_active
                 )
             }
             if (data.y < normal) {
                 return@setValueDependentColor ContextCompat.getColor(
                     requireContext(),
-                    R.color.green_selected
+                    values.color.green_selected
                 )
             }
             if (normal <= data.y && data.y <= (normal * 2)) {
                 return@setValueDependentColor ContextCompat
-                    .getColor(requireContext(), R.color.yellow_selected)
+                    .getColor(requireContext(), values.color.yellow_selected)
             }
             return@setValueDependentColor ContextCompat.getColor(
                 requireContext(),
-                R.color.red_selected
+                values.color.red_selected
             )
         }
         barSeries.setOnDataPointTapListener { _, dataPoint ->
@@ -206,8 +222,14 @@ class StatisticFragment : Fragment() {
         binding.statisticGraph.addSeries(barSeries)
     }
 
-    private fun mapValue(value: Double, min: Int): Double {
-        return value / 10000 * (min + barSeries.highestValueY - min) + min
+    private fun mapValue(
+        value: Double,
+        oldBegin: Double,
+        oldEnd: Double,
+        newBegin: Double,
+        newEnd: Double
+    ): Double {
+        return (value - oldBegin) / (oldEnd - oldBegin) * (newEnd - newBegin) + newBegin
     }
 
     private fun graphSettings() {
@@ -217,7 +239,12 @@ class StatisticFragment : Fragment() {
             removeAllSeries()
             addSeries(tonicSeries)
             addSeries(barSeries)
-            setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.card_background))
+            setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    values.color.card_background
+                )
+            )
             viewport.isXAxisBoundsManual = true
             viewport.isYAxisBoundsManual = true
             viewport.setMinX(minX)
@@ -231,7 +258,7 @@ class StatisticFragment : Fragment() {
             viewport.setScrollableY(false)
             gridLabelRenderer.padding = 16
             gridLabelRenderer.gridColor =
-                ContextCompat.getColor(requireContext(), R.color.graph_grid)
+                ContextCompat.getColor(requireContext(), values.color.graph_grid)
             gridLabelRenderer.isVerticalLabelsVisible = false
             gridLabelRenderer.numHorizontalLabels = 10
             gridLabelRenderer.labelFormatter = object : DefaultLabelFormatter() {
@@ -261,14 +288,14 @@ class StatisticFragment : Fragment() {
                 if (data.y < normal) {
                     return@setValueDependentColor ContextCompat.getColor(
                         requireContext(),
-                        R.color.green_active
+                        values.color.green_active
                     )
                 }
                 if (normal <= data.y && data.y <= (normal * 2)) {
                     return@setValueDependentColor ContextCompat
-                        .getColor(requireContext(), R.color.yellow_active)
+                        .getColor(requireContext(), values.color.yellow_active)
                 }
-                ContextCompat.getColor(requireContext(), R.color.red_active)
+                ContextCompat.getColor(requireContext(), values.color.red_active)
             }
 
             setOnDataPointTapListener { _, dataPoint ->
@@ -289,5 +316,9 @@ class StatisticFragment : Fragment() {
             viewModel.setKeepByTime(time, keep)
         }
 
+    }
+
+    override fun deleteMarkup(time: Date) {
+        viewModel.deleteMarkupByTime(time)
     }
 }

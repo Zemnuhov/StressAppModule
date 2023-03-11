@@ -27,29 +27,35 @@ class FirebaseController (context: Context, workerParams: WorkerParameters) :
     }
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO){
-        val localDatabase = resultApi.getResultsTenMinute().first()
-        val firebaseDatabase = firebaseDataApi.readTenMinuteResults()
-        val checkLocalDatabase = localDatabase.list.map { ResultTimeAndCause(it.time, it.stressCause) }
-        val checkFirebaseDatabase = firebaseDatabase.list.map { ResultTimeAndCause(it.time, it.stressCause) }
+        try{
+            val localDatabase = resultApi.getResultsTenMinute().first()
+            val firebaseDatabase = firebaseDataApi.readTenMinuteResults()
+            val checkLocalDatabase =
+                localDatabase.list.map { ResultTimeAndCause(it.time, it.stressCause) }
+            val checkFirebaseDatabase =
+                firebaseDatabase.list.map { ResultTimeAndCause(it.time, it.stressCause) }
 
-        val mutableCheckLocalDatabase = checkLocalDatabase.toMutableList()
-        mutableCheckLocalDatabase.removeAll(checkFirebaseDatabase)
-        val mutableCheckFirebaseDatabase = checkFirebaseDatabase.toMutableList()
-        mutableCheckFirebaseDatabase.removeAll(checkLocalDatabase)
+            val mutableCheckLocalDatabase = checkLocalDatabase.toMutableList()
+            mutableCheckLocalDatabase.removeAll(checkFirebaseDatabase)
+            val mutableCheckFirebaseDatabase = checkFirebaseDatabase.toMutableList()
+            mutableCheckFirebaseDatabase.removeAll(checkLocalDatabase)
 
-        mutableCheckLocalDatabase.forEach { result ->
-            if(result.time in mutableCheckFirebaseDatabase.map { it.time }){
-                val localResult = localDatabase.list.filter{it.time == result.time}[0]
-                val firebaseResult = firebaseDatabase.list.filter{it.time == result.time}[0]
-                if(localResult.stressCause != null){
+            mutableCheckLocalDatabase.forEach { result ->
+                if (result.time in mutableCheckFirebaseDatabase.map { it.time }) {
+                    val localResult = localDatabase.list.filter { it.time == result.time }[0]
+                    val firebaseResult = firebaseDatabase.list.filter { it.time == result.time }[0]
+                    if (localResult.stressCause != null) {
+                        firebaseDataApi.writeTenMinuteResult(localResult)
+                    } else {
+                        resultApi.updateResultTenMinute(ResultsTenMinute(listOf(firebaseResult)))
+                    }
+                } else {
+                    val localResult = localDatabase.list.filter { it.time == result.time }[0]
                     firebaseDataApi.writeTenMinuteResult(localResult)
-                }else{
-                    resultApi.updateResultTenMinute(ResultsTenMinute(listOf(firebaseResult)))
                 }
-            }else{
-                val localResult = localDatabase.list.filter { it.time == result.time }[0]
-                firebaseDataApi.writeTenMinuteResult(localResult)
             }
+        }catch (e: java.lang.Exception){
+            return@withContext Result.failure()
         }
 
         return@withContext Result.success()

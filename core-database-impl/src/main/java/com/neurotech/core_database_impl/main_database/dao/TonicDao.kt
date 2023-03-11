@@ -2,6 +2,7 @@ package com.neurotech.core_database_impl.main_database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.neurotech.core_database_impl.main_database.entity.TonicEntity
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +22,7 @@ interface TonicDao {
     @Query("SELECT AVG(value) FROM TonicEntity WHERE time >= :beginDateTime AND time <= :endDateTime")
     fun getTonicAverageInInterval(beginDateTime: String, endDateTime: String): Int
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertTonicValue(vararg peak: TonicEntity)
 
     @Query("DELETE FROM TonicEntity WHERE time >= datetime('now','-2 day','localtime')")

@@ -36,6 +36,9 @@ class PhaseDB: PhaseApi {
         )
     }
 
+    override suspend fun getPhaseFromNow(dateTime: Date): Flow<Int> =
+        phaseDao.getPhaseFromNow(dateTime.toString(TimeFormat.dateTimeIsoPattern))
+
     override suspend fun writePhase(model: Phase) {
         phaseDao.insertPhase(
             PhaseEntity(

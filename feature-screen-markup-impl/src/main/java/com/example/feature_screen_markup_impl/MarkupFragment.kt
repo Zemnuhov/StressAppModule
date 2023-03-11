@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,7 @@ import com.neurotech.utils.TimeFormat
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Provider
+import com.example.values.R as values
 
 class MarkupFragment: Fragment(R.layout.fragment_markup), ResultAdapter.ResultAdapterCallback, CauseAdapter.CauseCallback {
 
@@ -73,30 +75,36 @@ class MarkupFragment: Fragment(R.layout.fragment_markup), ResultAdapter.ResultAd
 
 
         viewModel.resultForMarkup.observe(viewLifecycleOwner){
-            resultAdapter?.submitList(
-                it.list.map {
-                    ResultAdapterModel(
-                        it.time,
-                        it.peakCount,
-                        it.tonicAvg,
-                        it.conditionAssessment,
-                        it.stressCause,
-                        it.keep,
-                        false,
-                        when(it.peakCount){
-                            in 0..viewModel.user.phaseNormal -> {
-                                ContextCompat.getColor(requireContext(), R.color.green_active)
+            if(it.list.isNotEmpty()){
+                binding.markupRecyclerView.visibility = View.VISIBLE
+                resultAdapter?.submitList(
+                    it.list.map {
+                        ResultAdapterModel(
+                            it.time,
+                            it.peakCount,
+                            it.tonicAvg,
+                            it.conditionAssessment,
+                            it.stressCause,
+                            it.keep,
+                            false,
+                            when(it.peakCount){
+                                in 0..viewModel.user.phaseNormal -> {
+                                    ContextCompat.getColor(requireContext(), values.color.green_active)
+                                }
+                                in viewModel.user.phaseNormal+1..viewModel.user.phaseNormal * 2 -> {
+                                    ContextCompat.getColor(requireContext(), values.color.yellow_active)
+                                }
+                                else  -> {
+                                    ContextCompat.getColor(requireContext(), values.color.red_active)
+                                }
                             }
-                            in viewModel.user.phaseNormal+1..viewModel.user.phaseNormal * 2 -> {
-                                ContextCompat.getColor(requireContext(), R.color.yellow_active)
-                            }
-                            else  -> {
-                                ContextCompat.getColor(requireContext(), R.color.red_active)
-                            }
-                        }
-                    )
-                }
-            )
+                        )
+                    }
+                )
+            }else{
+                binding.markupRecyclerView.visibility = View.GONE
+            }
+
         }
 
         binding.timeSetButton.setOnClickListener {
@@ -133,7 +141,6 @@ class MarkupFragment: Fragment(R.layout.fragment_markup), ResultAdapter.ResultAd
                             )
                         }
                 )
-
             )
         }
 

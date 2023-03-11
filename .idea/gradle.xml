@@ -28,6 +28,8 @@
             <option value="$PROJECT_DIR$/core-firebase-database-impl" />
             <option value="$PROJECT_DIR$/core-foreground-service-api" />
             <option value="$PROJECT_DIR$/core-foreground-service-impl" />
+            <option value="$PROJECT_DIR$/core-notification-controller-api" />
+            <option value="$PROJECT_DIR$/core-notification-controller-impl" />
             <option value="$PROJECT_DIR$/core-signal-control-api" />
             <option value="$PROJECT_DIR$/core-signal-control-impl" />
             <option value="$PROJECT_DIR$/custom-views" />
@@ -44,9 +46,11 @@
             <option value="$PROJECT_DIR$/feature-scan-api" />
             <option value="$PROJECT_DIR$/feature-scan-impl" />
             <option value="$PROJECT_DIR$/feature-screen-analytic-impl" />
+            <option value="$PROJECT_DIR$/feature-screen-editing-day-plan-impl" />
             <option value="$PROJECT_DIR$/feature-screen-main-api" />
             <option value="$PROJECT_DIR$/feature-screen-main-impl" />
             <option value="$PROJECT_DIR$/feature-screen-markup-impl" />
+            <option value="$PROJECT_DIR$/feature-screen-relax-impl" />
             <option value="$PROJECT_DIR$/feature-screen-setting-api" />
             <option value="$PROJECT_DIR$/feature-screen-setting-impl" />
             <option value="$PROJECT_DIR$/feature-screen-statistic-api" />
@@ -56,6 +60,7 @@
             <option value="$PROJECT_DIR$/navigation" />
             <option value="$PROJECT_DIR$/navigation-api" />
             <option value="$PROJECT_DIR$/utils" />
+            <option value="$PROJECT_DIR$/values" />
           </set>
         </option>
       </GradleProjectSettings>

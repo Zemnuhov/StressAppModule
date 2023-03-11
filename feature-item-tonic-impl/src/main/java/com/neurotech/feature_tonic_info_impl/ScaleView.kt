@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import kotlin.math.min
+import com.example.values.R as values
 
 class ScaleView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -142,60 +143,60 @@ class ScaleView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
 
     private fun Canvas.drawGreenScale(){
         paint.color = when(value){
-            in 1000..10000 -> ContextCompat.getColor(context, R.color.green_active)
-            else -> ContextCompat.getColor(context, R.color.green_not_active)
+            in 1000..10000 -> ContextCompat.getColor(context, values.color.green_active)
+            else -> ContextCompat.getColor(context, values.color.green_not_active)
         }
         drawRect(greenRectOne,paint)
 
         paint.color = when(value){
-            in 2000..10000 -> ContextCompat.getColor(context, R.color.green_active)
-            else -> ContextCompat.getColor(context, R.color.green_not_active)
+            in 2000..10000 -> ContextCompat.getColor(context, values.color.green_active)
+            else -> ContextCompat.getColor(context, values.color.green_not_active)
         }
         drawRect(greenRectTwo,paint)
 
         paint.color = when(value){
-            in 3000..10000 -> ContextCompat.getColor(context, R.color.green_active)
-            else -> ContextCompat.getColor(context, R.color.green_not_active)
+            in 3000..10000 -> ContextCompat.getColor(context, values.color.green_active)
+            else -> ContextCompat.getColor(context, values.color.green_not_active)
         }
         drawRect(greenRectThree,paint)
     }
 
     private fun Canvas.drawYellowScale(){
         paint.color = when(value){
-            in 4000..10000 -> ContextCompat.getColor(context, R.color.yellow_active)
-            else -> ContextCompat.getColor(context, R.color.yellow_not_active)
+            in 4000..10000 -> ContextCompat.getColor(context, values.color.yellow_active)
+            else -> ContextCompat.getColor(context, values.color.yellow_not_active)
         }
         drawRect(yellowRectOne,paint)
 
         paint.color = when(value){
-            in 5000..10000 -> ContextCompat.getColor(context, R.color.yellow_active)
-            else -> ContextCompat.getColor(context, R.color.yellow_not_active)
+            in 5000..10000 -> ContextCompat.getColor(context, values.color.yellow_active)
+            else -> ContextCompat.getColor(context, values.color.yellow_not_active)
         }
         drawRect(yellowRectTwo,paint)
 
         paint.color = when(value){
-            in 6000..10000 -> ContextCompat.getColor(context, R.color.yellow_active)
-            else -> ContextCompat.getColor(context, R.color.yellow_not_active)
+            in 6000..10000 -> ContextCompat.getColor(context, values.color.yellow_active)
+            else -> ContextCompat.getColor(context, values.color.yellow_not_active)
         }
         drawRect(yellowRectThree,paint)
     }
 
     private fun Canvas.drawRedScale(){
         paint.color = when(value){
-            in 7000..10000 -> ContextCompat.getColor(context, R.color.red_active)
-            else -> ContextCompat.getColor(context, R.color.red_not_active)
+            in 7000..10000 -> ContextCompat.getColor(context, values.color.red_active)
+            else -> ContextCompat.getColor(context, values.color.red_not_active)
         }
         drawRect(redRectOne,paint)
 
         paint.color = when(value){
-            in 8000..10000 -> ContextCompat.getColor(context, R.color.red_active)
-            else -> ContextCompat.getColor(context, R.color.red_not_active)
+            in 8000..10000 -> ContextCompat.getColor(context, values.color.red_active)
+            else -> ContextCompat.getColor(context, values.color.red_not_active)
         }
         drawRect(redRectTwo,paint)
 
         paint.color = when(value){
-            in 9000..10000 -> ContextCompat.getColor(context, R.color.red_active)
-            else -> ContextCompat.getColor(context, R.color.red_not_active)
+            in 9000..10000 -> ContextCompat.getColor(context, values.color.red_active)
+            else -> ContextCompat.getColor(context, values.color.red_not_active)
         }
         drawRect(redRectThree,paint)
     }

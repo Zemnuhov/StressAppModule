@@ -10,6 +10,8 @@ import com.neurotech.core_database_impl.setting_database.dao.DeviceDao
 import com.neurotech.core_database_impl.setting_database.entity.CauseEntity
 import com.neurotech.core_database_impl.setting_database.entity.DayPlanEntity
 import com.neurotech.core_database_impl.setting_database.entity.DeviceEntity
+import com.neurotech.utils.StressLogger.log
+import com.neurotech.utils.WorkResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class SettingDB: SettingApi {
+class SettingDB : SettingApi {
     @Inject
     lateinit var deviceDao: DeviceDao
 
@@ -35,10 +37,10 @@ class SettingDB: SettingApi {
     init {
         DatabaseComponent.get().inject(this)
         CoroutineScope(Dispatchers.IO).launch {
-            if("Артефакты" !in causeDao.getCause().first().map { it.cause }){
+            if ("Артефакты" !in causeDao.getCause().first().map { it.cause }) {
                 causeDao.insertCause(CauseEntity("Артефакты"))
             }
-            if("Сон" !in causeDao.getCause().first().map { it.cause }){
+            if ("Сон" !in causeDao.getCause().first().map { it.cause }) {
                 causeDao.insertCause(CauseEntity("Сон"))
             }
         }
@@ -48,7 +50,7 @@ class SettingDB: SettingApi {
 
     override suspend fun getDevice(): Device? = withContext(Dispatchers.IO) {
         val device = deviceDao.getDevice()
-        if(device != null){
+        if (device != null) {
             return@withContext Device(name = device.name, mac = device.mac)
         }
         return@withContext null
@@ -56,32 +58,32 @@ class SettingDB: SettingApi {
     }
 
     override suspend fun rememberDevice(device: Device) {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             deviceDao.insertDevice(DeviceEntity(device.mac, device.name))
         }
     }
 
     override suspend fun removedDevice() {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             deviceDao.removedDevice()
         }
     }
 
     override suspend fun getCauses(): Flow<Causes> {
         return causeDao
-                .getCause()
-                .map { entity ->
-                    Causes(entity
-                        .map { it.mapToCause() })
-                }
+            .getCause()
+            .map { entity ->
+                Causes(entity
+                    .map { it.mapToCause() })
+            }
     }
 
-    override suspend fun addCause(cause: Cause) = withContext(Dispatchers.IO){
+    override suspend fun addCause(cause: Cause) = withContext(Dispatchers.IO) {
         causeDao.insertCause(CauseEntity(cause.name))
         firebaseDataApi.writeCause(cause)
     }
 
-    override suspend fun deleteCause(cause: Cause) = withContext(Dispatchers.IO){
+    override suspend fun deleteCause(cause: Cause) = withContext(Dispatchers.IO) {
         causeDao.deleteCause(CauseEntity(cause.name))
         firebaseDataApi.removeCause(cause)
     }
@@ -96,22 +98,80 @@ class SettingDB: SettingApi {
             )
         }
 
+    override suspend fun getDayPlanById(id: Int): DayPlan {
+        return withContext(Dispatchers.IO) {
+            dayPlanDao.getDayPlanById(id).mapToDayPlan()
+        }
+    }
 
-    override suspend fun addDayPlan(dayPlan: DayPlan) = withContext(Dispatchers.IO){
-        dayPlanDao.insertDayPlan(
-            DayPlanEntity(
-                0,
-                dayPlan.plan,
-                dayPlan.timeBegin,
-                dayPlan.timeEnd,
-                dayPlan.firstSource,
-                dayPlan.secondSource,
-                dayPlan.autoMarkup
+    override suspend fun getDayPlanByTime(time: String): DayPlan? {
+        return dayPlanDao.getDayPlanByTime(time)?.mapToDayPlan()
+    }
+
+
+    override suspend fun addDayPlan(dayPlan: DayPlan, autoGenerateId: Boolean) = withContext(Dispatchers.IO) {
+        if(autoGenerateId){
+            dayPlanDao.insertDayPlan(
+                DayPlanEntity(
+                    0,
+                    dayPlan.plan,
+                    dayPlan.timeBegin,
+                    dayPlan.timeEnd,
+                    dayPlan.firstSource,
+                    dayPlan.secondSource,
+                    dayPlan.autoMarkup
+                )
             )
+        }else{
+            dayPlanDao.insertDayPlan(
+                DayPlanEntity(
+                    dayPlan.planId,
+                    dayPlan.plan,
+                    dayPlan.timeBegin,
+                    dayPlan.timeEnd,
+                    dayPlan.firstSource,
+                    dayPlan.secondSource,
+                    dayPlan.autoMarkup
+                )
+            )
+        }
+        firebaseDataApi.writeDayPlan(dayPlanDao.getDayPlan().mapToDayPlan())
+
+    }
+
+    private fun isValidTime(timeBegin: String, timeEnd: String): Boolean {
+        val begin = timeBegin.split(":").joinToString("").toInt()
+        val end = timeEnd.split(":").joinToString("").toInt()
+        if (begin < end) {
+            return true
+        }
+        return false
+    }
+
+    override suspend fun updateDayPlan(dayPlan: DayPlan): WorkResult = withContext(Dispatchers.IO) {
+        if (isValidTime(dayPlan.timeBegin!!, dayPlan.timeEnd!!)) {
+            dayPlanDao.updateDayPlan(
+                DayPlanEntity(
+                    dayPlan.planId,
+                    dayPlan.plan,
+                    dayPlan.timeBegin,
+                    dayPlan.timeEnd,
+                    dayPlan.firstSource,
+                    dayPlan.secondSource,
+                    dayPlan.autoMarkup
+                )
+            )
+            firebaseDataApi.writeDayPlan(dayPlanDao.getDayPlan().mapToDayPlan())
+            return@withContext WorkResult(isError = false)
+        }
+        return@withContext WorkResult(
+            isError = true,
+            message = "Событие не может начаться позже чем закончиться!"
         )
     }
 
-    override suspend fun deleteDayPlan(dayPlan: DayPlan) = withContext(Dispatchers.IO){
+
+    override suspend fun deleteDayPlan(dayPlan: DayPlan) = withContext(Dispatchers.IO) {
         dayPlanDao.deleteDayPlan(
             DayPlanEntity(
                 dayPlan.planId,
@@ -123,5 +183,6 @@ class SettingDB: SettingApi {
                 dayPlan.autoMarkup
             )
         )
+        firebaseDataApi.removeDayPlan(dayPlan)
     }
 }

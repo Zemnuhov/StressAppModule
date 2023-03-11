@@ -14,10 +14,14 @@ import com.neurotech.core_database_impl.main_database.entity.ResultHourEntity
 import com.neurotech.core_database_impl.main_database.entity.ResultTenMinuteEntity
 import com.neurotech.utils.TimeFormat
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 class ResultDB : ResultApi {
 
@@ -40,18 +44,21 @@ class ResultDB : ResultApi {
 
     override suspend fun writeResultTenMinute(resultTenMinute: ResultTenMinute) {
         withContext(Dispatchers.IO){
-            resultTenMinuteDao.insertResult(
-                ResultTenMinuteEntity(
-                    resultTenMinute.time.toString(TimeFormat.dateTimeIsoPattern),
-                    resultTenMinute.peakCount,
-                    resultTenMinute.tonicAvg,
-                    resultTenMinute.conditionAssessment,
-                    resultTenMinute.stressCause,
-                    resultTenMinute.keep
+            launch {
+                resultTenMinuteDao.insertResult(
+                    ResultTenMinuteEntity(
+                        resultTenMinute.time.toString(TimeFormat.dateTimeIsoPattern),
+                        resultTenMinute.peakCount,
+                        resultTenMinute.tonicAvg,
+                        resultTenMinute.conditionAssessment,
+                        resultTenMinute.stressCause,
+                        resultTenMinute.keep
+                    )
                 )
-            )
-
-            firebaseData.writeTenMinuteResult(resultTenMinute)
+            }
+            launch {
+                firebaseData.writeTenMinuteResult(resultTenMinute)
+            }
         }
     }
 
@@ -121,10 +128,13 @@ class ResultDB : ResultApi {
 
     override suspend fun getCountForEachCause(causes: Causes): Flow<CountForEachCause> {
         return flow {
-            resultTenMinuteDao.getCountForEachCause(causes.values.map { it.name }).collect {
+            resultTenMinuteDao.getCountForEachCause(causes.values.map { it.name }.filter {
+                it !in arrayOf("Сон", "Артефакты")
+            }).collect {
                 emit(CountForEachCause(it.toMutableList().apply {
                     causes.values.forEach { cause ->
-                        if (cause.name !in this.map { countForCauseDB -> countForCauseDB.cause }) {
+                        if (cause.name !in this.map { countForCauseDB -> countForCauseDB.cause } &&
+                            cause.name !in arrayOf("Сон", "Артефакты")) {
                             add(CountForCauseDB(cause.name, 0))
                         }
                     }
@@ -149,27 +159,62 @@ class ResultDB : ResultApi {
     }
 
     override suspend fun setKeepByTime(keep: String?, time: Date) {
-        TODO("Not yet implemented")
+        withContext(Dispatchers.IO){
+            resultTenMinuteDao.setKeepByTime(keep, time.toString(TimeFormat.dateTimeIsoPattern))
+            firebaseData
+                .writeTenMinuteResult(
+                    resultTenMinuteDao
+                        .getResultByDateTime(
+                            time.toString(TimeFormat.dateTimeIsoPattern)
+                        )!!.mapToResultTenMinute()
+                )
+        }
     }
 
     override suspend fun updateResultTenMinute(resultsTenMinute: ResultsTenMinute) {
         withContext(Dispatchers.IO) {
-            resultTenMinuteDao.updateResult(
-                *resultsTenMinute.list.map {
-                    ResultTenMinuteEntity(
-                        it.time.toString(TimeFormat.dateTimeIsoPattern),
-                        it.peakCount,
-                        it.tonicAvg,
-                        it.conditionAssessment,
-                        it.stressCause,
-                        it.keep
-                    )
-                }.toTypedArray()
-            )
-
-            firebaseData.writeTenMinuteResults(resultsTenMinute)
+            launch {
+                resultTenMinuteDao.updateResult(
+                    *resultsTenMinute.list.map {
+                        ResultTenMinuteEntity(
+                            it.time.toString(TimeFormat.dateTimeIsoPattern),
+                            it.peakCount,
+                            it.tonicAvg,
+                            it.conditionAssessment,
+                            it.stressCause,
+                            it.keep
+                        )
+                    }.toTypedArray()
+                )
+            }
+            thread(start = true) {
+                launch {
+                    firebaseData.writeTenMinuteResults(resultsTenMinute)
+                }
+            }
         }
 
+    }
+
+    override suspend fun setCauseByTime(cause: Cause, time: Date) {
+        withContext(Dispatchers.IO){
+            launch {
+                resultTenMinuteDao.setCauseByTime(cause.name, time.toString(TimeFormat.dateTimeIsoPattern))
+                firebaseData
+                    .writeTenMinuteResult(
+                        resultTenMinuteDao
+                            .getResultByDateTime(
+                                time.toString(TimeFormat.dateTimeIsoPattern)
+                            )!!.mapToResultTenMinute()
+                    )
+            }
+        }
+    }
+
+    override suspend fun deleteMarkupByTime(time: Date) {
+        withContext(Dispatchers.IO){
+            resultTenMinuteDao.deleteMarkupByTime(time.toString(TimeFormat.dateTimeIsoPattern))
+        }
     }
 
     override suspend fun getLastFiveValidDay(): Flow<ResultsDay> {
@@ -200,12 +245,14 @@ class ResultDB : ResultApi {
                     CountForEachCause(it.map { CountForCause(Cause(it.cause), it.count) })
                 }.collect {
                     val resultList = it.list.toMutableList()
-                    causes.values.forEach { cause ->
+                    val mutableCauses = causes.values.toMutableList()
+                    mutableCauses.removeAll(listOf(Cause("Артефакты"),Cause("Сон")))
+                    mutableCauses.forEach { cause ->
                         if (cause !in it.list.map { it.cause }) {
                             resultList.add(CountForCause(cause, 0))
                         }
                     }
-                    emit(CountForEachCause(resultList))
+                    emit(CountForEachCause(resultList.sortedBy { it.cause.name }))
                 }
         }
     }
@@ -259,8 +306,8 @@ class ResultDB : ResultApi {
             resultDayDao.getResultDayByInterval(
                 month.beginningOfMonth.toString(TimeFormat.dateTimeIsoPattern),
                 month.endOfMonth.toString(TimeFormat.dateTimeIsoPattern)
-            ).map {
-                it.map {
+            ).map { resultDayList ->
+                resultDayList.map {
                     ResultDay(
                         it.date.toDate(TimeFormat.dateTimeIsoPattern),
                         it.peaks,
@@ -275,7 +322,7 @@ class ResultDB : ResultApi {
                     val thisYear = month.toString("yyyy").toInt()
                     val thisMonth = month.toString("MM").toInt()
                     val dayInMonth = month.endOfMonth.toString("dd").toInt()
-                    val existingDates = it.map { it.date }
+                    val existingDates = it.map { result -> result.date }
                     for (day in 1..dayInMonth) {
                         val date =
                             Tempo.with(year = thisYear, month = thisMonth, day = day).beginningOfDay

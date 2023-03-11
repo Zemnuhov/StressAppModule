@@ -12,8 +12,10 @@ import androidx.work.WorkManager
 import com.example.core_database_control_api.DatabaseControllerApi
 import com.example.core_firebase_controller_impl.FirebaseController
 import com.example.core_foreground_service_impl.di.ServiceComponent
+import com.example.core_notification_controller_api.NotificationControllerApi
 import com.example.core_signal_control_api.SignalControlApi
 import com.example.feature_notification_api.NotificationApi
+import com.neurotech.core_bluetooth_comunication_api.BluetoothSynchronizerApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -31,6 +33,9 @@ class StressAppService: Service() {
     lateinit var notification: NotificationApi
 
     @Inject
+    lateinit var notificationController: NotificationControllerApi
+
+    @Inject
     lateinit var signalController: SignalControlApi
 
     @Inject
@@ -38,6 +43,9 @@ class StressAppService: Service() {
 
     @Inject
     lateinit var workManager: WorkManager
+
+    @Inject
+    lateinit var bluetoothSynchronizer: BluetoothSynchronizerApi
 
     private val binder = LocalBinder()
 
@@ -47,12 +55,14 @@ class StressAppService: Service() {
         ServiceComponent.get().inject(this)
         startForeground(FOREGROUND_SERVICE_ID, notification.getForegroundNotification())
         CoroutineScope(Dispatchers.IO).launch {
+            launch { bluetoothSynchronizer.synchronize() }
             launch { signalController.listenPhaseSignal() }
             launch { signalController.listenTonicSignal() }
             launch { databaseControllerApi.controlResultTenMinute() }
             launch { databaseControllerApi.controlResultHour() }
             launch { databaseControllerApi.controlResultDay() }
             launch { databaseControllerApi.controlUserData() }
+            launch { notificationController.control() }
             launch {
                 val dbControlRequest =
                     PeriodicWorkRequestBuilder<FirebaseController>(1, TimeUnit.DAYS)

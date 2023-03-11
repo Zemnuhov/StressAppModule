@@ -1,5 +1,6 @@
 package com.example.core_database_control_impl.di
 
+import android.content.Context
 import com.example.core_database_control_impl.DatabaseController
 import com.example.core_firebase_database_api.FirebaseDataApi
 import com.neurotech.core_database_api.PhaseApi
@@ -44,6 +45,7 @@ interface DatabaseControlDependencies{
     val tonicApi: TonicApi
     val userApi: UserApi
     val firebaseDataApi: FirebaseDataApi
+    val context: Context
 }
 
 internal interface DatabaseControlDependenciesProvider{

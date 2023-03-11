@@ -15,6 +15,7 @@ import com.jjoe64.graphview.series.BarGraphSeries
 import com.jjoe64.graphview.series.DataPoint
 import javax.inject.Inject
 import dagger.Lazy
+import com.example.values.R as values
 
 class PhaseInfoFragment: Fragment(R.layout.fragment_phase_info) {
 
@@ -98,7 +99,7 @@ class PhaseInfoFragment: Fragment(R.layout.fragment_phase_info) {
             viewport.isScrollable = false
             viewport.setScalableY(false)
             viewport.setScrollableY(false)
-            setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.card_background))
+            setBackgroundColor(ContextCompat.getColor(requireContext(), com.example.values.R.color.card_background))
             gridLabelRenderer.gridColor = Color.BLACK
             gridLabelRenderer.isVerticalLabelsVisible = false
             gridLabelRenderer.isHorizontalLabelsVisible = false
@@ -111,14 +112,14 @@ class PhaseInfoFragment: Fragment(R.layout.fragment_phase_info) {
             if (data.y < normal) {
                 return@setValueDependentColor ContextCompat.getColor(
                     requireContext(),
-                    R.color.green_active
+                    values.color.green_active
                 )
             }
             if (data.y in normal..normal * 2) {
                 return@setValueDependentColor ContextCompat
-                    .getColor(requireContext(), R.color.yellow_active)
+                    .getColor(requireContext(), values.color.yellow_active)
             }
-            ContextCompat.getColor(requireContext(), R.color.red_active)
+            ContextCompat.getColor(requireContext(), values.color.red_active)
         }
         binding.peaksCounterGraph.invalidate()
 

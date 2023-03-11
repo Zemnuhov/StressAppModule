@@ -4,6 +4,7 @@ import com.example.core_firebase_auth.FirebaseAuthApi
 import com.example.core_firebase_database_impl.FirebaseData
 import dagger.Component
 import dagger.Component.Builder
+import java.lang.annotation.RetentionPolicy
 import javax.inject.Scope
 import kotlin.properties.Delegates.notNull
 
@@ -33,4 +34,5 @@ internal interface FirebaseDataComponent {
 
 
 @Scope
+@Retention(AnnotationRetention.RUNTIME)
 annotation class FirebaseDataScope

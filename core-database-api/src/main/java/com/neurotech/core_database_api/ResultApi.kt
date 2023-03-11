@@ -11,6 +11,8 @@ interface ResultApi {
     suspend fun writeResultDay(resultsDay: ResultsDay)
     suspend fun setKeepByTime(keep: String?, time: Date)
     suspend fun updateResultTenMinute(resultsTenMinute: ResultsTenMinute)
+    suspend fun setCauseByTime(cause: Cause, time: Date)
+    suspend fun deleteMarkupByTime(time: Date)
 
     suspend fun getResultHourFromResultTenMinute(beginInterval: Date, endInterval: Date): ResultsHour
     suspend fun getResultDayFromResultTenMinute(beginInterval: Date, endInterval: Date): ResultsDay

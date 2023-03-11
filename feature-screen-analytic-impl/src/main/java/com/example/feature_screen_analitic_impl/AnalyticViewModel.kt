@@ -1,5 +1,6 @@
 package com.example.feature_screen_analitic_impl
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.cesarferreira.tempo.*
 import com.neurotech.core_database_api.ResultApi
@@ -60,7 +61,8 @@ class AnalyticViewModel(
                 }
                 _dayRatingList.postValue(dayRating.reversed())
                 if (dayRating.isNotEmpty()){
-                    _userRating.postValue((dayRating.sum()/dayRating.size).roundToInt())
+                    val rating = dayRating.sum()/dayRating.size
+                    _userRating.postValue(if (rating<1) 1 else rating.roundToInt())
                 }else{
                     _userRating.postValue(0)
                 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="large_indent">16dp</dimen>
+    <dimen name="default_indent">11dp</dimen>
+    <dimen name="small_indent">5dp</dimen>
+    <dimen name="half_small_indent">3dp</dimen>
+    <dimen name="default_text_size">11sp</dimen>
+    <dimen name="small_text_size">10sp</dimen>
+    <dimen name="peak_text_size">21sp</dimen>
+    <dimen name="range_size">35dp</dimen>
+    <dimen name="routed_button_size">21dp</dimen>
+    <dimen name="default_elevation">7dp</dimen>
+</resources>

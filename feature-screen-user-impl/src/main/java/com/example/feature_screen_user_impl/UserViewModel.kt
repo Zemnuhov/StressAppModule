@@ -62,9 +62,7 @@ class UserViewModel(
     fun setOneDayInterval(){
         userParametersJob?.cancel()
         userParametersJob = viewModelScope.launch {
-            val begin = Tempo.now.beginningOfDay
-            val end = Tempo.now.endOfDay
-            userApi.getUserParametersByInterval(begin, end).collect{
+            userApi.getUserParametersByInterval(Tempo.now - 1.day, Tempo.now).collect{
                 _userParameter.postValue(it)
             }
         }

@@ -8,6 +8,8 @@ import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.SettingApi
 import com.neurotech.core_database_api.UserApi
 import com.neurotech.core_database_api.model.ResultsTenMinute
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -24,7 +26,7 @@ class MarkupViewModel(
     val resultForMarkup = liveData {
         resultApi
             .getResultsTenMinuteAboveThreshold(
-                userApi.getUserParameters().first().tenMinutePhase
+                userApi.getUser().phaseNormal
             ).collect {
                 emit(it)
             }
@@ -39,7 +41,7 @@ class MarkupViewModel(
     val user = runBlocking { userApi.getUser() }
 
     fun saveMarkups(results: ResultsTenMinute){
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             resultApi.updateResultTenMinute(results)
         }
     }

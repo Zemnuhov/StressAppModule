@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="disconnect_message">Нет соединения с устройством</string>
-    <string name="phase_item_title">Количество пиков</string>
-    <string name="default_value">0</string>
-    <string name="statistic_icon">statistic_icon</string>
-    <string name="color_marker">color_marker</string>
-    <string name="default_title">Source</string>
-</resources>

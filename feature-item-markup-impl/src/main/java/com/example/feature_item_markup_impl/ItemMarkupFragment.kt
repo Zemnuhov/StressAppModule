@@ -18,6 +18,8 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import javax.inject.Inject
 import dagger.Lazy
+import com.example.values.R as values
+
 
 class ItemMarkupFragment: Fragment(R.layout.fragment_item_markup) {
 
@@ -39,13 +41,13 @@ class ItemMarkupFragment: Fragment(R.layout.fragment_item_markup) {
 
     private val colors by lazy {
         listOf(
-            ContextCompat.getColor(requireContext(), R.color.primary),
-            ContextCompat.getColor(requireContext(), R.color.primary_dark),
-            ContextCompat.getColor(requireContext(), R.color.primary_light),
-            ContextCompat.getColor(requireContext(), R.color.secondary),
-            ContextCompat.getColor(requireContext(), R.color.secondary_dark),
-            ContextCompat.getColor(requireContext(), R.color.third_dark),
-            ContextCompat.getColor(requireContext(), R.color.third)
+            ContextCompat.getColor(requireContext(), values.color.primary),
+            ContextCompat.getColor(requireContext(), values.color.primary_dark),
+            ContextCompat.getColor(requireContext(), values.color.primary_light),
+            ContextCompat.getColor(requireContext(), values.color.secondary),
+            ContextCompat.getColor(requireContext(), values.color.secondary_dark),
+            ContextCompat.getColor(requireContext(), values.color.third_dark),
+            ContextCompat.getColor(requireContext(), values.color.third)
         )
     }
 
@@ -113,9 +115,9 @@ class ItemMarkupFragment: Fragment(R.layout.fragment_item_markup) {
         binding.pieChart.legend.isEnabled = false
         binding.pieChart.description = null
         binding.pieChart
-            .setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.card_background))
+            .setBackgroundColor(ContextCompat.getColor(requireContext(), values.color.card_background))
         binding.pieChart
-            .setHoleColor(ContextCompat.getColor(requireContext(), R.color.card_background))
+            .setHoleColor(ContextCompat.getColor(requireContext(), values.color.card_background))
         binding.pieChart.invalidate()
     }
 

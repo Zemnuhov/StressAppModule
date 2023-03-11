@@ -100,6 +100,9 @@ class MainFragment: Fragment(R.layout.fragment_main) {
         connectionObserver()
         fillFragment()
         menuController()
+        binding.imageView2.setOnClickListener {
+            navigationApi.navigateMainToRelax()
+        }
     }
 
     private fun connectionObserver(){

@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_mainFragment_to_statisticScreenFragment"
             app:destination="@id/statisticScreenFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_relaxFragment"
+            app:destination="@id/relaxFragment" />
     </fragment>
     <fragment
         android:id="@+id/statisticScreenFragment"
@@ -23,7 +26,11 @@
     <fragment
         android:id="@+id/settingFragment"
         android:name="com.example.feature_screen_setting_impl.SettingFragment"
-        android:label="Настройки" />
+        android:label="Настройки" >
+        <action
+            android:id="@+id/action_settingFragment_to_editingDayPlanFragment"
+            app:destination="@id/editingDayPlanFragment" />
+    </fragment>
     <fragment
         android:id="@+id/analyticFragment"
         android:name="com.example.feature_screen_analitic_impl.AnalyticFragment"
@@ -36,5 +43,13 @@
         android:id="@+id/userFragment"
         android:name="com.example.feature_screen_user_impl.UserFragment"
         android:label="Пользователь" />
+    <fragment
+        android:id="@+id/relaxFragment"
+        android:name="com.example.feature_screen_relax_impl.RelaxFragment"
+        android:label="Тренировка релаксации" />
+    <fragment
+        android:id="@+id/editingDayPlanFragment"
+        android:name="com.example.feature_screen_editing_day_plan_impl.EditingDayPlanFragment"
+        android:label="План на день" />
 
 </navigation>

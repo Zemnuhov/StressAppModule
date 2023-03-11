@@ -40,7 +40,8 @@
             android:background="@drawable/black_shadow"
             android:gravity="center"
             android:text="@string/markup_is_ok"
-            android:textSize="@dimen/default_text_size" />
+            android:textSize="@dimen/default_text_size"
+            android:visibility="visible" />
     </LinearLayout>
 
     <Button
@@ -60,18 +61,17 @@
         android:id="@+id/sourceRecyclerView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/default_indent"
+        android:layout_marginBottom="@dimen/small_indent"
         android:padding="@dimen/small_indent"
         app:layout_constraintBottom_toTopOf="@+id/saveButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/default_indent"
+        android:layout_marginBottom="@dimen/small_indent"
         android:background="@drawable/shadow"
         android:elevation="@dimen/default_elevation"
         app:layout_constraintBottom_toTopOf="@+id/sourceRecyclerView"
@@ -100,6 +100,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/large_indent"
             android:text="Начало диапазона:"
+            android:textColor="@color/text_color"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/beginTime"
             app:layout_constraintStart_toStartOf="parent"
@@ -110,6 +111,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Конец диапазона:"
+            android:textColor="@color/text_color"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/endTime"
             app:layout_constraintStart_toStartOf="@+id/textView"
@@ -125,6 +127,7 @@
             android:elevation="@dimen/default_elevation"
             android:padding="@dimen/default_indent"
             android:text="00:00"
+            android:textColor="@color/text_color"
             android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@+id/textView"
             app:layout_constraintTop_toTopOf="parent" />
@@ -138,6 +141,7 @@
             android:elevation="@dimen/default_elevation"
             android:padding="@dimen/default_indent"
             android:text="00:00"
+            android:textColor="@color/text_color"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="@+id/beginTime"
             app:layout_constraintStart_toStartOf="@+id/beginTime"

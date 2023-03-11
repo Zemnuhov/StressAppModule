@@ -16,6 +16,10 @@
     <uses-feature android:name="android.hardware.bluetooth" android:required="true"/>
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -28,8 +32,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ModuleStressApp"
-        android:enableOnBackInvokedCallback="true"
-        tools:targetApi="31">
+        tools:targetApi="33">
         <activity
             android:name=".GoogleSignInActivity"
             android:exported="false">
@@ -50,6 +53,13 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <receiver android:name="com.example.feature_notification_impl.NotificationReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.neurotech.stressapp.notification.FIRST_SOURCE_ACTION" />
+                <action android:name="com.neurotech.stressapp.notification.SECOND_SOURCE_ACTION" />
+            </intent-filter>
+        </receiver>
         <service android:name="com.example.core_foreground_service_impl.StressAppService"/>
     </application>
 

@@ -9,15 +9,30 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.cesarferreira.tempo.toString
 import com.example.feature_notification_api.NotificationApi
 import com.example.feature_notification_impl.di.NotificationComponent
+import com.neurotech.core_database_api.ResultApi
+import com.neurotech.core_database_api.SettingApi
+import com.neurotech.core_database_api.model.Cause
+import com.neurotech.core_database_api.model.ResultTenMinute
+import com.neurotech.utils.TimeFormat
 import javax.inject.Inject
 
 
+@Suppress("DEPRECATION")
 class NotificationImpl: NotificationApi {
 
     @Inject
     lateinit var activity: AppCompatActivity
+
+    @Inject
+    lateinit var settingApi: SettingApi
+
+    @Inject
+    lateinit var resultApi: ResultApi
+
+
 
     companion object {
         const val FOREGROUND_CHANNEL_ID = "foreground_channel"
@@ -55,7 +70,6 @@ class NotificationImpl: NotificationApi {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(WARNING_CHANNEL_ID, WARNING_CHANNEL_ID, WARNING_CHANNEL_ID)
         }
@@ -64,11 +78,88 @@ class NotificationImpl: NotificationApi {
             cancel(4)
             notify(4, builder.build())
         }
-
     }
 
-    override suspend fun showStressExcessNotification() {
-        TODO("Not yet implemented")
+    override suspend fun deleteDisconnectNotification() {
+        with(NotificationManagerCompat.from(activity.applicationContext)) {
+            cancel(4)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    override suspend fun showStressExcessNotification(tenMinuteResult: ResultTenMinute) {
+        val pendingIntent: PendingIntent =
+            Intent(activity.applicationContext, activity.javaClass).let { notificationIntent ->
+                PendingIntent.getActivity(
+                    activity.applicationContext,
+                    0,
+                    notificationIntent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            }
+        val builder = NotificationCompat.Builder(activity.applicationContext, WARNING_CHANNEL_ID)
+            .setSmallIcon(R.drawable.icon_stress)
+            .setContentTitle(titleNotification)
+            .setContentText(warningContent)
+            .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+
+        addMarkupAction(builder, tenMinuteResult)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel(WARNING_CHANNEL_ID, WARNING_CHANNEL_ID, WARNING_CHANNEL_ID)
+        }
+
+        with(NotificationManagerCompat.from(activity.applicationContext)) {
+            cancel(3)
+            notify(3, builder.build())
+        }
+    }
+
+    private suspend fun addMarkupAction(builder: NotificationCompat.Builder, tenMinuteResult: ResultTenMinute){
+        val dayPlan = settingApi.getDayPlanByTime(tenMinuteResult.time.toString(TimeFormat.timePattern))
+        if(dayPlan != null){
+            if(dayPlan.firstSource != null && dayPlan.autoMarkup){
+                resultApi.setCauseByTime(Cause(dayPlan.firstSource!!), tenMinuteResult.time)
+            }
+            if(dayPlan.firstSource != null && !dayPlan.autoMarkup){
+                val firstCausePendingIntent: PendingIntent =
+                    Intent(activity.applicationContext, NotificationReceiver::class.java).let {
+                        it.action = NotificationReceiver.FIRST_SOURCE_ACTION
+                        it.putExtra(NotificationReceiver.SOURCE_EXTRA, dayPlan.firstSource)
+                        it.putExtra(
+                            NotificationReceiver.TIME_EXTRA,
+                            tenMinuteResult.time.toString(TimeFormat.dateTimeIsoPattern)
+                        )
+                        PendingIntent.getBroadcast(
+                            activity.applicationContext,
+                            0,
+                            it,
+                            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                        )
+                    }
+                builder.addAction(R.drawable.icon_stress, dayPlan.firstSource, firstCausePendingIntent)
+            }
+            if(dayPlan.secondSource != null && !dayPlan.autoMarkup){
+                val secondSourcePendingIntent: PendingIntent =
+                    Intent(activity.applicationContext, NotificationReceiver::class.java).let {
+                        it.action = NotificationReceiver.SECOND_SOURCE_ACTION
+                        it.putExtra(NotificationReceiver.SOURCE_EXTRA, dayPlan.secondSource)
+                        it.putExtra(
+                            NotificationReceiver.TIME_EXTRA,
+                            tenMinuteResult.time.toString(TimeFormat.dateTimeIsoPattern)
+                        )
+                        PendingIntent.getBroadcast(
+                            activity.applicationContext,
+                            0,
+                            it,
+                            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                        )
+                    }
+                builder.addAction(R.drawable.icon_stress, dayPlan.secondSource, secondSourcePendingIntent)
+            }
+        }
     }
 
     override fun getForegroundNotification(): Notification {
@@ -90,6 +181,7 @@ class NotificationImpl: NotificationApi {
                     .setSmallIcon(R.drawable.icon_stress)
                     .setContentIntent(pendingIntent)
                     .setTicker(titleNotification)
+                    .setOngoing(true)
                     .build()
             } else {
                 NotificationCompat.Builder(activity.applicationContext)

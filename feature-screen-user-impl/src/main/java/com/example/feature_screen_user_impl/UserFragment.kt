@@ -77,7 +77,7 @@ class UserFragment: Fragment(R.layout.fragment_user) {
         }
     }
 
-    fun fillUserParams(params: UserParameters){
+    private fun fillUserParams(params: UserParameters){
         binding.avgTonic.text = params.tonic.toString()
         binding.avgPeakCountInDayTextView.text = params.dayPhase.toString()
         binding.avgPeakCountInTenMinuteTextView.text = params.tenMinutePhase.toString()
@@ -150,7 +150,7 @@ class UserFragment: Fragment(R.layout.fragment_user) {
         if (viewModel.user.gender != null){
             binding.genderTextView.visibility = View.VISIBLE
             binding.genderEdit.visibility = View.GONE
-            binding.genderTextView.text = viewModel.user.gender
+            binding.genderTextView.text = if(viewModel.user.gender == "male") "Муж" else "Жен"
         }else{
             binding.genderTextView.visibility = View.GONE
             binding.genderEdit.visibility = View.VISIBLE

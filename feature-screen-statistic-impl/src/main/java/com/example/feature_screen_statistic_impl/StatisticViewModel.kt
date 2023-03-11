@@ -1,10 +1,7 @@
 package com.example.feature_screen_statistic_impl
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.cesarferreira.tempo.*
 import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.UserApi
@@ -51,6 +48,12 @@ class StatisticViewModel(
         setDayResults()
         Log.e("Time", xLabelOfDay.toString())
         _dateFlow.postValue(date.toString("EE " + TimeFormat.datePattern))
+    }
+
+    fun deleteMarkupByTime(time: Date){
+        viewModelScope.launch {
+            result.deleteMarkupByTime(time)
+        }
     }
 
     fun setKeepByTime(time: Date, keep:String?){

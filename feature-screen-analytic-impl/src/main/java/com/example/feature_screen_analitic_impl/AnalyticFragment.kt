@@ -32,6 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.example.values.R as values
 
 class AnalyticFragment: Fragment() {
 
@@ -46,9 +47,9 @@ class AnalyticFragment: Fragment() {
 
     private val appColors by lazy {
         mutableListOf<Int>().apply {
-            add(ContextCompat.getColor(requireContext(), R.color.green_active))
-            add(ContextCompat.getColor(requireContext(), R.color.yellow_active))
-            add(ContextCompat.getColor(requireContext(), R.color.red_active))
+            add(ContextCompat.getColor(requireContext(), values.color.green_active))
+            add(ContextCompat.getColor(requireContext(), values.color.yellow_active))
+            add(ContextCompat.getColor(requireContext(), values.color.red_active))
         }
     }
 
@@ -110,18 +111,18 @@ class AnalyticFragment: Fragment() {
 
                     ContextCompat.getColor(
                         requireContext(),
-                        R.color.green_active
+                        values.color.green_active
                     )
 
                 } else if (it in 2..4) {
                     ContextCompat.getColor(
                         requireContext(),
-                        R.color.yellow_active
+                        values.color.yellow_active
                     )
                 } else {
                     ContextCompat.getColor(
                         requireContext(),
-                        R.color.red_active
+                        values.color.red_active
                     )
                 }
             )
@@ -310,7 +311,7 @@ class AnalyticFragment: Fragment() {
         binding.ratingGraph.apply {
             removeAllSeries()
             addSeries(barSeries)
-            setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.card_background))
+            setBackgroundColor(ContextCompat.getColor(requireContext(), values.color.card_background))
             viewport.isXAxisBoundsManual = true
             viewport.isYAxisBoundsManual = true
             viewport.setMinX(1.0)
@@ -322,7 +323,7 @@ class AnalyticFragment: Fragment() {
             viewport.setScalableY(false)
             viewport.setScrollableY(false)
             gridLabelRenderer.padding = 16
-            gridLabelRenderer.gridColor = ContextCompat.getColor(requireContext(), R.color.graph_grid)
+            gridLabelRenderer.gridColor = ContextCompat.getColor(requireContext(), values.color.graph_grid)
             gridLabelRenderer.isVerticalLabelsVisible = false
             gridLabelRenderer.numHorizontalLabels = 10
             gridLabelRenderer.isHorizontalLabelsVisible = false

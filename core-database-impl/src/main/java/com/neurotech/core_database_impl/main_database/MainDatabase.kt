@@ -11,8 +11,9 @@ import com.neurotech.core_database_impl.main_database.entity.*
         TonicEntity::class,
         ResultTenMinuteEntity::class,
         ResultHourEntity::class,
-        ResultDayEntity::class],
-    version = 1
+        ResultDayEntity::class,
+        RelaxRecordEntity::class],
+    version = 2
 )
 abstract class MainDatabase: RoomDatabase() {
     abstract fun phaseDao(): PhaseDao

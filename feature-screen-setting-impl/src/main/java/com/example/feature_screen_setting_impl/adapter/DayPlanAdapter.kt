@@ -15,6 +15,7 @@ internal class DayPlanAdapter:
 
     interface DayPlanAdapterCallback{
         fun deleteDayPlan(dayPlan: DayPlan)
+        fun clickToDayPlan(dayPlan: DayPlan)
     }
 
     var callback: DayPlanAdapterCallback? = null
@@ -51,6 +52,9 @@ internal class DayPlanAdapter:
                 binding.timeTextView.text = "${dayPlan.timeBegin}-${dayPlan.timeEnd}"
             }else{
                 binding.timeTextView.text = "Время не задано"
+            }
+            binding.root.setOnClickListener {
+                callback?.clickToDayPlan(dayPlan)
             }
             binding.deleteMarkupButton.setOnClickListener {
                 callback?.deleteDayPlan(dayPlan)

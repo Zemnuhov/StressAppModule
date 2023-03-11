@@ -2,6 +2,7 @@ package com.neurotech.core_database_impl.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
 import com.neurotech.core_database_impl.main_database.MainDatabase
 import com.neurotech.core_database_impl.setting_database.SettingDatabase
 import com.neurotech.core_database_impl.user_database.UserDatabase
@@ -11,6 +12,17 @@ import dagger.Provides
 @Module
 class DatabaseModule {
 
+    val MAIN_MIGRATION_1_2 = Migration(1,2){
+        it.execSQL("CREATE TABLE 'RelaxRecordEntity' (\n" +
+                "    'id' INTEGER NOT NULL, " +
+                "    'date' TEXT NOT NULL," +
+                "    'relaxationDuration' INTEGER NOT NULL," +
+                "    'phaseCount' INTEGER NOT NULL," +
+                "    'tonicAdjusted' INTEGER NOT NULL, " +
+                "PRIMARY KEY ('id')"+
+                ")")
+    }
+
     @Provides
     @DatabaseScope
     fun provideMainDatabase(context: Context): MainDatabase{
@@ -18,7 +30,7 @@ class DatabaseModule {
             context,
             MainDatabase::class.java,
             name = "stress_app_main_database"
-        ).build()
+        ).addMigrations(MAIN_MIGRATION_1_2).build()
     }
 
     @Provides

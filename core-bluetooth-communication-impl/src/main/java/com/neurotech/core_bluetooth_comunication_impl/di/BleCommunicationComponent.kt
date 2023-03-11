@@ -3,6 +3,7 @@ package com.neurotech.core_bluetooth_comunication_impl.di
 import android.content.Context
 import com.neurotech.core_bluetooth_comunication_impl.implementation.BluetoothConnection
 import com.neurotech.core_bluetooth_comunication_impl.implementation.BluetoothData
+import com.neurotech.core_bluetooth_comunication_impl.implementation.BluetoothSynchronizer
 import com.neurotech.core_bluetooth_comunication_impl.implementation.BluetoothWriter
 
 import dagger.Component
@@ -16,6 +17,7 @@ internal interface BleCommunicationComponent {
     fun inject(bluetoothConnection: BluetoothConnection)
     fun inject(bluetoothConnection: BluetoothData)
     fun inject(bluetoothWriter: BluetoothWriter)
+    fun inject(bluetoothSynchronizer: BluetoothSynchronizer)
 
     @Builder
     @BleCommunicationScope

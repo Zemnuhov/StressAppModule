@@ -16,6 +16,8 @@ import com.jjoe64.graphview.series.LineGraphSeries
 import com.jjoe64.graphview.series.PointsGraphSeries
 import dagger.Lazy
 import javax.inject.Inject
+import com.example.values.R as values
+
 
 class PhaseGraphFragment: Fragment(R.layout.fragment_phase_graph_item) {
 
@@ -88,8 +90,8 @@ class PhaseGraphFragment: Fragment(R.layout.fragment_phase_graph_item) {
             viewport.isScrollable = true
             viewport.setScalableY(false)
             viewport.setScrollableY(false)
-            setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.card_background))
-            gridLabelRenderer.gridColor = ContextCompat.getColor(requireContext(), R.color.card_background)
+            setBackgroundColor(ContextCompat.getColor(requireContext(), values.color.card_background))
+            gridLabelRenderer.gridColor = ContextCompat.getColor(requireContext(), values.color.card_background)
             gridLabelRenderer.isHorizontalLabelsVisible = false
             gridLabelRenderer.isVerticalLabelsVisible = false
             gridLabelRenderer.setHumanRounding(false)
