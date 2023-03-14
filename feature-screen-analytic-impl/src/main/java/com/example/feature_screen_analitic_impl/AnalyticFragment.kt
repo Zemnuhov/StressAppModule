@@ -25,7 +25,6 @@ import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import com.neurotech.core_database_api.model.CountForEachCause
 import com.neurotech.core_database_api.model.ResultsDay
-import com.neurotech.core_database_api.model.ResultsTenMinute
 import javax.inject.Inject
 import dagger.Lazy
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +33,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.example.values.R as values
 
-class AnalyticFragment: Fragment() {
+class AnalyticFragment : Fragment() {
 
     @Inject
     lateinit var factory: Lazy<AnalyticViewModel.Factory>
@@ -53,7 +52,8 @@ class AnalyticFragment: Fragment() {
         }
     }
 
-    private var barSeries = LineGraphSeries(emptyArray())
+    private var ratingSeries = LineGraphSeries(emptyArray())
+    private var correctedRatingSeries = LineGraphSeries(emptyArray())
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -64,7 +64,7 @@ class AnalyticFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View{
+    ): View {
         _binding = FragmentAnalyticBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -99,11 +99,21 @@ class AnalyticFragment: Fragment() {
             settingMonthGraph(getMonthData(it))
         }
         viewModel.dayRatingList.observe(viewLifecycleOwner) {
-            barSeries = LineGraphSeries(it.mapIndexed{index, d ->
-                DataPoint(index + 1.toDouble(), d)
-            }.toTypedArray())
+            ratingSeries = LineGraphSeries()
+            it.forEachIndexed { index, d ->
+                ratingSeries.appendData(DataPoint(index + 1.toDouble(), d), true, 5)
+            }
             settingRatingGraph()
         }
+
+        viewModel.correctedDayRatingList.observe(viewLifecycleOwner) {
+            correctedRatingSeries = LineGraphSeries()
+            it.forEachIndexed { index, d ->
+                correctedRatingSeries.appendData(DataPoint(index + 1.toDouble(), d), true, 5)
+            }
+            settingRatingGraph()
+        }
+
         viewModel.userRating.observe(viewLifecycleOwner) {
             binding.ratingTextView.text = it.toString()
             binding.ratingTextView.setTextColor(
@@ -228,13 +238,13 @@ class AnalyticFragment: Fragment() {
         var id = 0.01f
         resultEntityList.list.sortedBy { it.date }.forEach {
             val x = it.date.toString("dd").toFloat()
-            val y = if(resultEntityList.list.any { it.peaks>0 }){
+            val y = if (resultEntityList.list.any { it.peaks > 0 }) {
                 it.peaks + id
             } else {
                 it.peaks.toFloat()
             }
             barEntryList.add(BarEntry(x, y))
-            sourceMap[y] = it.stressCause?:""
+            sourceMap[y] = it.stressCause ?: ""
             yValueList.add(y)
             id += 0.01f
         }
@@ -251,7 +261,7 @@ class AnalyticFragment: Fragment() {
                 yValueList.forEach { yValue ->
                     if (yValue < viewModel.user.phaseInDayNormal) {
                         add(appColors[0])
-                    } else if (yValue > viewModel.user.phaseInDayNormal && yValue < viewModel.user.phaseInDayNormal*2) {
+                    } else if (yValue > viewModel.user.phaseInDayNormal && yValue < viewModel.user.phaseInDayNormal * 2) {
                         add(appColors[1])
                     } else {
                         add(appColors[2])
@@ -310,8 +320,15 @@ class AnalyticFragment: Fragment() {
     private fun settingRatingGraph() {
         binding.ratingGraph.apply {
             removeAllSeries()
-            addSeries(barSeries)
-            setBackgroundColor(ContextCompat.getColor(requireContext(), values.color.card_background))
+            addSeries(correctedRatingSeries)
+            correctedRatingSeries.color = Color.GREEN
+            addSeries(ratingSeries)
+            setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    values.color.card_background
+                )
+            )
             viewport.isXAxisBoundsManual = true
             viewport.isYAxisBoundsManual = true
             viewport.setMinX(1.0)
@@ -323,29 +340,13 @@ class AnalyticFragment: Fragment() {
             viewport.setScalableY(false)
             viewport.setScrollableY(false)
             gridLabelRenderer.padding = 16
-            gridLabelRenderer.gridColor = ContextCompat.getColor(requireContext(), values.color.graph_grid)
+            gridLabelRenderer.gridColor =
+                ContextCompat.getColor(requireContext(), values.color.graph_grid)
             gridLabelRenderer.isVerticalLabelsVisible = false
             gridLabelRenderer.numHorizontalLabels = 10
             gridLabelRenderer.isHorizontalLabelsVisible = false
         }
-        barSeries.color = Color.BLACK
-//        barSeries.apply {
-//            dataWidth = 0.2
-//
-//            setValueDependentColor { data: DataPoint ->
-//                if (data.y < 2) {
-//                    return@setValueDependentColor ContextCompat.getColor(
-//                        requireContext(),
-//                        R.color.green_active
-//                    )
-//                }
-//                if (data.y in 2.0..4.0) {
-//                    return@setValueDependentColor ContextCompat
-//                        .getColor(requireContext(), R.color.yellow_active)
-//                }
-//                ContextCompat.getColor(requireContext(), R.color.red_active)
-//            }
-//        }
+        ratingSeries.color = Color.BLACK
         binding.ratingGraph.invalidate()
     }
 

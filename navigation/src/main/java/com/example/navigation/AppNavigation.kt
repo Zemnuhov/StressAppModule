@@ -12,41 +12,37 @@ import com.example.navigation.di.NavigationComponent
 import com.example.navigation_api.NavigationApi
 import com.example.navigation_api.ViewID
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Provider
 
 class AppNavigation : NavigationApi {
-    @Inject
-    lateinit var navigationHostFragment: Provider<NavHostFragment>
 
     @Inject
-    lateinit var activity: Provider<AppCompatActivity>
+    lateinit var navigationHostFragment: NavHostFragment
+
+    @Inject
+    lateinit var activity: AppCompatActivity
 
     @Inject
     lateinit var viewID: ViewID
 
     private val bottomNavigationView
         get() =
-            activity.get().findViewById<BottomNavigationView>(viewID.bottomNavigationView)
+            activity.findViewById<BottomNavigationView>(viewID.bottomNavigationView)
 
-    private val navigationController: NavController get() = navigationHostFragment.get().navController
+    private val navigationController: NavController get() = navigationHostFragment.navController
 
-    private fun waitNotNull(obj: Any?){
-        while (true){
-            if(obj != null){
-                break
-            }
-        }
-    }
 
     init {
         NavigationComponent.get().inject(this)
         CoroutineScope(Dispatchers.IO).launch {
-            waitNotNull(activity.get().actionBar)
+            delay(500)
             launch(Dispatchers.Main) {
                 val appBarConfiguration = AppBarConfiguration(navigationController.graph)
-                activity.get()
+                activity
                     .setupActionBarWithNavController(navigationController, appBarConfiguration)
             }
         }
@@ -56,16 +52,18 @@ class AppNavigation : NavigationApi {
     override fun navigateScanToMain() {
         navigationController.setGraph(R.navigation.main_navigation)
         val appBarConfiguration = AppBarConfiguration(navigationController.graph)
-        activity.get().setupActionBarWithNavController(navigationController, appBarConfiguration)
+        activity.setupActionBarWithNavController(navigationController, appBarConfiguration)
         bottomNavigationView.isVisible = true
         bottomNavigationView.setupWithNavController(navigationController)
+
     }
 
     override fun navigateMainToScan() {
         navigationController.setGraph(R.navigation.navigation)
         val appBarConfiguration = AppBarConfiguration(navigationController.graph)
-        activity.get().setupActionBarWithNavController(navigationController, appBarConfiguration)
+        activity.setupActionBarWithNavController(navigationController, appBarConfiguration)
         bottomNavigationView.isVisible = false
+
     }
 
     override fun navigateMainToStatistic() {

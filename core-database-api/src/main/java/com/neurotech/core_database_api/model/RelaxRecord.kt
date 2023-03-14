@@ -1,6 +1,10 @@
-package com.neurotech.core_database_api
+package com.neurotech.core_database_api.model
 
 import java.util.Date
+
+data class RelaxRecords(
+    val value:List<RelaxRecord>
+)
 
 data class RelaxRecord(
     val date: Date,

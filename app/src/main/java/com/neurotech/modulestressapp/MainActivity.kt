@@ -5,6 +5,10 @@ import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import com.example.navigation.AppNavigation
+import com.example.navigation_api.NavigationApi
 import com.example.navigation_api.ViewID
 import com.neurotech.core_bluetooth_comunication_api.BluetoothConnectionApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
@@ -46,6 +50,7 @@ class MainActivity : AppCompatActivity(), FeatureComponentDependencies {
     override val viewID: ViewID
         get() = ViewID(R.id.bottomNavigationView)
 
+
     private lateinit var binding: ActivityMainBinding
 
     override fun onResume() {
@@ -70,12 +75,9 @@ class MainActivity : AppCompatActivity(), FeatureComponentDependencies {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         AppComponent.get().inject(this)
 
-
         FeatureComponentDependenciesStore.dependencies = this
         FeatureComponent.init()
         FeatureComponent.provideDependencies()
-
-
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

@@ -38,4 +38,10 @@ class MainDaoModule {
         return database.resultDayDao()
     }
 
+    @Provides
+    @DatabaseScope
+    fun provideRelaxRecordDao(database: MainDatabase): RelaxRecordDao{
+        return database.relaxRecordDao()
+    }
+
 }

@@ -54,6 +54,7 @@ class AppBluetoothManager(
     private var memoryDateEndCharacteristic: BluetoothGattCharacteristic? = null
     private var memoryMaxPeakValueCharacteristic: BluetoothGattCharacteristic? = null
     private var memoryTonicCharacteristic: BluetoothGattCharacteristic? = null
+
     @OptIn(DelicateCoroutinesApi::class)
     val scope = CoroutineScope(newSingleThreadContext("BleFlow"))
 
@@ -83,7 +84,7 @@ class AppBluetoothManager(
         return settingCharacteristicResult && dataCharacteristicResult && memoryCharacteristicResult
     }
 
-    private fun settingCharacteristicInit(settingService: BluetoothGattService): Boolean{
+    private fun settingCharacteristicInit(settingService: BluetoothGattService): Boolean {
         notifyStateCharacteristic = settingService.getCharacteristic(notifyStateCharacteristicUUID)
         return notifyStateCharacteristic != null
     }
@@ -159,23 +160,21 @@ class AppBluetoothManager(
 
     }
 
-    suspend fun connectToDevice(device: BluetoothDevice) = coroutineScope{
-        launch(Dispatchers.IO) {
-            connect(device)
-                .retry(3, 250)
-                .timeout(15_000)
-                .useAutoConnect(true)
-                .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK or PhyRequest.PHY_LE_2M_MASK or PhyRequest.PHY_LE_CODED_MASK)
-                .timeout(15_000)
-                .invalid { log("Invalid connect to device") }
-                .done{connectDevice ->
-                    log("Connect to device: ${connectDevice.address}")
-                }
-                .fail{connectDevice, status ->
-                    log("Error connect to device: ${connectDevice.address}  Code: $status")
-                }
-                .await()
-        }
+    suspend fun connectToDevice(device: BluetoothDevice){
+        connect(device)
+            .retry(3, 100)
+            .timeout(15_000)
+            .useAutoConnect(true)
+            .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK or PhyRequest.PHY_LE_2M_MASK or PhyRequest.PHY_LE_CODED_MASK)
+            .timeout(15_000)
+            .invalid { log("Invalid connect to device") }
+            .done { connectDevice ->
+                log("Connect to device: ${connectDevice.address}")
+            }
+            .fail { connectDevice, status ->
+                log("Error connect to device: ${connectDevice.address}  Code: $status")
+            }
+            .enqueue()
     }
 
 
@@ -293,11 +292,11 @@ class AppBluetoothManager(
         val timeEnd = timeEndRequest.value?.let { String(it) }
         val max = maxRequest.value?.let { ByteBuffer.wrap(it).int }
         val date = dateRequest.value?.let { String(it) }
-        return try{
+        return try {
             val dateTimeBegin = "$date $timeBegin".toDate(TimeFormat.dateTimeIsoPattern)
             val dateTimeEnd = "$date $timeEnd".toDate(TimeFormat.dateTimeIsoPattern)
             PhaseEntityFromDevice(dateTimeBegin, dateTimeEnd, max!!.toDouble())
-        }catch (e: java.lang.Exception){
+        } catch (e: java.lang.Exception) {
             null
         }
     }
@@ -313,7 +312,8 @@ class AppBluetoothManager(
             .with { device, data ->
                 log(
                     "Write memory flag to device ${device.address}. Data: ${
-                        data.value?.let { ByteBuffer.wrap(it).int }}"
+                        data.value?.let { ByteBuffer.wrap(it).int }
+                    }"
                 )
             }
             .fail { device, status -> log("Write memory flag to device fail ${device.address}. Status: $status") }
@@ -321,9 +321,9 @@ class AppBluetoothManager(
     }
 
     fun writeNotifyFlag(isNotify: Boolean) {
-        val byteValue = if(isNotify){
+        val byteValue = if (isNotify) {
             ByteBuffer.allocate(4).putInt(1).array()
-        } else{
+        } else {
             ByteBuffer.allocate(4).putInt(0).array()
         }
         byteValue.reverse()
@@ -335,7 +335,8 @@ class AppBluetoothManager(
             .with { device, data ->
                 log(
                     "Write notify flag to device ${device.address}. Data: ${
-                        data.value?.let { ByteBuffer.wrap(it).int }}"
+                        data.value?.let { ByteBuffer.wrap(it).int }
+                    }"
                 )
             }
             .fail { device, status -> log("Write notify flag to device fail ${device.address}. Status: $status") }

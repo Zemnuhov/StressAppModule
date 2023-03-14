@@ -22,6 +22,7 @@ internal interface DatabaseComponent {
     fun inject(resultDB: ResultDB)
     fun inject(phaseDB: PhaseDB)
     fun inject(userDB: UserDB)
+    fun inject(relaxDB: RelaxDB)
 
     @DatabaseScope
     @Builder

@@ -1,6 +1,5 @@
 package com.example.core_firebase_database_impl
 
-import android.util.Log
 import com.cesarferreira.tempo.toString
 import com.example.core_firebase_database_api.FirebaseDataApi
 import com.example.core_firebase_database_impl.di.FirebaseDataComponent
@@ -28,8 +27,8 @@ class FirebaseData : FirebaseDataApi {
     private val databaseReference: DatabaseReference by lazy { firebaseDatabase.reference }
     private val firebaseUser get() = Firebase.auth.currentUser
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val scope = CoroutineScope(Dispatchers.IO.limitedParallelism(128))
+    @OptIn(DelicateCoroutinesApi::class)
+    private val scope = CoroutineScope(newFixedThreadPoolContext(64, "FirebaseThreadPool"))
 
     init {
         FirebaseDataComponent.get().inject(this)
@@ -67,7 +66,7 @@ class FirebaseData : FirebaseDataApi {
 
 
     override suspend fun writeTenMinuteResult(result: ResultTenMinute) {
-        withContext(Dispatchers.IO) {
+        scope.launch {
             if (firebaseUser != null) {
                 val key = result.time.toString(TimeFormat.firebaseDateTimePattern)
                 databaseReference
@@ -78,7 +77,7 @@ class FirebaseData : FirebaseDataApi {
                         mapToResultTenMinuteFirebase(result)
                     ).addOnSuccessListener {
                         log("Write results in Firebase: $key")
-                    }
+                    }.await()
             }
         }
     }
@@ -96,44 +95,27 @@ class FirebaseData : FirebaseDataApi {
                             mapToResultTenMinuteFirebase(it)
                         ).addOnSuccessListener {
                             log("Write results in Firebase: $key")
-                        }.await()
+                        }
                 }
-
             }
 
         }
     }
 
     override suspend fun getCauses(): Causes = withContext(Dispatchers.IO) {
-        var isRead = false
         var causeList = emptyList<Cause>()
         if (firebaseUser != null) {
-            databaseReference
+            val causeTask = databaseReference
                 .child("causes")
                 .child(firebaseUser!!.uid)
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        causeList = snapshot.children.mapNotNull {
-                            it.getValue<CauseFirebase>()?.mapToCause()
-                        }
-                        isRead = true
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        Log.e("Firebase read error: ", error.message)
-                        Log.e("Firebase read error: ", error.details)
-                        Log.e("Firebase read error: ", error.code.toString())
-                    }
-
-                }
-                )
-        } else isRead = true
-        return@withContext scope.async {
-            while (!isRead) {
-                delay(1)
+                .get().addOnFailureListener {
+                    log("Read Causes from Firebase failure: ${it.message}")
+                }.await()
+            causeList = causeTask.children.mapNotNull {
+                it.getValue<CauseFirebase>()?.mapToCause()
             }
-            return@async Causes(causeList)
-        }.await()
+        }
+        return@withContext Causes(causeList)
     }
 
 
@@ -158,41 +140,21 @@ class FirebaseData : FirebaseDataApi {
     }
 
 
-    //TODO(Попробовать с JOB)
     override suspend fun readTenMinuteResults(): ResultsTenMinute = withContext(Dispatchers.IO) {
-        val resultList = mutableListOf<ResultTenMinute>()
-        var isRead = false
-        if (firebaseUser != null) {
-            databaseReference
+        var resultList = emptyList<ResultTenMinute>()
+        if(firebaseUser != null){
+            val resultTenMinuteTask = databaseReference
                 .child("tenMinutesData")
                 .child(firebaseUser!!.uid)
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        snapshot.children.forEach {
-                            val receivedData = it.getValue<ResultTenMinuteFirebase>()
-                            if (receivedData != null) {
-                                resultList.add(receivedData.toResultEntity())
-                            }
-                        }
-                        isRead = true
+                .get().addOnFailureListener {
+                    log("Read from Firebase failure: ${it.message}")
+                }.await()
 
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        Log.e("Firebase read error: ", error.message)
-                        Log.e("Firebase read error: ", error.details)
-                        Log.e("Firebase read error: ", error.code.toString())
-                    }
-
-                }
-                )
-        } else isRead = true
-        return@withContext scope.async {
-            while (!isRead) {
-                delay(1)
+            resultList = resultTenMinuteTask.children.mapNotNull {
+                it.getValue<ResultTenMinuteFirebase>()?.toResultEntity()
             }
-            return@async ResultsTenMinute(resultList)
-        }.await()
+        }
+        return@withContext ResultsTenMinute(resultList)
     }
 
     private fun mapToResultTenMinuteFirebase(result: ResultTenMinute): ResultTenMinuteFirebase {
@@ -228,35 +190,19 @@ class FirebaseData : FirebaseDataApi {
     }
 
     override suspend fun getDayPlans(): DayPlans = withContext(Dispatchers.IO) {
-        var isRead = false
         var dayPlanList = emptyList<DayPlan>()
         if (firebaseUser != null) {
-            databaseReference
+            val dayPlanTask = databaseReference
                 .child("dayPlan")
                 .child(firebaseUser!!.uid)
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        dayPlanList = snapshot.children.mapNotNull {
-                            it.getValue<DayPlanFirebase>()?.mapToDayPlan()
-                        }
-                        isRead = true
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        Log.e("Firebase read error: ", error.message)
-                        Log.e("Firebase read error: ", error.details)
-                        Log.e("Firebase read error: ", error.code.toString())
-                    }
-
-                }
-                )
-        } else isRead = true
-        return@withContext scope.async {
-            while (!isRead) {
-                delay(1)
+                .get().addOnFailureListener {
+                    log("Read DayPlans from Firebase failure: ${it.message}")
+                }.await()
+            dayPlanList = dayPlanTask.children.mapNotNull {
+                it.getValue<DayPlanFirebase>()?.mapToDayPlan()
             }
-            return@async DayPlans(dayPlanList)
-        }.await()
+        }
+        return@withContext DayPlans(dayPlanList)
     }
 
 }

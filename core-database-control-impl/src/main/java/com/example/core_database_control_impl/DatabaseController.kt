@@ -13,6 +13,7 @@ import com.neurotech.core_database_api.model.ResultTenMinute
 import com.neurotech.core_database_api.model.UserParameters
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
+import java.io.File
 import javax.inject.Inject
 
 class DatabaseController : DatabaseControllerApi {
@@ -35,8 +36,12 @@ class DatabaseController : DatabaseControllerApi {
     @Inject
     lateinit var context: Context
 
+
+    private val file:File
+
     init {
         DatabaseControlComponent.get().inject(this)
+        file = File(context.getExternalFilesDir("files"), "file.txt")
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -57,6 +62,7 @@ class DatabaseController : DatabaseControllerApi {
                                 null
                             )
                         )
+                        file.appendText(Tempo.now.toString() + " Writen\n")
                     }
                 }
                 delay(10000)

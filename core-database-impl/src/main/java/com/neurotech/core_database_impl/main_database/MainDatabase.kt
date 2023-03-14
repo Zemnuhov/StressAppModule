@@ -21,4 +21,5 @@ abstract class MainDatabase: RoomDatabase() {
     abstract fun resultTenMinuteDao(): ResultTenMinuteDao
     abstract fun resultHourDao(): ResultHourDao
     abstract fun resultDayDao(): ResultDayDao
+    abstract fun relaxRecordDao(): RelaxRecordDao
 }

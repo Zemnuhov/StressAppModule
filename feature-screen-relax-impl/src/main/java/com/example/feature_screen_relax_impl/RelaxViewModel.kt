@@ -1,12 +1,11 @@
 package com.example.feature_screen_relax_impl
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.cesarferreira.tempo.Tempo
 import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
 import com.neurotech.core_database_api.PhaseApi
-import com.neurotech.core_database_api.RelaxRecord
-import com.neurotech.core_database_api.model.Tonic
+import com.neurotech.core_database_api.RelaxRecordApi
+import com.neurotech.core_database_api.model.RelaxRecord
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 import java.util.*
@@ -15,7 +14,8 @@ import javax.inject.Provider
 
 class RelaxViewModel(
     private val bluetoothDataApi: BluetoothDataApi,
-    private val phaseApi: PhaseApi
+    private val phaseApi: PhaseApi,
+    private val relaxRecordApi: RelaxRecordApi
 ): ViewModel() {
 
     private val timeBegin = Tempo.now
@@ -94,6 +94,7 @@ class RelaxViewModel(
                         phase.value!!,
                         tonicDifference.value!!
                     )
+                    relaxRecordApi.writeRelaxRecord(relaxRecord)
                 }
             }
 
@@ -102,20 +103,15 @@ class RelaxViewModel(
     }
 
 
-
-
-
-
-
-
     @Suppress("UNCHECKED_CAST")
     class Factory @Inject constructor(
         private val bluetoothDataApi: Provider<BluetoothDataApi>,
-        private val phaseApi: Provider<PhaseApi>
+        private val phaseApi: Provider<PhaseApi>,
+        private val relaxRecordApi: Provider<RelaxRecordApi>
     ): ViewModelProvider.Factory{
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             require(modelClass == RelaxViewModel::class.java)
-            return RelaxViewModel(bluetoothDataApi.get(), phaseApi.get()) as T
+            return RelaxViewModel(bluetoothDataApi.get(), phaseApi.get(), relaxRecordApi.get()) as T
         }
     }
 }

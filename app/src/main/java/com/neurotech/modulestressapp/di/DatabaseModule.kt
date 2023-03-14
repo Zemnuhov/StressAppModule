@@ -22,6 +22,12 @@ class DatabaseModule {
 
     @Provides
     @FeatureScope
+    fun provideRelaxRecordApi(): RelaxRecordApi {
+        return RelaxDB()
+    }
+
+    @Provides
+    @FeatureScope
     fun provideResultTenMinuteApi(): ResultApi {
         return ResultDB()
     }

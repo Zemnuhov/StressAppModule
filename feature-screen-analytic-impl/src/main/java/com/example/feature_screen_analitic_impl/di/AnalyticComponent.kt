@@ -1,6 +1,7 @@
 package com.example.feature_screen_analitic_impl.di
 
 import com.example.feature_screen_analitic_impl.AnalyticFragment
+import com.neurotech.core_database_api.RelaxRecordApi
 import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.SettingApi
 import com.neurotech.core_database_api.UserApi
@@ -43,6 +44,7 @@ interface AnalyticDependencies{
     val resultApi: ResultApi
     val userApi :UserApi
     val settingApi :SettingApi
+    val relaxRecordApi: RelaxRecordApi
 }
 
 interface AnalyticDependenciesProvider{
