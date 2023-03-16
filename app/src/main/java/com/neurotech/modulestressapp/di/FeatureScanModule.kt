@@ -19,14 +19,4 @@ class FeatureScanModule {
         return BluetoothScan()
     }
 
-    @Provides
-    fun provideNavigation(): NavigationApi {
-        return AppNavigation()
-    }
-
-    @Provides
-    fun provideNavHostFragment(activity: AppCompatActivity): NavHostFragment {
-        return activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-    }
-
 }

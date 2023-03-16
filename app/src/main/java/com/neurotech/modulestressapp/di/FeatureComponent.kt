@@ -1,5 +1,6 @@
 package com.neurotech.modulestressapp.di
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import com.example.core_database_control_impl.di.DatabaseControlDependencies
 import com.example.core_database_control_impl.di.DatabaseControlDependenciesStore
@@ -39,6 +40,7 @@ import com.example.feature_screen_user_impl.di.UserScreenDependencies
 import com.example.feature_screen_user_impl.di.UserScreenDependenciesStore
 import com.example.navigation.di.NavigationDependencies
 import com.example.navigation.di.NavigationDependenciesStore
+import com.example.navigation_api.NavigationApi
 import com.example.navigation_api.ViewID
 import com.neurotech.core_bluetooth_comunication_api.BluetoothConnectionApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
@@ -143,6 +145,7 @@ interface FeatureComponentDependencies {
     val bluetoothData: BluetoothDataApi
     val bluetoothWriter: BluetoothWriterApi
     val viewID: ViewID
+    val navigationApi: NavigationApi
 }
 
 interface FeatureComponentDependenciesProvider {

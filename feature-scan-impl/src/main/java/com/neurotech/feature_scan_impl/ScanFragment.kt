@@ -20,6 +20,7 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.navigation_api.NavigationApi
 import com.neurotech.core_ble_device_scan_api.Device
@@ -80,8 +81,12 @@ class ScanFragment: Fragment(R.layout.fragment_scan), ScanAdapter.ClickItemDevic
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        navigation.bind(findNavController())
         if(viewModel.deviceInMemory != null){
-            navigation.navigateScanToMain()
+            if(findNavController().currentDestination?.id == R.id.scanFragment){
+                navigation.navigateScanToMain()
+            }
+
         }
         binding.recyclerViewList.layoutManager = LinearLayoutManager(context)
         scanAdapter = ScanAdapter()

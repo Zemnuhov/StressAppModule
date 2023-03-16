@@ -3,6 +3,8 @@ package com.neurotech.modulestressapp.di
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import com.example.navigation.AppNavigation
+import com.example.navigation_api.NavigationApi
 import com.neurotech.core_bluetooth_comunication_impl.di.BleCommunicationDependencies
 import com.neurotech.core_bluetooth_comunication_impl.di.BleCommunicationDependenciesStore
 import com.neurotech.core_database_impl.di.DatabaseComponentDependenciesStore
@@ -58,5 +60,11 @@ class AppModule{
     @Singleton
     fun provideContext(application: Application): Context{
         return application.applicationContext
+    }
+
+    @Provides
+    @Singleton
+    fun provideNavigation(): NavigationApi{
+        return AppNavigation()
     }
 }

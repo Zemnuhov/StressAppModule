@@ -40,9 +40,9 @@ interface NavigationComponent {
 }
 
 interface NavigationDependencies {
-    val navigationHostFragment: NavHostFragment
-    val activity: AppCompatActivity
-    val viewID: ViewID
+//    val navigationHostFragment: NavHostFragment
+//    val activity: AppCompatActivity
+//    val viewID: ViewID
 }
 
 interface NavigationDependenciesProvider {
