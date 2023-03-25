@@ -28,12 +28,11 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import no.nordicsemi.android.ble.BleManager
-import no.nordicsemi.android.ble.PhyRequest
 import no.nordicsemi.android.ble.ktx.asFlow
+import no.nordicsemi.android.ble.ktx.state
 import no.nordicsemi.android.ble.ktx.stateAsFlow
 import no.nordicsemi.android.ble.ktx.suspend
 import java.nio.ByteBuffer
-import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppBluetoothManager(
@@ -69,6 +68,8 @@ class AppBluetoothManager(
     val memoryStateFlow: Flow<Int> get() = _memoryStateFlow
     val memoryTonicFlow: Flow<Int> get() = _memoryTonicFlow
 
+    var isAutoConnect = true
+
     override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
         val settingService = gatt.getService(settingServiceUUID)
         val dataService = gatt.getService(dataServiceUUID)
@@ -82,6 +83,11 @@ class AppBluetoothManager(
             memoryCharacteristicResult = memoryCharacteristicInit(memoryService)
         }
         return settingCharacteristicResult && dataCharacteristicResult && memoryCharacteristicResult
+    }
+
+    override fun log(priority: Int, message: String) {
+        log("$message. Priority $priority")
+        super.log(priority, message)
     }
 
     private fun settingCharacteristicInit(settingService: BluetoothGattService): Boolean {
@@ -128,12 +134,15 @@ class AppBluetoothManager(
     }
 
     override fun initialize() {
-        requestMtu(517).enqueue()
+        try {
+            requestMtu(512).enqueue()
+        } catch (e: Exception) {
+            log(e.message.toString())
+        }
     }
 
     override fun onServicesInvalidated() {
         notifyStateCharacteristic = null
-
         phaseFlowCharacteristic = null
         tonicFlowCharacteristic = null
         timeCharacteristic = null
@@ -153,228 +162,187 @@ class AppBluetoothManager(
             delay(500)
             stateAsFlow().collect {
                 if (it.isReady) {
-                    observeNotification()
+                    try {
+                        observeNotification()
+                    } catch (e: Exception) {
+                        log(e.message.toString())
+                    }
                 }
             }
         }
 
     }
 
-    suspend fun connectToDevice(device: BluetoothDevice){
-        connect(device)
-            .retry(3, 100)
-            .timeout(15_000)
-            .useAutoConnect(true)
-            .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK or PhyRequest.PHY_LE_2M_MASK or PhyRequest.PHY_LE_CODED_MASK)
-            .timeout(15_000)
-            .invalid { log("Invalid connect to device") }
-            .done { connectDevice ->
-                log("Connect to device: ${connectDevice.address}")
+    suspend fun connectToDevice(device: BluetoothDevice) {
+        isAutoConnect = true
+        try {
+            if (!state.isConnected) {
+                connect(device)
+                    .retry(4, 300)
+                    .useAutoConnect(true)
+                    .timeout(15_000)
+                    .suspend()
             }
-            .fail { connectDevice, status ->
-                log("Error connect to device: ${connectDevice.address}  Code: $status")
-            }
-            .enqueue()
+        } catch (e: Exception) {
+            log(e.message.toString())
+            connectToDevice(device)
+        }
     }
 
 
-    private fun observeNotification() {
+    private suspend fun observeNotification() {
         val filter = ExpRunningAverage(0.1)
-        enableNotifications(phaseFlowCharacteristic).enqueue()
-        enableNotifications(tonicFlowCharacteristic).enqueue()
-        enableNotifications(memoryCharacteristic).enqueue()
-        enableNotifications(memoryTonicCharacteristic).enqueue()
+        try {
+            enableNotifications(phaseFlowCharacteristic).suspend()
+            enableNotifications(tonicFlowCharacteristic).suspend()
+            enableNotifications(memoryCharacteristic).suspend()
+            enableNotifications(memoryTonicCharacteristic).suspend()
+        } catch (e: Exception) {
+            log(e.message.toString())
+            observeNotification()
+        }
         writeMemoryFlag()
         scope.launch {
-            setNotificationCallback(phaseFlowCharacteristic).asFlow()
-                .collect {
-                    val bytes = it.value
-                    if (bytes != null) {
-                        var value = (ByteBuffer.wrap(bytes).int).toDouble()
-                        value = filter.filter(value)
-                        _phaseValueFlow.emit(value)
+            try {
+                setNotificationCallback(phaseFlowCharacteristic).asFlow()
+                    .collect {
+                        val bytes = it.value
+                        if (bytes != null) {
+                            var value = (ByteBuffer.wrap(bytes).int).toDouble()
+                            value = filter.filter(value)
+                            _phaseValueFlow.emit(value)
+                        }
                     }
-                }
+            } catch (e: Exception) {
+                log(e.message.toString())
+            }
         }
         scope.launch {
-            setNotificationCallback(tonicFlowCharacteristic).asFlow()
-                .collect {
-                    val bytes = it.value
-                    if (bytes != null) {
-                        val value = ByteBuffer.wrap(bytes).int
-                        _tonicValueFlow.emit(value)
+            try {
+                setNotificationCallback(tonicFlowCharacteristic).asFlow()
+                    .collect {
+                        val bytes = it.value
+                        if (bytes != null) {
+                            val value = ByteBuffer.wrap(bytes).int
+                            _tonicValueFlow.emit(value)
+                        }
                     }
-                }
-        }
-
-        scope.launch {
-            setNotificationCallback(memoryCharacteristic).asFlow()
-                .collect {
-                    val bytes = it.value
-                    bytes?.let { b ->
-                        _memoryStateFlow.emit(ByteBuffer.wrap(b).int)
-                    }
-                }
+            } catch (e: Exception) {
+                log(e.message.toString())
+            }
         }
 
         scope.launch {
-            setNotificationCallback(memoryTonicCharacteristic).asFlow()
-                .collect {
-                    val bytes = it.value
-                    bytes?.let { b ->
-                        _memoryTonicFlow.emit(ByteBuffer.wrap(b).int)
+            try {
+                setNotificationCallback(memoryCharacteristic).asFlow()
+                    .collect {
+                        val bytes = it.value
+                        bytes?.let { b ->
+                            _memoryStateFlow.emit(ByteBuffer.wrap(b).int)
+                        }
                     }
-                }
+            } catch (e: Exception) {
+                log(e.message.toString())
+            }
+        }
+
+        scope.launch {
+            try {
+                setNotificationCallback(memoryTonicCharacteristic).asFlow()
+                    .collect {
+                        val bytes = it.value
+                        bytes?.let { b ->
+                            _memoryTonicFlow.emit(ByteBuffer.wrap(b).int)
+                        }
+                    }
+            } catch (e: Exception) {
+                log(e.message.toString())
+            }
         }
     }
 
     suspend fun getPeaks(): PhaseEntityFromDevice? {
-        val timeBeginRequest = readCharacteristic(memoryTimeBeginCharacteristic)
-            .with { device, data ->
-                log(
-                    "Read 'BeginTimePeak' from ${device.address}. Data: ${
-                        data.value?.let {
-                            String(
-                                it
-                            )
-                        }
-                    }"
-                )
-            }
-            .invalid { log("Invalid read Memory Time Value") }
-            .fail { device, status -> log("Fail read Memory Time Value in ${device.address}. Status $status") }
-            .suspend()
-        val timeEndRequest = readCharacteristic(memoryTimeEndCharacteristic)
-            .with { device, data ->
-                log(
-                    "Read 'EndTimePeak' from ${device.address}. Data: ${
-                        data.value?.let {
-                            String(
-                                it
-                            )
-                        }
-                    }"
-                )
-            }
-            .invalid { log("Invalid read Memory Time Value") }
-            .fail { device, status -> log("Fail read Memory Time Value in ${device.address}. Status $status") }
-            .suspend()
-        val dateRequest = readCharacteristic(memoryDateEndCharacteristic)
-            .with { device, data ->
-                log(
-                    "Read 'DatePeak' from ${device.address}. Data: ${
-                        data.value?.let {
-                            String(
-                                it
-                            )
-                        }
-                    }"
-                )
-            }
-            .suspend()
-        val maxRequest = readCharacteristic(memoryMaxPeakValueCharacteristic)
-            .with { device, data ->
-                log(
-                    "Read 'MaxPeak' from ${device.address}. Data: ${
-                        data.value?.let {
-                            ByteBuffer.wrap(
-                                it
-                            ).int
-                        }
-                    }"
-                )
-            }
-            .invalid { log("Invalid read Memory Time Value") }
-            .fail { device, status -> log("Fail read Memory Max Value in ${device.address}. Status $status") }
-            .suspend()
+        val timeBeginRequest = try {
+            readCharacteristic(memoryTimeBeginCharacteristic).suspend()
+        } catch (e: Exception) {
+            null
+        }
+        val timeEndRequest = try {
+            readCharacteristic(memoryTimeEndCharacteristic).suspend()
+        } catch (e: Exception) {
+            null
+        }
+        val dateRequest = try {
+            readCharacteristic(memoryDateEndCharacteristic).suspend()
+        } catch (e: Exception) {
+            null
+        }
+        val maxRequest = try {
+            readCharacteristic(memoryMaxPeakValueCharacteristic).suspend()
+        } catch (e: Exception) {
+            null
+        }
 
-        val timeBegin = timeBeginRequest.value?.let { String(it) }
-        val timeEnd = timeEndRequest.value?.let { String(it) }
-        val max = maxRequest.value?.let { ByteBuffer.wrap(it).int }
-        val date = dateRequest.value?.let { String(it) }
+        val timeBegin = timeBeginRequest?.value?.let { String(it) }
+        val timeEnd = timeEndRequest?.value?.let { String(it) }
+        val max = maxRequest?.value?.let { ByteBuffer.wrap(it).int }
+        val date = dateRequest?.value?.let { String(it) }
         return try {
             val dateTimeBegin = "$date $timeBegin".toDate(TimeFormat.dateTimeIsoPattern)
             val dateTimeEnd = "$date $timeEnd".toDate(TimeFormat.dateTimeIsoPattern)
+            log("Write Phase in background")
             PhaseEntityFromDevice(dateTimeBegin, dateTimeEnd, max!!.toDouble())
-        } catch (e: java.lang.Exception) {
+        } catch (e: Exception) {
             null
         }
     }
 
-    fun writeMemoryFlag() {
-        val byteValue = ByteBuffer.allocate(4).putInt(1).array()
-        byteValue.reverse()
-        writeCharacteristic(
-            memoryCharacteristic,
-            byteValue,
-            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-        )
-            .with { device, data ->
-                log(
-                    "Write memory flag to device ${device.address}. Data: ${
-                        data.value?.let { ByteBuffer.wrap(it).int }
-                    }"
-                )
-            }
-            .fail { device, status -> log("Write memory flag to device fail ${device.address}. Status: $status") }
-            .enqueue()
-    }
-
-    fun writeNotifyFlag(isNotify: Boolean) {
-        val byteValue = if (isNotify) {
-            ByteBuffer.allocate(4).putInt(1).array()
-        } else {
-            ByteBuffer.allocate(4).putInt(0).array()
+    suspend fun writeMemoryFlag() {
+        try {
+            val byteValue = ByteBuffer.allocate(4).putInt(1).array()
+            byteValue.reverse()
+            writeCharacteristic(
+                memoryCharacteristic,
+                byteValue,
+                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+            ).suspend()
+        } catch (e: Exception) {
+            log(e.message.toString())
         }
-        byteValue.reverse()
-        writeCharacteristic(
-            notifyStateCharacteristic,
-            byteValue,
-            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-        )
-            .with { device, data ->
-                log(
-                    "Write notify flag to device ${device.address}. Data: ${
-                        data.value?.let { ByteBuffer.wrap(it).int }
-                    }"
-                )
-            }
-            .fail { device, status -> log("Write notify flag to device fail ${device.address}. Status: $status") }
-            .enqueue()
     }
 
-    fun writeDateTime(time: ByteArray, date: ByteArray) {
-        writeCharacteristic(
-            timeCharacteristic,
-            time,
-            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-        )
-            .with { device, data ->
-                log(
-                    "Write time to device ${device.address}. Data: ${
-                        String(
-                            data.value!!
-                        )
-                    }"
-                )
+    suspend fun writeNotifyFlag(isNotify: Boolean) {
+        try {
+            val byteValue = if (isNotify) {
+                ByteBuffer.allocate(4).putInt(1).array()
+            } else {
+                ByteBuffer.allocate(4).putInt(0).array()
             }
-            .fail { device, status -> log("Write time to device fail ${device.address}. Status: $status") }
-            .enqueue()
-        writeCharacteristic(
-            dateCharacteristic,
-            date,
-            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-        )
-            .with { device, data ->
-                log(
-                    "Write date to device ${device.address}. Data: ${
-                        String(
-                            data.value!!
-                        )
-                    }"
-                )
-            }
-            .fail { device, status -> log("Write date to device fail ${device.address}. Status: $status") }
-            .enqueue()
+            byteValue.reverse()
+            writeCharacteristic(
+                notifyStateCharacteristic,
+                byteValue,
+                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+            ).suspend()
+        } catch (e: Exception) {
+            log(e.message.toString())
+        }
+    }
+
+    suspend fun writeDateTime(time: ByteArray, date: ByteArray) {
+        try {
+            writeCharacteristic(
+                timeCharacteristic,
+                time,
+                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+            ).suspend()
+            writeCharacteristic(
+                dateCharacteristic,
+                date,
+                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+            ).suspend()
+        } catch (e: Exception) {
+            log(e.message.toString())
+        }
     }
 }

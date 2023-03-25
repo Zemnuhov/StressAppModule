@@ -81,7 +81,8 @@ class StressAppService: Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return super.onStartCommand(intent, flags, startId)
+        startForeground(FOREGROUND_SERVICE_ID, notification.getForegroundNotification())
+        return START_STICKY
     }
 
     override fun onBind(p0: Intent?): IBinder {

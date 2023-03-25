@@ -178,7 +178,9 @@ class MarkupFragment: Fragment(R.layout.fragment_markup), ResultAdapter.ResultAd
 
     override fun isCheckedClick(position: Int, isCheck: Boolean) {
         val list = resultAdapter?.currentList
-        list?.get(position)?.isChecked = isCheck
+        if(list != null && position < list.size){
+            list[position]?.isChecked = isCheck
+        }
         resultAdapter?.submitList(list)
     }
 

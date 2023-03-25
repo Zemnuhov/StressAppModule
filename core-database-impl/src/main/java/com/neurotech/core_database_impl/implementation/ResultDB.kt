@@ -43,7 +43,7 @@ class ResultDB : ResultApi {
     }
 
     override suspend fun writeResultTenMinute(resultTenMinute: ResultTenMinute) {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             launch {
                 resultTenMinuteDao.insertResult(
                     ResultTenMinuteEntity(
@@ -63,7 +63,7 @@ class ResultDB : ResultApi {
     }
 
     override suspend fun writeResultsTenMinute(resultsTenMinute: ResultsTenMinute) {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             resultTenMinuteDao.insertResult(
                 *resultsTenMinute.list.map {
                     ResultTenMinuteEntity(
@@ -80,7 +80,7 @@ class ResultDB : ResultApi {
     }
 
     override suspend fun writeResultHour(resultsHour: ResultsHour) {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             resultHourDao.insertOrUpdate(resultsHour.list.map {
                 ResultHourEntity(
                     it.date.toString(TimeFormat.dateTimeIsoPattern),
@@ -111,7 +111,8 @@ class ResultDB : ResultApi {
     }
 
     override suspend fun getResultsTenMinute(): Flow<ResultsTenMinute> {
-        return resultTenMinuteDao.getResults().map { ResultsTenMinute(it.map { it.mapToResultTenMinute() }) }
+        return resultTenMinuteDao.getResults()
+            .map { ResultsTenMinute(it.map { it.mapToResultTenMinute() }) }
     }
 
     override suspend fun getResultHour(): Flow<ResultHour> {
@@ -159,7 +160,7 @@ class ResultDB : ResultApi {
     }
 
     override suspend fun setKeepByTime(keep: String?, time: Date) {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             resultTenMinuteDao.setKeepByTime(keep, time.toString(TimeFormat.dateTimeIsoPattern))
             firebaseData
                 .writeTenMinuteResult(
@@ -186,33 +187,29 @@ class ResultDB : ResultApi {
                         )
                     }.toTypedArray()
                 )
-            }
-            thread(start = true) {
-                launch {
-                    firebaseData.writeTenMinuteResults(resultsTenMinute)
-                }
+                firebaseData.writeTenMinuteResults(resultsTenMinute)
             }
         }
-
     }
 
     override suspend fun setCauseByTime(cause: Cause, time: Date) {
-        withContext(Dispatchers.IO){
-            launch {
-                resultTenMinuteDao.setCauseByTime(cause.name, time.toString(TimeFormat.dateTimeIsoPattern))
-                firebaseData
-                    .writeTenMinuteResult(
-                        resultTenMinuteDao
-                            .getResultByDateTime(
-                                time.toString(TimeFormat.dateTimeIsoPattern)
-                            )!!.mapToResultTenMinute()
-                    )
-            }
+        withContext(Dispatchers.IO) {
+            resultTenMinuteDao.setCauseByTime(
+                cause.name,
+                time.toString(TimeFormat.dateTimeIsoPattern)
+            )
+            firebaseData
+                .writeTenMinuteResult(
+                    resultTenMinuteDao
+                        .getResultByDateTime(
+                            time.toString(TimeFormat.dateTimeIsoPattern)
+                        )!!.mapToResultTenMinute()
+                )
         }
     }
 
     override suspend fun deleteMarkupByTime(time: Date) {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             resultTenMinuteDao.deleteMarkupByTime(time.toString(TimeFormat.dateTimeIsoPattern))
         }
     }
@@ -246,7 +243,7 @@ class ResultDB : ResultApi {
                 }.collect {
                     val resultList = it.list.toMutableList()
                     val mutableCauses = causes.values.toMutableList()
-                    mutableCauses.removeAll(listOf(Cause("Артефакты"),Cause("Сон")))
+                    mutableCauses.removeAll(listOf(Cause("Артефакты"), Cause("Сон")))
                     mutableCauses.forEach { cause ->
                         if (cause !in it.list.map { it.cause }) {
                             resultList.add(CountForCause(cause, 0))

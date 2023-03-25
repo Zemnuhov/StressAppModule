@@ -12,6 +12,4 @@ class StressApplication: Application() {
         }
 
     }
-
-
 }

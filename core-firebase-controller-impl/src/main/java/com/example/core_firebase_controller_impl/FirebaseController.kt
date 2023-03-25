@@ -29,29 +29,29 @@ class FirebaseController (context: Context, workerParams: WorkerParameters) :
     override suspend fun doWork(): Result = withContext(Dispatchers.IO){
         try{
             val localDatabase = resultApi.getResultsTenMinute().first()
-            val firebaseDatabase = firebaseDataApi.readTenMinuteResults()
-            val checkLocalDatabase =
-                localDatabase.list.map { ResultTimeAndCause(it.time, it.stressCause) }
-            val checkFirebaseDatabase =
-                firebaseDatabase.list.map { ResultTimeAndCause(it.time, it.stressCause) }
+            val firebaseDatabase = firebaseDataApi.readTenMinuteResultsByLimit(1000)
 
-            val mutableCheckLocalDatabase = checkLocalDatabase.toMutableList()
-            mutableCheckLocalDatabase.removeAll(checkFirebaseDatabase)
-            val mutableCheckFirebaseDatabase = checkFirebaseDatabase.toMutableList()
-            mutableCheckFirebaseDatabase.removeAll(checkLocalDatabase)
+            val localSet = localDatabase.list.map { ResultTimeAndCause(it.time, it.stressCause) }.toSet()
+            val firebaseSet = firebaseDatabase.list.map { ResultTimeAndCause(it.time, it.stressCause) }.toSet()
 
-            mutableCheckLocalDatabase.forEach { result ->
-                if (result.time in mutableCheckFirebaseDatabase.map { it.time }) {
-                    val localResult = localDatabase.list.filter { it.time == result.time }[0]
-                    val firebaseResult = firebaseDatabase.list.filter { it.time == result.time }[0]
-                    if (localResult.stressCause != null) {
+            val onlyLocal = localSet - firebaseSet
+            val onlyFirebase = firebaseSet - localSet
+
+            val localMap = localDatabase.list.associateBy { it.time }
+            val firebaseMap = firebaseDatabase.list.associateBy { it.time }
+
+            onlyLocal.forEach { result ->
+                if (result.time in firebaseMap) {
+                    val localResult = localMap[result.time]
+                    val firebaseResult = firebaseMap[result.time]
+                    if (localResult?.stressCause != null) {
                         firebaseDataApi.writeTenMinuteResult(localResult)
                     } else {
-                        resultApi.updateResultTenMinute(ResultsTenMinute(listOf(firebaseResult)))
+                        resultApi.updateResultTenMinute(ResultsTenMinute(listOf(firebaseResult!!)))
                     }
                 } else {
-                    val localResult = localDatabase.list.filter { it.time == result.time }[0]
-                    firebaseDataApi.writeTenMinuteResult(localResult)
+                    val localResult = localMap[result.time]
+                    firebaseDataApi.writeTenMinuteResult(localResult!!)
                 }
             }
         }catch (e: java.lang.Exception){

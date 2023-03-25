@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Build
 import android.os.IBinder
 import com.example.core_foreground_service_api.ServiceApi
 import com.example.core_foreground_service_impl.di.ServiceComponent
@@ -36,6 +37,9 @@ class ServiceImpl: ServiceApi {
 
     override fun bindService() {
         Intent(context, StressAppService::class.java).also { intent ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startService(intent)
+            }
             context.bindService(intent,serviceConnection, Context.BIND_AUTO_CREATE)
         }
     }

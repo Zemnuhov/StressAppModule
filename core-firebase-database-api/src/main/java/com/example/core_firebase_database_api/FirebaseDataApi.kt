@@ -20,4 +20,5 @@ interface FirebaseDataApi {
     suspend fun getDayPlans(): DayPlans
 
     suspend fun readTenMinuteResults(): ResultsTenMinute
+    suspend fun readTenMinuteResultsByLimit(limit: Int): ResultsTenMinute
 }

@@ -11,6 +11,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <uses-permission android:name="android.permission.READ_LOGS"
+        tools:ignore="ProtectedPermissions" />
+
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <uses-feature android:name="android.hardware.bluetooth" android:required="true"/>
@@ -32,6 +35,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ModuleStressApp"
+        android:enableOnBackInvokedCallback="true"
         tools:targetApi="33">
         <activity
             android:name=".GoogleSignInActivity"
@@ -42,7 +46,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -60,7 +65,8 @@
                 <action android:name="com.neurotech.stressapp.notification.SECOND_SOURCE_ACTION" />
             </intent-filter>
         </receiver>
-        <service android:name="com.example.core_foreground_service_impl.StressAppService"/>
+        <service android:name="com.example.core_foreground_service_impl.StressAppService"
+            android:stopWithTask="false"/>
     </application>
 
 </manifest>

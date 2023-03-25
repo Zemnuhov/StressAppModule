@@ -68,8 +68,13 @@ class BluetoothSynchronizer(
         withContext(Dispatchers.IO){
             launch {
                 manager.memoryStateFlow.collect {
+                    log("Command mem state $it")
                     if (it == 1) {
-                        getPeakFromDeviceInMemory()
+                        try {
+                            getPeakFromDeviceInMemory()
+                        } catch (e: Exception) {
+                            log(e.message.toString())
+                        }
                     }
                     if (it == 2) {
                         getPeakFromDevice()

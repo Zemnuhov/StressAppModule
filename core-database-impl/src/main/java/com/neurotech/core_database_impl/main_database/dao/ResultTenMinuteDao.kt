@@ -19,7 +19,7 @@ interface ResultTenMinuteDao {
     @Query("SELECT * FROM ResultTenMinuteEntity WHERE time = :time")
     fun getResultByDateTime(time: String): ResultTenMinuteEntity?
 
-    @Query("SELECT * FROM ResultTenMinuteEntity GROUP BY time")
+    @Query("SELECT * FROM ResultTenMinuteEntity ORDER BY time DESC LIMIT 1000")
     fun getResults(): Flow<List<ResultTenMinuteEntity>>
 
     @Query("SELECT * FROM ResultTenMinuteEntity WHERE time >= datetime('now','-1 hour','localtime')")

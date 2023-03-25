@@ -37,11 +37,8 @@ class DatabaseController : DatabaseControllerApi {
     lateinit var context: Context
 
 
-    private val file:File
-
     init {
         DatabaseControlComponent.get().inject(this)
-        file = File(context.getExternalFilesDir("files"), "file.txt")
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -51,7 +48,7 @@ class DatabaseController : DatabaseControllerApi {
                 val time = Tempo.now.beginningOfMinute
                 if (time.toString("mm").toInt() % 10 == 0) {
                     val tonic = tonicApi.getTenMinuteAverageInInterval(time - 10.minute, time)
-                    if(tonic != 0){
+                    if (tonic != 0) {
                         resultApi.writeResultTenMinute(
                             ResultTenMinute(
                                 time,
@@ -62,10 +59,9 @@ class DatabaseController : DatabaseControllerApi {
                                 null
                             )
                         )
-                        file.appendText(Tempo.now.toString() + " Writen\n")
                     }
                 }
-                delay(10000)
+                delay(60000)
             }
         }
     }
@@ -84,8 +80,8 @@ class DatabaseController : DatabaseControllerApi {
     }
 
     override suspend fun controlResultDay() {
-        withContext(Dispatchers.IO){
-            resultApi.getResultTenMinute().collect{
+        withContext(Dispatchers.IO) {
+            resultApi.getResultTenMinute().collect {
                 resultApi.writeResultDay(
                     resultApi.getResultDayFromResultTenMinute(
                         (Tempo.now - 1.year),
@@ -96,9 +92,9 @@ class DatabaseController : DatabaseControllerApi {
         }
     }
 
-    override suspend fun controlUserData(){
-        withContext(Dispatchers.IO){
-            resultApi.getResultTenMinute().collect{
+    override suspend fun controlUserData() {
+        withContext(Dispatchers.IO) {
+            resultApi.getResultTenMinute().collect {
                 val params = userApi.getUserParameters().first()
                 userApi.setUserParameters(
                     UserParameters(

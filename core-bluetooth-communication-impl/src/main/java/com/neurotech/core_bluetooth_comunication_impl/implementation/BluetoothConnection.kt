@@ -63,5 +63,6 @@ class BluetoothConnection: BluetoothConnectionApi {
 
     override suspend fun disconnectDevice() {
         bleManager.disconnect().enqueue()
+        bleManager.isAutoConnect = false
     }
 }

@@ -77,7 +77,7 @@ class FirebaseData : FirebaseDataApi {
                         mapToResultTenMinuteFirebase(result)
                     ).addOnSuccessListener {
                         log("Write results in Firebase: $key")
-                    }.await()
+                    }
             }
         }
     }
@@ -146,6 +146,24 @@ class FirebaseData : FirebaseDataApi {
             val resultTenMinuteTask = databaseReference
                 .child("tenMinutesData")
                 .child(firebaseUser!!.uid)
+                .get().addOnFailureListener {
+                    log("Read from Firebase failure: ${it.message}")
+                }.await()
+
+            resultList = resultTenMinuteTask.children.mapNotNull {
+                it.getValue<ResultTenMinuteFirebase>()?.toResultEntity()
+            }
+        }
+        return@withContext ResultsTenMinute(resultList)
+    }
+
+    override suspend fun readTenMinuteResultsByLimit(limit: Int): ResultsTenMinute = withContext(Dispatchers.IO) {
+        var resultList = emptyList<ResultTenMinute>()
+        if(firebaseUser != null){
+            val resultTenMinuteTask = databaseReference
+                .child("tenMinutesData")
+                .child(firebaseUser!!.uid)
+                .limitToLast(limit)
                 .get().addOnFailureListener {
                     log("Read from Firebase failure: ${it.message}")
                 }.await()

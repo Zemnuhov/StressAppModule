@@ -20,7 +20,7 @@ import com.neurotech.utils.TimeFormat
 import javax.inject.Inject
 
 
-@Suppress("DEPRECATION")
+
 class NotificationImpl: NotificationApi {
 
     @Inject
@@ -190,6 +190,7 @@ class NotificationImpl: NotificationApi {
                     .setSmallIcon(R.drawable.icon_stress)
                     .setContentIntent(pendingIntent)
                     .setTicker(titleNotification)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .build()
             }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

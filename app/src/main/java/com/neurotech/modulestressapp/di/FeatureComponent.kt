@@ -95,16 +95,12 @@ interface FeatureComponent :
 
     companion object {
         private var component: FeatureComponent? = null
-        private var activity: AppCompatActivity? = null
-
         fun init() {
             component = null
-            activity?.finish()
             component = DaggerFeatureComponent
                 .builder()
                 .provideDependencies(FeatureComponentDependenciesProvider.dependencies)
                 .build()
-            activity = FeatureComponentDependenciesProvider.dependencies.activity
         }
 
         fun clear(){
