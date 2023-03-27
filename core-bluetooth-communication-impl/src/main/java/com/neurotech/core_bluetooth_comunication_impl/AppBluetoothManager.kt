@@ -71,19 +71,36 @@ class AppBluetoothManager(
     var isAutoConnect = true
 
     override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
-        val settingService = gatt.getService(settingServiceUUID)
-        val dataService = gatt.getService(dataServiceUUID)
-        val memoryService = gatt.getService(memoryServiceUUID)
+        val settingService = try {
+            gatt.getService(settingServiceUUID)
+        } catch (e: Exception) {
+            null
+        }
+        val dataService = try {
+            gatt.getService(dataServiceUUID)
+        } catch (e: Exception) {
+            null
+        }
+        val memoryService = try {
+            gatt.getService(memoryServiceUUID)
+        } catch (e: Exception) {
+            null
+        }
         var settingCharacteristicResult = false
         var dataCharacteristicResult = false
         var memoryCharacteristicResult = false
         if (settingService != null && dataService != null && memoryService != null) {
-            settingCharacteristicResult = settingCharacteristicInit(settingService)
-            dataCharacteristicResult = dataCharacteristicInit(dataService)
-            memoryCharacteristicResult = memoryCharacteristicInit(memoryService)
+            try {
+                settingCharacteristicResult = settingCharacteristicInit(settingService)
+                dataCharacteristicResult = dataCharacteristicInit(dataService)
+                memoryCharacteristicResult = memoryCharacteristicInit(memoryService)
+            } catch (e: Exception) {
+                log(e.message.toString())
+            }
         }
         return settingCharacteristicResult && dataCharacteristicResult && memoryCharacteristicResult
     }
+
 
     override fun log(priority: Int, message: String) {
         log("$message. Priority $priority")
@@ -91,27 +108,55 @@ class AppBluetoothManager(
     }
 
     private fun settingCharacteristicInit(settingService: BluetoothGattService): Boolean {
-        notifyStateCharacteristic = settingService.getCharacteristic(notifyStateCharacteristicUUID)
+        notifyStateCharacteristic = try {
+            settingService.getCharacteristic(notifyStateCharacteristicUUID)
+        } catch (e: Exception) {
+            null
+        }
         return notifyStateCharacteristic != null
     }
 
     private fun memoryCharacteristicInit(memoryService: BluetoothGattService): Boolean {
-        memoryCharacteristic = memoryService.getCharacteristic(memoryCharacteristicUUID)
-        memoryTimeBeginCharacteristic = memoryService.getCharacteristic(
-            memoryTimeBeginCharacteristicUUID
-        )
-        memoryTimeEndCharacteristic = memoryService.getCharacteristic(
-            memoryTimeEndCharacteristicUUID
-        )
-        memoryDateEndCharacteristic = memoryService.getCharacteristic(
-            memoryDateEndCharacteristicUUID
-        )
-        memoryMaxPeakValueCharacteristic = memoryService.getCharacteristic(
-            memoryMaxPeakValueCharacteristicUUID
-        )
-        memoryTonicCharacteristic = memoryService.getCharacteristic(
-            memoryTonicCharacteristicUUID
-        )
+        memoryCharacteristic = try {
+            memoryService.getCharacteristic(memoryCharacteristicUUID)
+        } catch (e: Exception) {
+            null
+        }
+        memoryTimeBeginCharacteristic = try {
+            memoryService.getCharacteristic(
+                memoryTimeBeginCharacteristicUUID
+            )
+        } catch (e: Exception) {
+            null
+        }
+        memoryTimeEndCharacteristic = try {
+            memoryService.getCharacteristic(
+                memoryTimeEndCharacteristicUUID
+            )
+        } catch (e: Exception) {
+            null
+        }
+        memoryDateEndCharacteristic = try {
+            memoryService.getCharacteristic(
+                memoryDateEndCharacteristicUUID
+            )
+        } catch (e: Exception) {
+            null
+        }
+        memoryMaxPeakValueCharacteristic = try {
+            memoryService.getCharacteristic(
+                memoryMaxPeakValueCharacteristicUUID
+            )
+        } catch (e: Exception) {
+            null
+        }
+        memoryTonicCharacteristic = try {
+            memoryService.getCharacteristic(
+                memoryTonicCharacteristicUUID
+            )
+        } catch (e: Exception) {
+            null
+        }
         return memoryCharacteristic != null &&
                 memoryTimeBeginCharacteristic != null &&
                 memoryTimeEndCharacteristic != null &&
@@ -121,10 +166,26 @@ class AppBluetoothManager(
     }
 
     private fun dataCharacteristicInit(dataService: BluetoothGattService): Boolean {
-        phaseFlowCharacteristic = dataService.getCharacteristic(phaseFlowUUID)
-        tonicFlowCharacteristic = dataService.getCharacteristic(tonicFlowUUID)
-        timeCharacteristic = dataService.getCharacteristic(timeUUID)
-        dateCharacteristic = dataService.getCharacteristic(dateUUID)
+        phaseFlowCharacteristic = try {
+            dataService.getCharacteristic(phaseFlowUUID)
+        } catch (e: Exception) {
+            null
+        }
+        tonicFlowCharacteristic = try {
+            dataService.getCharacteristic(tonicFlowUUID)
+        } catch (e: Exception) {
+            null
+        }
+        timeCharacteristic = try {
+            dataService.getCharacteristic(timeUUID)
+        } catch (e: Exception) {
+            null
+        }
+        dateCharacteristic = try {
+            dataService.getCharacteristic(dateUUID)
+        } catch (e: Exception) {
+            null
+        }
 
         log("$phaseFlowCharacteristic -- $tonicFlowCharacteristic -- $timeCharacteristic -- $dateCharacteristic")
         return phaseFlowCharacteristic != null &&
