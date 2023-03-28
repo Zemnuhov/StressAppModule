@@ -1,4 +1,4 @@
-package com.neurotech.modulestressapp.di
+package com.neurotech.modulestressapp.di.app
 
 import com.neurotech.core_bluetooth_comunication_api.BluetoothConnectionApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
@@ -11,7 +11,7 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class CoreModule {
+class BluetoothModule {
 
     @Provides
     @Singleton

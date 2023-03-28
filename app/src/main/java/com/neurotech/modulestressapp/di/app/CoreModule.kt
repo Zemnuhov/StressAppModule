@@ -1,12 +1,9 @@
-package com.neurotech.modulestressapp.di
+package com.neurotech.modulestressapp.di.app
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import androidx.work.WorkManager
 import com.example.core_database_control_api.DatabaseControllerApi
 import com.example.core_database_control_impl.DatabaseController
-import com.example.core_firebase_auth.FirebaseAuthApi
-import com.example.core_firebase_auth_impl.AppFirebaseAuth
 import com.example.core_firebase_database_api.FirebaseDataApi
 import com.example.core_firebase_database_impl.FirebaseData
 import com.example.core_notification_controller_api.NotificationControllerApi
@@ -24,24 +21,47 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-
-class FeatureModule {
-
-
-
-    @Provides
-    fun provideContext(activity: AppCompatActivity): Context {
-        return activity.applicationContext
-    }
-
-
+class CoreModule {
 
     @Provides
     @Singleton
-    fun provideAppFirebaseAuth(): FirebaseAuthApi {
-        return AppFirebaseAuth()
+    fun provideNotificationApi(): NotificationApi {
+        return NotificationImpl()
     }
 
+    @Provides
+    @Singleton
+    fun provideSignalController(): SignalControlApi {
+        return SignalControlImpl()
+    }
 
+    @Provides
+    @Singleton
+    fun provideDatabaseController(): DatabaseControllerApi {
+        return DatabaseController()
+    }
 
+    @Provides
+    @Singleton
+    fun provideFirebaseData(): FirebaseDataApi {
+        return FirebaseData()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWorkManager(context: Context): WorkManager {
+        return WorkManager.getInstance(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBluetoothSynchronizer(phaseApi: PhaseApi, tonicApi: TonicApi): BluetoothSynchronizerApi {
+        return BluetoothSynchronizer(phaseApi, tonicApi)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationController(): NotificationControllerApi {
+        return NotificationController()
+    }
 }

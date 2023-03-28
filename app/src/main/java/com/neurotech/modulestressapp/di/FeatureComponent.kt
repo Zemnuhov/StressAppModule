@@ -1,6 +1,5 @@
 package com.neurotech.modulestressapp.di
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import com.example.core_database_control_impl.di.DatabaseControlDependencies
 import com.example.core_database_control_impl.di.DatabaseControlDependenciesStore
@@ -8,6 +7,7 @@ import com.example.core_firebase_auth_impl.di.FirebaseAuthDependencies
 import com.example.core_firebase_auth_impl.di.FirebaseAuthDependenciesStore
 import com.example.core_firebase_controller_impl.di.FirebaseControllerDependencies
 import com.example.core_firebase_controller_impl.di.FirebaseControllerDependenciesStore
+import com.example.core_firebase_database_api.FirebaseDataApi
 import com.example.core_foreground_service_impl.di.ServiceDependencies
 import com.example.core_foreground_service_impl.di.ServiceDependenciesStore
 import com.example.core_notification_controller_impl.di.NotificationControllerDependencies
@@ -45,13 +45,14 @@ import com.example.navigation_api.ViewID
 import com.neurotech.core_bluetooth_comunication_api.BluetoothConnectionApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothWriterApi
+import com.neurotech.core_database_api.*
 import com.neurotech.core_database_impl.di.DatabaseComponentDependenciesStore
 import com.neurotech.core_database_impl.di.DatabaseDependencies
 import com.neurotech.feature_scan_impl.di.ScanDependencies
 import com.neurotech.feature_scan_impl.di.ScanDependenciesStore
 import com.neurotech.feature_tonic_info_impl.di.ItemTonicDependencies
 import com.neurotech.feature_tonic_info_impl.di.TonicInfoDependenciesStore
-import com.neurotech.modulestressapp.MainActivity
+import com.neurotech.modulestressapp.di.app.DatabaseModule
 import dagger.Component
 import dagger.Component.Builder
 import javax.inject.Scope
@@ -60,7 +61,7 @@ import kotlin.properties.Delegates.notNull
 
 @Component(
     dependencies = [FeatureComponentDependencies::class],
-    modules = [FeatureScanModule::class, DatabaseModule::class, MainScreenModule::class, FeatureModule::class]
+    modules = [FeatureScanModule::class, MainScreenModule::class, FeatureModule::class]
 )
 @Singleton
 interface FeatureComponent :
@@ -73,18 +74,11 @@ interface FeatureComponent :
     StatisticDependencies,
     SettingDependencies,
     AnalyticDependencies,
-    NotificationDependencies,
-    ServiceDependencies,
-    SignalControlDependencies,
-    DatabaseControlDependencies,
     MarkupComponentDependencies,
     FirebaseAuthDependencies,
     UserScreenDependencies,
-    DatabaseDependencies,
-    FirebaseControllerDependencies,
     RelaxDependencies,
     EditingDayPlanDependencies,
-    NotificationControllerDependencies,
     NavigationDependencies {
 
 
@@ -120,18 +114,12 @@ interface FeatureComponent :
             StatisticDependenciesStore.dependencies = component!!
             SettingDependenciesStore.dependencies = component!!
             AnalyticDependenciesStore.dependencies = component!!
-            NotificationDependenciesStore.dependencies = component!!
-            ServiceDependenciesStore.dependencies = component!!
-            SignalControlDependenciesStore.dependencies = component!!
-            DatabaseControlDependenciesStore.dependencies = component!!
             MarkupComponentDependenciesStore.dependencies = component!!
             FirebaseAuthDependenciesStore.dependencies = component!!
             UserScreenDependenciesStore.dependencies = component!!
-            DatabaseComponentDependenciesStore.dependencies = component!!
-            FirebaseControllerDependenciesStore.dependencies = component!!
             RelaxDependenciesStore.dependencies = component!!
             EditingDayPlanDependenciesStore.dependencies = component!!
-            NotificationControllerDependenciesStore.dependencies = component!!
+
         }
     }
 }
@@ -143,6 +131,13 @@ interface FeatureComponentDependencies {
     val bluetoothWriter: BluetoothWriterApi
     val viewID: ViewID
     val navigationApi: NavigationApi
+    val settingApi: SettingApi
+    val tonicApi: TonicApi
+    val phaseApi: PhaseApi
+    val resultApi: ResultApi
+    val userApi: UserApi
+    val relaxRecordApi: RelaxRecordApi
+    val firebaseDataApi: FirebaseDataApi
 }
 
 interface FeatureComponentDependenciesProvider {

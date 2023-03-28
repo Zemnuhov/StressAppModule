@@ -1,4 +1,4 @@
-package com.neurotech.modulestressapp.di
+package com.neurotech.modulestressapp.di.app
 
 import com.neurotech.core_database_api.*
 import com.neurotech.core_database_impl.implementation.*

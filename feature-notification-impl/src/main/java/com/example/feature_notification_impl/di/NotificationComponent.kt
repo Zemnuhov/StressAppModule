@@ -44,7 +44,7 @@ interface NotificationComponent {
 
 interface NotificationDependencies{
     val context: Context
-    val activity: AppCompatActivity
+    val activityClass: Class<Any>
     val settingApi: SettingApi
     val resultApi: ResultApi
 }
