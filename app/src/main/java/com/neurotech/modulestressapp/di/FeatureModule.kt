@@ -21,13 +21,14 @@ import com.neurotech.core_database_api.PhaseApi
 import com.neurotech.core_database_api.TonicApi
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
 
 class FeatureModule {
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideNotificationApi(): NotificationApi {
         return NotificationImpl()
     }
@@ -38,43 +39,43 @@ class FeatureModule {
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideSignalController(): SignalControlApi {
         return SignalControlImpl()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideDatabaseController(): DatabaseControllerApi {
         return DatabaseController()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideAppFirebaseAuth(): FirebaseAuthApi {
         return AppFirebaseAuth()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideFirebaseData(): FirebaseDataApi {
         return FirebaseData()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideWorkManager(context: Context): WorkManager{
         return WorkManager.getInstance(context)
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideBluetoothSynchronizer(phaseApi: PhaseApi, tonicApi: TonicApi): BluetoothSynchronizerApi{
         return BluetoothSynchronizer(phaseApi, tonicApi)
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideNotificationController(): NotificationControllerApi {
         return NotificationController()
     }

@@ -18,31 +18,31 @@ import javax.inject.Singleton
 class MainScreenModule {
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideItemTonicApi(): ItemTonicApi{
         return ItemTonic()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideItemPhaseApi(): ItemPhaseApi{
         return ItemPhase()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideItemGraphApi(): ItemGraphApi{
         return ItemGraph()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideItemMarkupApi(): ItemMarkupApi{
         return ItemMarkup()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideServiceApi(): ServiceApi {
         return ServiceImpl()
     }

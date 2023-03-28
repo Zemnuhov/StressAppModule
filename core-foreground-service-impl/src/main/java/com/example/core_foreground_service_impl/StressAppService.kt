@@ -4,7 +4,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
@@ -16,16 +15,13 @@ import com.example.core_notification_controller_api.NotificationControllerApi
 import com.example.core_signal_control_api.SignalControlApi
 import com.example.feature_notification_api.NotificationApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothSynchronizerApi
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class StressAppService: Service() {
+class StressAppService : Service() {
 
-    companion object{
+    companion object {
         private const val FOREGROUND_SERVICE_ID = 1
     }
 
@@ -53,6 +49,7 @@ class StressAppService: Service() {
     override fun onCreate() {
         super.onCreate()
         ServiceComponent.get().inject(this)
+
         startForeground(FOREGROUND_SERVICE_ID, notification.getForegroundNotification())
         CoroutineScope(Dispatchers.IO).launch {
             launch { bluetoothSynchronizer.synchronize() }

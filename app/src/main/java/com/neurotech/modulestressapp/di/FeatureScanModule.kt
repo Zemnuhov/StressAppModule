@@ -9,12 +9,13 @@ import com.neurotech.core_ble_device_scan_api.BluetoothScanAPI
 import com.neurotech.modulestressapp.R
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
 class FeatureScanModule {
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideBluetoothScan(): BluetoothScanAPI {
         return BluetoothScan()
     }

@@ -12,10 +12,11 @@ import com.neurotech.core_bluetooth_comunication_api.BluetoothSynchronizerApi
 import dagger.Component
 import dagger.Component.Builder
 import javax.inject.Scope
+import javax.inject.Singleton
 import kotlin.properties.Delegates.notNull
 
 @Component(dependencies = [ServiceDependencies::class])
-@ServiceScope
+@Singleton
 internal interface ServiceComponent {
 
     fun inject(stressAppService: StressAppService)
@@ -39,10 +40,6 @@ internal interface ServiceComponent {
             }
             return component!!
         }
-
-        fun clear(){
-            component = null
-        }
     }
 
 }
@@ -65,6 +62,3 @@ interface ServiceDependenciesProvider{
 object ServiceDependenciesStore: ServiceDependenciesProvider{
     override var dependencies: ServiceDependencies by notNull()
 }
-
-@Scope
-annotation class ServiceScope

@@ -4,42 +4,43 @@ import com.neurotech.core_database_api.*
 import com.neurotech.core_database_impl.implementation.*
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
 class DatabaseModule {
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideTonicApi(): TonicApi {
         return TonicDB()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun providePhaseApi(): PhaseApi {
         return PhaseDB()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideRelaxRecordApi(): RelaxRecordApi {
         return RelaxDB()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideResultTenMinuteApi(): ResultApi {
         return ResultDB()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideSettingApi(): SettingApi {
         return SettingDB()
     }
 
     @Provides
-    @FeatureScope
+    @Singleton
     fun provideUserApi(): UserApi {
         return UserDB()
     }

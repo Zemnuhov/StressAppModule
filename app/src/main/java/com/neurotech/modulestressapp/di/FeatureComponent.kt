@@ -55,13 +55,14 @@ import com.neurotech.modulestressapp.MainActivity
 import dagger.Component
 import dagger.Component.Builder
 import javax.inject.Scope
+import javax.inject.Singleton
 import kotlin.properties.Delegates.notNull
 
 @Component(
     dependencies = [FeatureComponentDependencies::class],
     modules = [FeatureScanModule::class, DatabaseModule::class, MainScreenModule::class, FeatureModule::class]
 )
-@FeatureScope
+@Singleton
 interface FeatureComponent :
     ScanDependencies,
     MainScreenDependencies,

@@ -47,10 +47,10 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
@@ -65,8 +65,7 @@
                 <action android:name="com.neurotech.stressapp.notification.SECOND_SOURCE_ACTION" />
             </intent-filter>
         </receiver>
-        <service android:name="com.example.core_foreground_service_impl.StressAppService"
-            android:stopWithTask="false"/>
+        <service android:name="com.example.core_foreground_service_impl.StressAppService" />
     </application>
 
 </manifest>

@@ -10,6 +10,5 @@ class StressApplication: Application() {
             AppComponent.init(this)
             AppComponent.provideDependencies()
         }
-
     }
 }
