@@ -27,6 +27,8 @@ import com.neurotech.utils.TimeFormat
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import no.nordicsemi.android.ble.BleManager
 import no.nordicsemi.android.ble.ktx.asFlow
 import no.nordicsemi.android.ble.ktx.state
@@ -68,22 +70,29 @@ class AppBluetoothManager(
     val memoryStateFlow: Flow<Int> get() = _memoryStateFlow
     val memoryTonicFlow: Flow<Int> get() = _memoryTonicFlow
 
+    private val errorFlow: MutableStateFlow<Exception?> = MutableStateFlow(null)
+
     var isAutoConnect = true
+
+    var savedDevice: BluetoothDevice? = null
 
     override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
         val settingService = try {
             gatt.getService(settingServiceUUID)
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         val dataService = try {
             gatt.getService(dataServiceUUID)
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         val memoryService = try {
             gatt.getService(memoryServiceUUID)
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         var settingCharacteristicResult = false
@@ -95,7 +104,7 @@ class AppBluetoothManager(
                 dataCharacteristicResult = dataCharacteristicInit(dataService)
                 memoryCharacteristicResult = memoryCharacteristicInit(memoryService)
             } catch (e: Exception) {
-                log(e.message.toString())
+                errorFlow.value = e
             }
         }
         return settingCharacteristicResult && dataCharacteristicResult && memoryCharacteristicResult
@@ -111,6 +120,7 @@ class AppBluetoothManager(
         notifyStateCharacteristic = try {
             settingService.getCharacteristic(notifyStateCharacteristicUUID)
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         return notifyStateCharacteristic != null
@@ -120,6 +130,7 @@ class AppBluetoothManager(
         memoryCharacteristic = try {
             memoryService.getCharacteristic(memoryCharacteristicUUID)
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         memoryTimeBeginCharacteristic = try {
@@ -127,6 +138,7 @@ class AppBluetoothManager(
                 memoryTimeBeginCharacteristicUUID
             )
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         memoryTimeEndCharacteristic = try {
@@ -134,6 +146,7 @@ class AppBluetoothManager(
                 memoryTimeEndCharacteristicUUID
             )
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         memoryDateEndCharacteristic = try {
@@ -141,6 +154,7 @@ class AppBluetoothManager(
                 memoryDateEndCharacteristicUUID
             )
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         memoryMaxPeakValueCharacteristic = try {
@@ -148,6 +162,7 @@ class AppBluetoothManager(
                 memoryMaxPeakValueCharacteristicUUID
             )
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         memoryTonicCharacteristic = try {
@@ -155,6 +170,7 @@ class AppBluetoothManager(
                 memoryTonicCharacteristicUUID
             )
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         return memoryCharacteristic != null &&
@@ -169,21 +185,25 @@ class AppBluetoothManager(
         phaseFlowCharacteristic = try {
             dataService.getCharacteristic(phaseFlowUUID)
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         tonicFlowCharacteristic = try {
             dataService.getCharacteristic(tonicFlowUUID)
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         timeCharacteristic = try {
             dataService.getCharacteristic(timeUUID)
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         dateCharacteristic = try {
             dataService.getCharacteristic(dateUUID)
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
 
@@ -198,7 +218,7 @@ class AppBluetoothManager(
         try {
             requestMtu(512).enqueue()
         } catch (e: Exception) {
-            log(e.message.toString())
+            errorFlow.value = e
         }
     }
 
@@ -226,18 +246,27 @@ class AppBluetoothManager(
                     try {
                         observeNotification()
                     } catch (e: Exception) {
-                        log(e.message.toString())
+                        errorFlow.value = e
                     }
                 }
             }
         }
-
+        scope.launch(Dispatchers.IO) {
+            errorFlow.collect{
+                if(it != null){
+                    log(it.message.toString())
+                    cancel()
+                    savedDevice?.let { connectToDevice(it) }
+                }
+            }
+        }
     }
 
     suspend fun connectToDevice(device: BluetoothDevice) {
         isAutoConnect = true
         try {
             if (!state.isConnected) {
+                savedDevice = device
                 connect(device)
                     .retry(4, 300)
                     .useAutoConnect(true)
@@ -245,8 +274,7 @@ class AppBluetoothManager(
                     .suspend()
             }
         } catch (e: Exception) {
-            log(e.message.toString())
-            connectToDevice(device)
+            errorFlow.value = e
         }
     }
 
@@ -259,8 +287,7 @@ class AppBluetoothManager(
             enableNotifications(memoryCharacteristic).suspend()
             enableNotifications(memoryTonicCharacteristic).suspend()
         } catch (e: Exception) {
-            log(e.message.toString())
-            observeNotification()
+            errorFlow.value = e
         }
         writeMemoryFlag()
         scope.launch {
@@ -275,7 +302,7 @@ class AppBluetoothManager(
                         }
                     }
             } catch (e: Exception) {
-                log(e.message.toString())
+                errorFlow.value = e
             }
         }
         scope.launch {
@@ -289,7 +316,7 @@ class AppBluetoothManager(
                         }
                     }
             } catch (e: Exception) {
-                log(e.message.toString())
+                errorFlow.value = e
             }
         }
 
@@ -303,7 +330,7 @@ class AppBluetoothManager(
                         }
                     }
             } catch (e: Exception) {
-                log(e.message.toString())
+                errorFlow.value = e
             }
         }
 
@@ -317,7 +344,7 @@ class AppBluetoothManager(
                         }
                     }
             } catch (e: Exception) {
-                log(e.message.toString())
+                errorFlow.value = e
             }
         }
     }
@@ -326,21 +353,25 @@ class AppBluetoothManager(
         val timeBeginRequest = try {
             readCharacteristic(memoryTimeBeginCharacteristic).suspend()
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         val timeEndRequest = try {
             readCharacteristic(memoryTimeEndCharacteristic).suspend()
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         val dateRequest = try {
             readCharacteristic(memoryDateEndCharacteristic).suspend()
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
         val maxRequest = try {
             readCharacteristic(memoryMaxPeakValueCharacteristic).suspend()
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
 
@@ -354,6 +385,7 @@ class AppBluetoothManager(
             log("Write Phase in background")
             PhaseEntityFromDevice(dateTimeBegin, dateTimeEnd, max!!.toDouble())
         } catch (e: Exception) {
+            errorFlow.value = e
             null
         }
     }
@@ -368,7 +400,7 @@ class AppBluetoothManager(
                 BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
             ).suspend()
         } catch (e: Exception) {
-            log(e.message.toString())
+            errorFlow.value = e
         }
     }
 
@@ -386,7 +418,7 @@ class AppBluetoothManager(
                 BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
             ).suspend()
         } catch (e: Exception) {
-            log(e.message.toString())
+            errorFlow.value = e
         }
     }
 
@@ -403,7 +435,7 @@ class AppBluetoothManager(
                 BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
             ).suspend()
         } catch (e: Exception) {
-            log(e.message.toString())
+            errorFlow.value = e
         }
     }
 }
