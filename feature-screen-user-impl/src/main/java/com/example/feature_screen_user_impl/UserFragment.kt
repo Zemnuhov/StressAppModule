@@ -16,11 +16,11 @@ import com.cesarferreira.tempo.Tempo
 import com.cesarferreira.tempo.toString
 import com.example.feature_screen_user_impl.databinding.FragmentUserBinding
 import com.example.feature_screen_user_impl.di.UserScreenComponent
+import com.example.navigation_api.NavigationApi
 import com.google.firebase.auth.FirebaseUser
+import com.neurotech.core_bluetooth_comunication_api.ConnectionState
 import com.neurotech.core_database_api.model.UserParameters
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -29,6 +29,8 @@ class UserFragment: Fragment(R.layout.fragment_user) {
 
     @Inject
     lateinit var factory: Provider<UserViewModel.Factory>
+    @Inject
+    lateinit var navigation: NavigationApi
 
     private val viewModel: UserViewModel by viewModels {
         factory.get()
@@ -74,6 +76,16 @@ class UserFragment: Fragment(R.layout.fragment_user) {
         }
         viewModel.userParameter.observe(viewLifecycleOwner){
             fillUserParams(it)
+        }
+        binding.disconnectButton.setOnClickListener {
+            viewModel.disconnectDevice()
+            runBlocking{
+                viewModel.connectionState.observe(viewLifecycleOwner){
+                    if(it == ConnectionState.DISCONNECTED){
+                        navigation.navigateMainToScan()
+                    }
+                }
+            }
         }
     }
 

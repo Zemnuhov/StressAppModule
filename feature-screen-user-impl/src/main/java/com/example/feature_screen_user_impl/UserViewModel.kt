@@ -6,7 +6,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import com.cesarferreira.tempo.*
 import com.example.core_firebase_auth.FirebaseAuthApi
+import com.example.navigation_api.NavigationApi
+import com.neurotech.core_bluetooth_comunication_api.BluetoothConnectionApi
 import com.neurotech.core_database_api.ResultApi
+import com.neurotech.core_database_api.SettingApi
 import com.neurotech.core_database_api.UserApi
 import com.neurotech.core_database_api.model.UserParameters
 import kotlinx.coroutines.Job
@@ -19,8 +22,9 @@ import javax.inject.Provider
 
 class UserViewModel(
     private val userApi: UserApi,
-    private val resultApi: ResultApi,
-    private val firebaseAuthApi: FirebaseAuthApi
+    private val firebaseAuthApi: FirebaseAuthApi,
+    private val bluetoothConnectionApi: BluetoothConnectionApi,
+    private val settingApi: SettingApi
 ): ViewModel() {
 
     val firebaseUser = liveData {
@@ -31,6 +35,11 @@ class UserViewModel(
     val user = runBlocking { userApi.getUser() }
     private val _userParameter = MutableLiveData<UserParameters>()
     val userParameter: LiveData<UserParameters> get() = _userParameter
+    val connectionState = liveData {
+        bluetoothConnectionApi.getConnectionStateFlow().collect{
+            emit(it)
+        }
+    }
 
     private var userParametersJob: Job? = null
 
@@ -98,18 +107,27 @@ class UserViewModel(
         }
     }
 
+    fun disconnectDevice(){
+        viewModelScope.launch {
+            settingApi.removedDevice()
+            bluetoothConnectionApi.disconnectDevice()
+        }
+    }
+
 
     class Factory @Inject constructor(
         private val userApi: Provider<UserApi>,
-        private val resultApi: Provider<ResultApi>,
-        private val firebaseAuthApi: Provider<FirebaseAuthApi>
+        private val firebaseAuthApi: Provider<FirebaseAuthApi>,
+        private val bluetoothConnectionApi: Provider<BluetoothConnectionApi>,
+        private val settingApi: Provider<SettingApi>,
     ): ViewModelProvider.Factory{
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             require(modelClass == UserViewModel::class.java)
             return UserViewModel(
                 userApi.get(),
-                resultApi.get(),
-                firebaseAuthApi.get()
+                firebaseAuthApi.get(),
+                bluetoothConnectionApi.get(),
+                settingApi.get()
             ) as T
         }
     }

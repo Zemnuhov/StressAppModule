@@ -24,6 +24,7 @@ class AppModule{
         return AppNavigation()
     }
 
+    @Suppress("UNCHECKED_CAST")
     @Provides
     @Singleton
     fun provideMainClass(): Class<Any> {

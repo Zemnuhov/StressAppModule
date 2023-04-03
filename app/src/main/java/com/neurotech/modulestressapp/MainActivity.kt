@@ -1,15 +1,15 @@
 package com.neurotech.modulestressapp
 
+import android.content.res.Resources.Theme
 import android.os.Bundle
-import android.view.Menu
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.core_firebase_database_api.FirebaseDataApi
+import com.example.core_screen_controller.ScreenControllerApi
+import com.example.core_screen_controller.ScreenState
 import com.example.navigation_api.NavigationApi
 import com.example.navigation_api.ViewID
 import com.neurotech.core_bluetooth_comunication_api.BluetoothConnectionApi
@@ -17,6 +17,7 @@ import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothWriterApi
 import com.neurotech.core_database_api.*
 import com.neurotech.modulestressapp.databinding.ActivityMainBinding
+import com.neurotech.modulestressapp.databinding.StressAppToolbarBinding
 import com.neurotech.modulestressapp.di.app.AppComponent
 import com.neurotech.modulestressapp.di.FeatureComponent
 import com.neurotech.modulestressapp.di.FeatureComponentDependencies
@@ -26,7 +27,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.navigation.R as NavigationRes
-import com.neurotech.shared_view_id.R as AppMenu
 
 class MainActivity : AppCompatActivity(), FeatureComponentDependencies {
 
@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity(), FeatureComponentDependencies {
     @Inject lateinit var user: UserApi
     @Inject lateinit var relaxRecord: RelaxRecordApi
     @Inject lateinit var firebaseData: FirebaseDataApi
+    @Inject lateinit var screenControllerApi: ScreenControllerApi
 
     override val activity: AppCompatActivity get() = this
     override val bluetoothConnection: BluetoothConnectionApi get() = connection
@@ -57,63 +58,64 @@ class MainActivity : AppCompatActivity(), FeatureComponentDependencies {
     override val firebaseDataApi: FirebaseDataApi get() = firebaseData
 
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var activityMainBinding: ActivityMainBinding
+    private lateinit var toolbarBinding: StressAppToolbarBinding
 
     private val navController get() = (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
 
     override fun onResume() {
         super.onResume()
         navigation.bind(navController)
-        CoroutineScope(Dispatchers.IO).launch {
-            bluetoothWriter.writeNotifyFlag(true)
-        }
+        screenControllerApi.setState(ScreenState.RESUME)
     }
 
     override fun onPause() {
         super.onPause()
         navigation.unbind()
-        CoroutineScope(Dispatchers.IO).launch {
-            bluetoothWriter.writeNotifyFlag(false)
-        }
+        screenControllerApi.setState(ScreenState.PAUSE)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(null)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        //WindowCompat.setDecorFitsSystemWindows(window, false)
         AppComponent.get().inject(this)
         FeatureComponentDependenciesStore.dependencies = this
         FeatureComponent.init()
         FeatureComponent.provideDependencies()
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        toolbarBinding = StressAppToolbarBinding.bind(activityMainBinding.root)
+        setContentView(activityMainBinding.root)
         navigation.bind(navController)
+        toolbarBinding.upButton.setOnClickListener {
+            navController.navigateUp()
+        }
 
-        setSupportActionBar(binding.toolbar)
+        //setSupportActionBar(binding.toolbar)
     }
 
     override fun onStart() {
         super.onStart()
+        screenControllerApi.setState(ScreenState.START)
         navController.addOnDestinationChangedListener{ _, destination, _ ->
+            toolbarBinding.titleTextView.text = destination.label
             when(destination.id){
                 NavigationRes.id.mainFragment ->{
-                    val appBarConfiguration = AppBarConfiguration(navController.graph)
-                    setupActionBarWithNavController(navController, appBarConfiguration)
-                    binding.bottomNavigationView.isVisible = true
-                    binding.bottomNavigationView.setupWithNavController(navController)
+                    toolbarBinding.upButton.isVisible = false
+                    activityMainBinding.bottomNavigationView.isVisible = true
+                    activityMainBinding.bottomNavigationView.setupWithNavController(navController)
+                    toolbarBinding.starLayout.isVisible = true
                 }
                 NavigationRes.id.scanFragment -> {
-                    val appBarConfiguration = AppBarConfiguration(navController.graph)
-                    activity.setupActionBarWithNavController(navController, appBarConfiguration)
-                    binding.bottomNavigationView.isVisible = false
+                    toolbarBinding.upButton.isVisible = false
+                    activityMainBinding.bottomNavigationView.isVisible = false
+                    toolbarBinding.starLayout.isVisible = false
+                }
+                else -> {
+                    toolbarBinding.upButton.isVisible = true
+                    toolbarBinding.starLayout.isVisible = false
                 }
             }
         }
     }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(AppMenu.menu.app_menu, menu)
-        return true
-    }
-
 }

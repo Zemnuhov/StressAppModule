@@ -8,6 +8,8 @@ import com.example.core_firebase_database_api.FirebaseDataApi
 import com.example.core_firebase_database_impl.FirebaseData
 import com.example.core_notification_controller_api.NotificationControllerApi
 import com.example.core_notification_controller_impl.NotificationController
+import com.example.core_screen_controller.ScreenControllerApi
+import com.example.core_screen_controller_impl.ScreenController
 import com.example.core_signal_control_api.SignalControlApi
 import com.example.core_signal_control_impl.SignalControlImpl
 import com.example.feature_notification_api.NotificationApi
@@ -64,4 +66,11 @@ class CoreModule {
     fun provideNotificationController(): NotificationControllerApi {
         return NotificationController()
     }
+
+    @Provides
+    @Singleton
+    fun provideScreenController(): ScreenControllerApi {
+        return ScreenController()
+    }
+
 }

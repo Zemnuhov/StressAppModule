@@ -30,6 +30,8 @@
             <option value="$PROJECT_DIR$/core-foreground-service-impl" />
             <option value="$PROJECT_DIR$/core-notification-controller-api" />
             <option value="$PROJECT_DIR$/core-notification-controller-impl" />
+            <option value="$PROJECT_DIR$/core-screen-controller-api" />
+            <option value="$PROJECT_DIR$/core-screen-controller-impl" />
             <option value="$PROJECT_DIR$/core-signal-control-api" />
             <option value="$PROJECT_DIR$/core-signal-control-impl" />
             <option value="$PROJECT_DIR$/custom-views" />

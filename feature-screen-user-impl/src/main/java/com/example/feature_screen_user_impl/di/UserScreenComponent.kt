@@ -2,10 +2,14 @@ package com.example.feature_screen_user_impl.di
 
 import com.example.core_firebase_auth.FirebaseAuthApi
 import com.example.feature_screen_user_impl.UserFragment
+import com.example.navigation_api.NavigationApi
+import com.neurotech.core_bluetooth_comunication_api.BluetoothConnectionApi
 import com.neurotech.core_database_api.ResultApi
+import com.neurotech.core_database_api.SettingApi
 import com.neurotech.core_database_api.UserApi
 import dagger.Component
 import dagger.Component.Builder
+import javax.inject.Inject
 import javax.inject.Scope
 import kotlin.properties.Delegates.notNull
 
@@ -41,8 +45,10 @@ interface UserScreenComponent {
 
 interface UserScreenDependencies{
     val userApi: UserApi
-    val resultApi: ResultApi
     val firebaseAuthApi: FirebaseAuthApi
+    val bluetoothConnectionApi: BluetoothConnectionApi
+    val navigation: NavigationApi
+    val settingApi: SettingApi
 }
 
 interface UserScreenDependenciesProvider{

@@ -14,14 +14,11 @@ import com.neurotech.core_database_impl.main_database.entity.ResultHourEntity
 import com.neurotech.core_database_impl.main_database.entity.ResultTenMinuteEntity
 import com.neurotech.utils.TimeFormat
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
-import kotlin.concurrent.thread
 
 class ResultDB : ResultApi {
 
@@ -45,7 +42,7 @@ class ResultDB : ResultApi {
     override suspend fun writeResultTenMinute(resultTenMinute: ResultTenMinute) {
         withContext(Dispatchers.IO) {
             launch {
-                resultTenMinuteDao.insertResult(
+                resultTenMinuteDao.insertResultOnIgnore(
                     ResultTenMinuteEntity(
                         resultTenMinute.time.toString(TimeFormat.dateTimeIsoPattern),
                         resultTenMinute.peakCount,
@@ -64,7 +61,7 @@ class ResultDB : ResultApi {
 
     override suspend fun writeResultsTenMinute(resultsTenMinute: ResultsTenMinute) {
         withContext(Dispatchers.IO) {
-            resultTenMinuteDao.insertResult(
+            resultTenMinuteDao.insertResultOnIgnore(
                 *resultsTenMinute.list.map {
                     ResultTenMinuteEntity(
                         it.time.toString(TimeFormat.dateTimeIsoPattern),
@@ -211,6 +208,31 @@ class ResultDB : ResultApi {
     override suspend fun deleteMarkupByTime(time: Date) {
         withContext(Dispatchers.IO) {
             resultTenMinuteDao.deleteMarkupByTime(time.toString(TimeFormat.dateTimeIsoPattern))
+        }
+    }
+
+    override suspend fun updateResult() {
+        withContext(Dispatchers.IO){
+            val result = mutableListOf<ResultTenMinuteEntity>()
+            val data = resultTenMinuteDao.getDataByInterval(Tempo.now.toString(TimeFormat.dateTimeIsoPattern)).map { it.mapToResultTenMinute() }
+            val fact = resultTenMinuteDao.getResultsInInterval(data.map { it.time }.min(),data.map { it.time }.max()).first()
+            data.forEach {entity ->
+                val factElem = fact.firstOrNull { it.time == entity.time }
+                val elem = if(factElem != null){
+                    ResultTenMinuteEntity(
+                        entity.time,
+                        entity.peakCount,
+                        entity.tonicAvg,
+                        factElem.conditionAssessment,
+                        factElem.stressCause,
+                        factElem.keep
+                    )
+                }else{
+                    entity
+                }
+                result.add(elem)
+            }
+            resultTenMinuteDao.insertResultOnReplace(*result.toTypedArray())
         }
     }
 

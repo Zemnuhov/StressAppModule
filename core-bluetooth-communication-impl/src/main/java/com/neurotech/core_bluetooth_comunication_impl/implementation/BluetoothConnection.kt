@@ -10,9 +10,14 @@ import com.neurotech.core_bluetooth_comunication_api.ConnectionState
 import com.neurotech.core_bluetooth_comunication_impl.AppBluetoothManager
 import com.neurotech.core_bluetooth_comunication_impl.di.BleCommunicationComponent
 import com.neurotech.utils.StressLogger.log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import no.nordicsemi.android.ble.ktx.stateAsFlow
+import no.nordicsemi.android.ble.ktx.suspend
 import javax.inject.Inject
 
 class BluetoothConnection: BluetoothConnectionApi {
@@ -21,11 +26,22 @@ class BluetoothConnection: BluetoothConnectionApi {
     @Inject
     lateinit var context:Context
 
+    private var mac: String? = null
+
     init {
         BleCommunicationComponent.get().inject(this)
+        CoroutineScope(Dispatchers.IO).launch {
+            while (true){
+                delay(60000)
+                if(!bleManager.isConnected && mac != null){
+                    connectionToPeripheral(mac!!)
+                }
+            }
+        }
     }
 
     override suspend fun connectionToPeripheral(deviceMac: String) {
+        mac = deviceMac
         val bluetoothManager: BluetoothManager? =
             ContextCompat.getSystemService(context, BluetoothManager::class.java)
         val bluetoothAdapter: BluetoothAdapter? = bluetoothManager?.adapter
@@ -62,7 +78,11 @@ class BluetoothConnection: BluetoothConnectionApi {
     }
 
     override suspend fun disconnectDevice() {
-        bleManager.disconnect().enqueue()
+        try {
+            bleManager.disconnect().suspend()
+        } catch (e: Exception) {
+            log(e.message.toString())
+        }
         bleManager.isAutoConnect = false
     }
 }

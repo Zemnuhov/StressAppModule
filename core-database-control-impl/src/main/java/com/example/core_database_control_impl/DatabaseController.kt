@@ -41,26 +41,10 @@ class DatabaseController : DatabaseControllerApi {
         DatabaseControlComponent.get().inject(this)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     override suspend fun controlResultTenMinute() {
-        CoroutineScope(newSingleThreadContext("TimeThread")).launch {
+        withContext(Dispatchers.IO) {
             while (true) {
-                val time = Tempo.now.beginningOfMinute
-                if (time.toString("mm").toInt() % 10 == 0) {
-                    val tonic = tonicApi.getTenMinuteAverageInInterval(time - 10.minute, time)
-                    if (tonic != 0) {
-                        resultApi.writeResultTenMinute(
-                            ResultTenMinute(
-                                time,
-                                phaseApi.getPhaseCountInInterval(time - 10.minute, time),
-                                tonic,
-                                1,
-                                null,
-                                null
-                            )
-                        )
-                    }
-                }
+                resultApi.updateResult()
                 delay(60000)
             }
         }

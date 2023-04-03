@@ -73,8 +73,8 @@ class AppBluetoothManager(
     private val errorFlow: MutableStateFlow<Exception?> = MutableStateFlow(null)
 
     var isAutoConnect = true
+    private var isLog = false
 
-    var savedDevice: BluetoothDevice? = null
 
     override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
         val settingService = try {
@@ -112,7 +112,10 @@ class AppBluetoothManager(
 
 
     override fun log(priority: Int, message: String) {
-        log("$message. Priority $priority")
+        if(isLog){
+            log("$message. Priority $priority")
+        }
+
         super.log(priority, message)
     }
 
@@ -256,7 +259,6 @@ class AppBluetoothManager(
                 if(it != null){
                     log(it.message.toString())
                     cancel()
-                    savedDevice?.let { connectToDevice(it) }
                 }
             }
         }
@@ -266,7 +268,6 @@ class AppBluetoothManager(
         isAutoConnect = true
         try {
             if (!state.isConnected) {
-                savedDevice = device
                 connect(device)
                     .retry(4, 300)
                     .useAutoConnect(true)

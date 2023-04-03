@@ -41,6 +41,8 @@ dependencies {
     implementation 'androidx.work:work-runtime-ktx:2.8.0'
     implementation project(path: ':core-firebase-controller-impl')
     implementation project(path: ':core-notification-controller-api')
+    implementation project(path: ':core-database-api')
+    implementation project(path: ':core-screen-controller-api')
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
     implementation 'androidx.core:core-ktx:1.9.0'

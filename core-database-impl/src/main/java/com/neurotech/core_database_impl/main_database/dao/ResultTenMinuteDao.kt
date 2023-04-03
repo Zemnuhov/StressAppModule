@@ -1,12 +1,11 @@
 package com.neurotech.core_database_impl.main_database.dao
 
 import androidx.room.*
-import com.neurotech.core_database_api.model.ResultHour
-import com.neurotech.core_database_api.model.ResultsTenMinute
 import com.neurotech.core_database_impl.main_database.entity.CountForCauseDB
 import com.neurotech.core_database_impl.main_database.entity.ResultDayEntity
 import com.neurotech.core_database_impl.main_database.entity.ResultHourEntity
 import com.neurotech.core_database_impl.main_database.entity.ResultTenMinuteEntity
+import com.neurotech.core_database_impl.main_database.model.ResultDataDB
 import com.neurotech.core_database_impl.main_database.model.UserParameterDB
 import kotlinx.coroutines.flow.Flow
 
@@ -60,23 +59,62 @@ interface ResultTenMinuteDao {
     @Query("SELECT * FROM ResultTenMinuteEntity WHERE phaseCount > :threshold and stressCause is NULL")
     fun getResultsTenMinuteAboveThreshold(threshold: Int): Flow<List<ResultTenMinuteEntity>>
 
-    @Query("SELECT AVG(tonicAvg) AS maxTonic, AVG(phaseCount) AS maxPeaksInTenMinute, " +
-            "(SELECT AVG(peaks) FROM ResultHourEntity) AS maxHourInDay, " +
-            "(SELECT AVG(peaks) FROM ResultDayEntity) AS maxPeakInDay FROM ResultTenMinuteEntity")
+    @Query("SELECT \n" +
+            "  AVG(rte.tonicAvg) AS maxTonic, \n" +
+            "  AVG(rte.phaseCount) AS maxPeaksInTenMinute,\n" +
+            "  AVG(rhe.peaks) AS maxHourInDay,\n" +
+            "  AVG(rde.peaks) AS maxPeakInDay\n" +
+            "FROM ResultTenMinuteEntity rte\n" +
+            "LEFT JOIN (SELECT AVG(peaks) AS peaks FROM ResultHourEntity) rhe ON 1=1\n" +
+            "LEFT JOIN (SELECT AVG(peaks) AS peaks FROM ResultDayEntity) rde ON 1=1")
     fun getUserParameter(): Flow<UserParameterDB>
 
-    @Query("SELECT" +
-            "   AVG(tonicAvg) AS maxTonic," +
-            "   AVG(phaseCount) AS maxPeaksInTenMinute," +
-            "   (SELECT AVG(peaks) FROM ResultHourEntity WHERE date >= strftime('%Y-%m-%d %H', :beginInterval)  AND date <= strftime('%Y-%m-%d %H', :endInterval) ) AS maxHourInDay," +
-            "   (SELECT AVG(peaks) FROM ResultDayEntity WHERE date >= strftime('%Y-%m-%d', :beginInterval)  AND date <= strftime('%Y-%m-%d', :endInterval)) AS maxPeakInDay " +
-            "FROM ResultTenMinuteEntity " +
-            "WHERE time >= :beginInterval  AND time <= :endInterval")
+    @Query("SELECT\n" +
+            "    AVG(rte.tonicAvg) AS maxTonic,\n" +
+            "    AVG(rte.phaseCount) AS maxPeaksInTenMinute,\n" +
+            "    AVG(rhe.peaks) AS maxHourInDay,\n" +
+            "    AVG(rde.peaks) AS maxPeakInDay\n" +
+            "FROM ResultTenMinuteEntity rte\n" +
+            "LEFT JOIN ResultHourEntity rhe ON strftime('%Y-%m-%d %H', rhe.date) = strftime('%Y-%m-%d %H', rte.time)\n" +
+            "LEFT JOIN ResultDayEntity rde ON strftime('%Y-%m-%d', rde.date) = strftime('%Y-%m-%d', rte.time)\n" +
+            "WHERE rte.time BETWEEN :beginInterval AND :endInterval")
     fun getUserParameterInInterval(beginInterval: String, endInterval:String): Flow<UserParameterDB>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertResult(vararg resultEntity: ResultTenMinuteEntity)
+    fun insertResultOnIgnore(vararg resultEntity: ResultTenMinuteEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertResultOnReplace(vararg resultEntity: ResultTenMinuteEntity)
 
     @Update
     fun updateResult(vararg resultEntity: ResultTenMinuteEntity)
+
+    @Query("UPDATE ResultTenMinuteEntity SET phaseCount = :phaseCount, tonicAvg = :tonicAvg WHERE time = :time")
+    fun updateResult(time: String, phaseCount: Int, tonicAvg: Int)
+
+    @Query("WITH RECURSIVE dates(date) AS (\n" +
+            "  VALUES (strftime('%Y-%m-%d %H:00:00.000', datetime(:nowDateTime, \"-1 day\")))\n" +
+            "  UNION ALL\n" +
+            "  SELECT datetime(date, '+10 minute')\n" +
+            "  FROM dates\n" +
+            "  WHERE date < :nowDateTime\n" +
+            ")\n" +
+            "SELECT strftime('%Y-%m-%d %H:%M:00.000', date) as time, phase as phaseCount, AVG(value) as tonicAvg FROM TonicEntity\n" +
+            "JOIN(\n" +
+            "SELECT date, COUNT(*) as phase FROM PhaseEntity\n" +
+            "JOIN(SELECT date FROM dates) \n" +
+            "WHERE timeBegin >= datetime(date, '-10 minute') and timeBegin <= date GROUP BY date)\n" +
+            "WHERE time >= datetime(date, '-10 minute') and time <= date GROUP BY date\n")
+    fun getDataByInterval(nowDateTime: String):List<ResultDataDB>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertTenMinuteResult(dayResult: List<ResultTenMinuteEntity>): List<Long>
+
+    @Transaction
+    fun insertOrUpdate(objList: List<ResultTenMinuteEntity>) {
+        val insertResult = insertTenMinuteResult(objList)
+        for (i in insertResult.indices) {
+            if (insertResult[i] == -1L) updateResult(objList[i].time,objList[i].peakCount,objList[i].tonicAvg)
+        }
+    }
 }
