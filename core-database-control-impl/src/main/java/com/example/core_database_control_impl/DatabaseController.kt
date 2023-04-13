@@ -36,6 +36,8 @@ class DatabaseController : DatabaseControllerApi {
     @Inject
     lateinit var context: Context
 
+    private val MINUTES = 600000L
+
 
     init {
         DatabaseControlComponent.get().inject(this)
@@ -45,50 +47,65 @@ class DatabaseController : DatabaseControllerApi {
         withContext(Dispatchers.IO) {
             while (true) {
                 resultApi.updateResult()
-                delay(60000)
+                delay(MINUTES)
             }
         }
     }
 
     override suspend fun controlResultHour() {
         withContext(Dispatchers.IO) {
+            var lastUpdate = 0L
             resultApi.getResultTenMinute().collect {
-                resultApi.writeResultHour(
-                    resultApi.getResultHourFromResultTenMinute(
-                        (Tempo.now - 1.year),
-                        Tempo.now
+                val millis = System.currentTimeMillis()
+                if(millis - lastUpdate > 10*MINUTES){
+                    lastUpdate = millis
+                    resultApi.writeResultHour(
+                        resultApi.getResultHourFromResultTenMinute(
+                            (Tempo.now - 1.year),
+                            Tempo.now
+                        )
                     )
-                )
+                }
             }
         }
     }
 
     override suspend fun controlResultDay() {
         withContext(Dispatchers.IO) {
+            var lastUpdate = 0L
             resultApi.getResultTenMinute().collect {
-                resultApi.writeResultDay(
-                    resultApi.getResultDayFromResultTenMinute(
-                        (Tempo.now - 1.year),
-                        Tempo.now
+                val millis = System.currentTimeMillis()
+                if(millis - lastUpdate > 10*MINUTES) {
+                    lastUpdate = millis
+                    resultApi.writeResultDay(
+                        resultApi.getResultDayFromResultTenMinute(
+                            (Tempo.now - 1.year),
+                            Tempo.now
+                        )
                     )
-                )
+                }
             }
         }
     }
 
     override suspend fun controlUserData() {
         withContext(Dispatchers.IO) {
+            var lastUpdate = 0L
             resultApi.getResultTenMinute().collect {
-                val params = userApi.getUserParameters().first()
-                userApi.setUserParameters(
-                    UserParameters(
-                        (params.tonic * 0.8).toInt(),
-                        (params.tenMinutePhase * 0.8).toInt(),
-                        (params.hourPhase * 0.8).toInt(),
-                        (params.dayPhase * 0.8).toInt(),
+                val millis = System.currentTimeMillis()
+                if(millis - lastUpdate > 10*MINUTES) {
+                    lastUpdate = millis
+                    val params = userApi.getUserParameters().first()
+                    userApi.setUserParameters(
+                        UserParameters(
+                            (params.tonic * 0.8).toInt(),
+                            (params.tenMinutePhase * 0.8).toInt(),
+                            (params.hourPhase * 0.8).toInt(),
+                            (params.dayPhase * 0.8).toInt(),
+                        )
                     )
-                )
-                firebaseData.setUser(userApi.getUser())
+                    firebaseData.setUser(userApi.getUser())
+                }
             }
         }
     }

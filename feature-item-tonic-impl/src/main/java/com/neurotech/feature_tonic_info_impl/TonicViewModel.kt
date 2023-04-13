@@ -25,37 +25,20 @@ class TonicViewModel(
     private val jobList = mutableListOf<Job>()
 
     fun setInterval(interval: Interval){
-        when(interval){
-            Interval.TEN_MINUTE -> {
-                stopJob()
-                jobList.add(
-                    viewModelScope.launch {
-                        tonicApi.getTenMinuteAverage().collect{
-                            _avgTonic.postValue(it)
-                        }
-                    }
-                )
+        viewModelScope.launch {
+            stopJob()
+            val flow = when(interval){
+                Interval.TEN_MINUTE -> tonicApi.getTenMinuteAverage()
+                Interval.HOUR -> tonicApi.getHourAverage()
+                Interval.DAY ->  tonicApi.getDayAverage()
             }
-            Interval.HOUR -> {
-                stopJob()
-                jobList.add(
-                    viewModelScope.launch {
-                        tonicApi.getHourAverage().collect{
-                            _avgTonic.postValue(it)
-                        }
+            jobList.add(
+                viewModelScope.launch {
+                    flow.collect{
+                        _avgTonic.postValue(it)
                     }
-                )
-            }
-            Interval.DAY -> {
-                stopJob()
-                jobList.add(
-                    viewModelScope.launch {
-                        tonicApi.getDayAverage().collect{
-                            _avgTonic.postValue(it)
-                        }
-                    }
-                )
-            }
+                }
+            )
         }
     }
 

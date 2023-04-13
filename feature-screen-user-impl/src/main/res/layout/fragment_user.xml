@@ -7,449 +7,463 @@
     android:background="@color/background_color"
     android:elevation="@dimen/default_elevation">
 
-    <TextView
-        android:id="@+id/logOutTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Выйти из аккаунта"
-        android:textColor="#C60000"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/disconnectButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/disconnectButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Отключиться от устройства"
-        android:textColor="#C60000"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signInButton" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/signInButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:buttonSize="wide"
-        app:layout_constraintBottom_toTopOf="@+id/disconnectButton"
-        app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/constraintLayout4"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
+            <TextView
+                android:id="@+id/logOutTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/large_indent"
+                android:layout_marginBottom="@dimen/large_indent"
+                android:text="Выйти из аккаунта"
+                android:textColor="#C60000"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/disconnectButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="@dimen/default_indent"
-        android:layout_marginTop="@dimen/default_indent"
-        android:elevation="@dimen/default_elevation"
-        app:cardCornerRadius="50dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+            <TextView
+                android:id="@+id/disconnectButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/large_indent"
+                android:text="Отключиться от устройства"
+                android:textColor="#C60000"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/signInButton" />
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            app:srcCompat="@drawable/icon_stress" />
-    </androidx.cardview.widget.CardView>
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/signInButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/large_indent"
+                app:buttonSize="wide"
+                app:layout_constraintBottom_toTopOf="@+id/disconnectButton"
+                app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="@+id/constraintLayout4"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
 
-    <TextView
-        android:id="@+id/textView18"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/small_indent"
-        android:text="Здравствуй, "
-        android:textColor="@color/text_color"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView"
-        app:layout_constraintStart_toEndOf="@+id/cardView"
-        app:layout_constraintTop_toTopOf="@+id/cardView"
-        tools:viewBindingIgnore="true" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginStart="@dimen/default_indent"
+                android:layout_marginTop="@dimen/default_indent"
+                android:elevation="@dimen/default_elevation"
+                app:cardCornerRadius="50dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/userNameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="неизвестный пользователь"
-        android:textColor="@color/text_color"
-        app:layout_constraintBottom_toBottomOf="@+id/textView18"
-        app:layout_constraintStart_toEndOf="@+id/textView18"
-        app:layout_constraintTop_toTopOf="@+id/textView18" />
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    app:srcCompat="@drawable/icon_stress" />
+            </androidx.cardview.widget.CardView>
 
-    <TextView
-        android:id="@+id/textView19"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_indent"
-        android:layout_marginTop="@dimen/default_indent"
-        android:layout_marginEnd="@dimen/default_indent"
-        android:elevation="@dimen/default_elevation"
-        android:text="Информация о пользователе"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/peak_text_size"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView"
-        tools:viewBindingIgnore="true" />
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/small_indent"
+                android:text="Здравствуй, "
+                android:textColor="@color/text_color"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView"
+                app:layout_constraintStart_toEndOf="@+id/cardView"
+                app:layout_constraintTop_toTopOf="@+id/cardView"
+                tools:viewBindingIgnore="true" />
 
-    <TextView
-        android:id="@+id/textView14"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_indent"
-        android:elevation="@dimen/default_elevation"
-        android:text="Характеристики"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/peak_text_size"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/constraintLayout3"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout3"
-        tools:viewBindingIgnore="true" />
+            <TextView
+                android:id="@+id/userNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="неизвестный пользователь"
+                android:textColor="@color/text_color"
+                app:layout_constraintBottom_toBottomOf="@+id/textView18"
+                app:layout_constraintStart_toEndOf="@+id/textView18"
+                app:layout_constraintTop_toTopOf="@+id/textView18" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout3"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_indent"
-        android:layout_marginTop="@dimen/small_indent"
-        android:layout_marginEnd="@dimen/default_indent"
-        android:background="@drawable/shadow"
-        android:elevation="@dimen/default_elevation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView19">
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_indent"
+                android:layout_marginTop="@dimen/default_indent"
+                android:layout_marginEnd="@dimen/default_indent"
+                android:elevation="@dimen/default_elevation"
+                android:text="Информация о пользователе"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/peak_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView"
+                tools:viewBindingIgnore="true" />
 
-        <TextView
-            android:id="@+id/textView21"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_indent"
-            android:text="Возраст:"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/textView24"
-            app:layout_constraintStart_toStartOf="@+id/textView20"
-            app:layout_constraintTop_toBottomOf="@+id/textView20"
-            tools:viewBindingIgnore="true" />
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_indent"
+                android:elevation="@dimen/default_elevation"
+                android:text="Характеристики"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/peak_text_size"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/constraintLayout3"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout3"
+                tools:viewBindingIgnore="true" />
 
-        <TextView
-            android:id="@+id/nameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_indent"
+                android:layout_marginTop="@dimen/small_indent"
+                android:layout_marginEnd="@dimen/default_indent"
+                android:background="@drawable/shadow"
+                android:elevation="@dimen/default_elevation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView19">
 
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toBottomOf="@+id/textView20"
-            app:layout_constraintStart_toStartOf="@+id/ageTextView"
-            app:layout_constraintTop_toTopOf="@+id/textView20" />
+                <TextView
+                    android:id="@+id/textView21"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_indent"
+                    android:text="Возраст:"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/textView24"
+                    app:layout_constraintStart_toStartOf="@+id/textView20"
+                    app:layout_constraintTop_toBottomOf="@+id/textView20"
+                    tools:viewBindingIgnore="true" />
 
-        <TextView
-            android:id="@+id/ageTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/small_indent"
+                <TextView
+                    android:id="@+id/nameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
 
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toBottomOf="@+id/textView21"
-            app:layout_constraintStart_toEndOf="@+id/textView21"
-            app:layout_constraintTop_toTopOf="@+id/textView21" />
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView20"
+                    app:layout_constraintStart_toStartOf="@+id/ageTextView"
+                    app:layout_constraintTop_toTopOf="@+id/textView20" />
 
-        <TextView
-            android:id="@+id/textView24"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_indent"
-            android:layout_marginBottom="@dimen/large_indent"
-            android:text="Пол:"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView21"
-            app:layout_constraintTop_toBottomOf="@+id/textView21"
-            tools:viewBindingIgnore="true" />
+                <TextView
+                    android:id="@+id/ageTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/small_indent"
 
-        <TextView
-            android:id="@+id/genderTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView21"
+                    app:layout_constraintStart_toEndOf="@+id/textView21"
+                    app:layout_constraintTop_toTopOf="@+id/textView21" />
 
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toBottomOf="@+id/textView24"
-            app:layout_constraintStart_toStartOf="@+id/ageTextView"
-            app:layout_constraintTop_toTopOf="@+id/textView24" />
+                <TextView
+                    android:id="@+id/textView24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_indent"
+                    android:layout_marginBottom="@dimen/large_indent"
+                    android:text="Пол:"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/textView21"
+                    app:layout_constraintTop_toBottomOf="@+id/textView21"
+                    tools:viewBindingIgnore="true" />
 
-        <TextView
-            android:id="@+id/textView20"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="@dimen/large_indent"
-            android:text="Имя:"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/textView21"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:viewBindingIgnore="true" />
+                <TextView
+                    android:id="@+id/genderTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
 
-        <ImageView
-            android:id="@+id/dateOfBirthEdit"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/default_indent"
-            app:layout_constraintBottom_toBottomOf="@+id/textView21"
-            app:layout_constraintStart_toEndOf="@+id/textView21"
-            app:layout_constraintTop_toTopOf="@+id/textView21"
-            app:srcCompat="@drawable/ic_baseline_create_24" />
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView24"
+                    app:layout_constraintStart_toStartOf="@+id/ageTextView"
+                    app:layout_constraintTop_toTopOf="@+id/textView24" />
 
-        <ImageView
-            android:id="@+id/genderEdit"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/textView24"
-            app:layout_constraintStart_toStartOf="@+id/dateOfBirthEdit"
-            app:layout_constraintTop_toTopOf="@+id/textView24"
-            app:srcCompat="@drawable/ic_baseline_create_24" />
+                <TextView
+                    android:id="@+id/textView20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="@dimen/large_indent"
+                    android:text="Имя:"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/textView21"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:viewBindingIgnore="true" />
 
-        <CheckBox
-            android:id="@+id/maleCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/default_indent"
-            android:text="Муж"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/genderEdit"
-            app:layout_constraintStart_toEndOf="@+id/genderEdit"
-            app:layout_constraintTop_toTopOf="@+id/genderEdit" />
+                <ImageView
+                    android:id="@+id/dateOfBirthEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/default_indent"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView21"
+                    app:layout_constraintStart_toEndOf="@+id/textView21"
+                    app:layout_constraintTop_toTopOf="@+id/textView21"
+                    app:srcCompat="@drawable/ic_baseline_create_24" />
 
-        <CheckBox
-            android:id="@+id/femaleCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:text="Жен"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/maleCheckBox"
-            app:layout_constraintStart_toEndOf="@+id/maleCheckBox"
-            app:layout_constraintTop_toTopOf="@+id/maleCheckBox" />
+                <ImageView
+                    android:id="@+id/genderEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView24"
+                    app:layout_constraintStart_toStartOf="@+id/dateOfBirthEdit"
+                    app:layout_constraintTop_toTopOf="@+id/textView24"
+                    app:srcCompat="@drawable/ic_baseline_create_24" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <CheckBox
+                    android:id="@+id/maleCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/default_indent"
+                    android:text="Муж"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/genderEdit"
+                    app:layout_constraintStart_toEndOf="@+id/genderEdit"
+                    app:layout_constraintTop_toTopOf="@+id/genderEdit" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout4"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_indent"
-        android:background="@drawable/shadow"
-        android:elevation="@dimen/default_elevation"
-        app:layout_constraintEnd_toEndOf="@+id/constraintLayout3"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/constraintLayout3"
-        app:layout_constraintTop_toBottomOf="@+id/switchButton">
+                <CheckBox
+                    android:id="@+id/femaleCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="16dp"
+                    android:text="Жен"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/maleCheckBox"
+                    app:layout_constraintStart_toEndOf="@+id/maleCheckBox"
+                    app:layout_constraintTop_toTopOf="@+id/maleCheckBox" />
 
-        <TextView
-            android:id="@+id/textView30"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_indent"
-            android:text="За день:"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toTopOf="@+id/textView31"
-            app:layout_constraintStart_toStartOf="@+id/textView28"
-            app:layout_constraintTop_toBottomOf="@+id/textView29"
-            tools:viewBindingIgnore="true" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/textView31"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_indent"
-            android:layout_marginBottom="@dimen/large_indent"
-            android:text="За 10 минут:"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView30"
-            app:layout_constraintTop_toBottomOf="@+id/textView30"
-            tools:viewBindingIgnore="true" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_indent"
+                android:background="@drawable/shadow"
+                android:elevation="@dimen/default_elevation"
+                app:layout_constraintEnd_toEndOf="@+id/constraintLayout3"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/constraintLayout3"
+                app:layout_constraintTop_toBottomOf="@+id/switchButton">
 
-        <TextView
-            android:id="@+id/textView17"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/large_indent"
-            android:layout_marginTop="@dimen/large_indent"
-            android:text="Средняя тоника:"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toTopOf="@+id/textView23"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:viewBindingIgnore="true" />
+                <TextView
+                    android:id="@+id/textView30"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_indent"
+                    android:text="За день:"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toTopOf="@+id/textView31"
+                    app:layout_constraintStart_toStartOf="@+id/textView28"
+                    app:layout_constraintTop_toBottomOf="@+id/textView29"
+                    tools:viewBindingIgnore="true" />
 
-        <TextView
-            android:id="@+id/avgTonic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+                <TextView
+                    android:id="@+id/textView31"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_indent"
+                    android:layout_marginBottom="@dimen/large_indent"
+                    android:text="За 10 минут:"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/textView30"
+                    app:layout_constraintTop_toBottomOf="@+id/textView30"
+                    tools:viewBindingIgnore="true" />
 
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toBottomOf="@+id/textView17"
-            app:layout_constraintStart_toStartOf="@+id/normalTonic"
-            app:layout_constraintTop_toTopOf="@+id/textView17" />
+                <TextView
+                    android:id="@+id/textView17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/large_indent"
+                    android:layout_marginTop="@dimen/large_indent"
+                    android:text="Средняя тоника:"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toTopOf="@+id/textView23"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:viewBindingIgnore="true" />
 
-        <TextView
-            android:id="@+id/avgPeakCountInTenMinuteTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toBottomOf="@+id/textView28"
-            app:layout_constraintStart_toStartOf="@+id/normalTonic"
-            app:layout_constraintTop_toTopOf="@+id/textView28" />
+                <TextView
+                    android:id="@+id/avgTonic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
 
-        <TextView
-            android:id="@+id/normalPeakCountInDayTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toBottomOf="@+id/textView30"
-            app:layout_constraintStart_toStartOf="@+id/normalTonic"
-            app:layout_constraintTop_toTopOf="@+id/textView30" />
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView17"
+                    app:layout_constraintStart_toStartOf="@+id/normalTonic"
+                    app:layout_constraintTop_toTopOf="@+id/textView17" />
 
-        <TextView
-            android:id="@+id/normalPeakCountInTenMinuteTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toBottomOf="@+id/textView31"
-            app:layout_constraintStart_toStartOf="@+id/normalTonic"
-            app:layout_constraintTop_toTopOf="@+id/textView31" />
+                <TextView
+                    android:id="@+id/avgPeakCountInTenMinuteTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView28"
+                    app:layout_constraintStart_toStartOf="@+id/normalTonic"
+                    app:layout_constraintTop_toTopOf="@+id/textView28" />
 
-        <TextView
-            android:id="@+id/avgPeakCountInDayTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toBottomOf="@+id/textView27"
-            app:layout_constraintStart_toStartOf="@+id/normalTonic"
-            app:layout_constraintTop_toTopOf="@+id/textView27" />
+                <TextView
+                    android:id="@+id/normalPeakCountInDayTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView30"
+                    app:layout_constraintStart_toStartOf="@+id/normalTonic"
+                    app:layout_constraintTop_toTopOf="@+id/textView30" />
 
-        <TextView
-            android:id="@+id/textView23"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_indent"
-            android:text="Нормальная тоника:"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toTopOf="@+id/textView26"
-            app:layout_constraintStart_toStartOf="@+id/textView17"
-            app:layout_constraintTop_toBottomOf="@+id/textView17"
-            tools:viewBindingIgnore="true" />
+                <TextView
+                    android:id="@+id/normalPeakCountInTenMinuteTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView31"
+                    app:layout_constraintStart_toStartOf="@+id/normalTonic"
+                    app:layout_constraintTop_toTopOf="@+id/textView31" />
 
-        <TextView
-            android:id="@+id/normalTonic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/small_indent"
+                <TextView
+                    android:id="@+id/avgPeakCountInDayTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView27"
+                    app:layout_constraintStart_toStartOf="@+id/normalTonic"
+                    app:layout_constraintTop_toTopOf="@+id/textView27" />
 
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toBottomOf="@+id/textView23"
-            app:layout_constraintStart_toEndOf="@+id/textView23"
-            app:layout_constraintTop_toTopOf="@+id/textView23" />
+                <TextView
+                    android:id="@+id/textView23"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_indent"
+                    android:text="Нормальная тоника:"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toTopOf="@+id/textView26"
+                    app:layout_constraintStart_toStartOf="@+id/textView17"
+                    app:layout_constraintTop_toBottomOf="@+id/textView17"
+                    tools:viewBindingIgnore="true" />
 
-        <TextView
-            android:id="@+id/textView26"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_indent"
-            android:text="Среднее количество пиков"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/textView27"
-            app:layout_constraintStart_toStartOf="@+id/textView23"
-            app:layout_constraintTop_toBottomOf="@+id/textView23"
-            tools:viewBindingIgnore="true" />
+                <TextView
+                    android:id="@+id/normalTonic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/small_indent"
 
-        <TextView
-            android:id="@+id/textView27"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/large_indent"
-            android:layout_marginTop="@dimen/default_indent"
-            android:text="За день:"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toTopOf="@+id/textView28"
-            app:layout_constraintStart_toStartOf="@+id/textView26"
-            app:layout_constraintTop_toBottomOf="@+id/textView26"
-            tools:viewBindingIgnore="true" />
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView23"
+                    app:layout_constraintStart_toEndOf="@+id/textView23"
+                    app:layout_constraintTop_toTopOf="@+id/textView23" />
 
-        <TextView
-            android:id="@+id/textView28"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_indent"
-            android:text="За 10 минут:"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            app:layout_constraintBottom_toTopOf="@+id/textView29"
-            app:layout_constraintStart_toStartOf="@+id/textView27"
-            app:layout_constraintTop_toBottomOf="@+id/textView27"
-            tools:viewBindingIgnore="true" />
+                <TextView
+                    android:id="@+id/textView26"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_indent"
+                    android:text="Среднее количество пиков"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/textView27"
+                    app:layout_constraintStart_toStartOf="@+id/textView23"
+                    app:layout_constraintTop_toBottomOf="@+id/textView23"
+                    tools:viewBindingIgnore="true" />
 
-        <TextView
-            android:id="@+id/textView29"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_indent"
-            android:text="Нормальное количество пиков"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/default_text_size"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/textView30"
-            app:layout_constraintStart_toStartOf="@+id/textView26"
-            app:layout_constraintTop_toBottomOf="@+id/textView28"
-            tools:viewBindingIgnore="true" />
+                <TextView
+                    android:id="@+id/textView27"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/large_indent"
+                    android:layout_marginTop="@dimen/default_indent"
+                    android:text="За день:"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toTopOf="@+id/textView28"
+                    app:layout_constraintStart_toStartOf="@+id/textView26"
+                    app:layout_constraintTop_toBottomOf="@+id/textView26"
+                    tools:viewBindingIgnore="true" />
+
+                <TextView
+                    android:id="@+id/textView28"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_indent"
+                    android:text="За 10 минут:"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    app:layout_constraintBottom_toTopOf="@+id/textView29"
+                    app:layout_constraintStart_toStartOf="@+id/textView27"
+                    app:layout_constraintTop_toBottomOf="@+id/textView27"
+                    tools:viewBindingIgnore="true" />
+
+                <TextView
+                    android:id="@+id/textView29"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_indent"
+                    android:text="Нормальное количество пиков"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/default_text_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/textView30"
+                    app:layout_constraintStart_toStartOf="@+id/textView26"
+                    app:layout_constraintTop_toBottomOf="@+id/textView28"
+                    tools:viewBindingIgnore="true" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.example.custom_views.SwitchButton
-        android:id="@+id/switchButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_indent"
-        app:animationSpeed="200"
-        app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
-        app:layout_constraintStart_toStartOf="@+id/constraintLayout4"
-        app:layout_constraintTop_toBottomOf="@+id/textView14"
-        app:selectedBackgroundColor="@color/primary"
-        app:textSize="@dimen/default_text_size" />
+            <com.example.custom_views.SwitchButton
+                android:id="@+id/switchButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_indent"
+                app:animationSpeed="200"
+                app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
+                app:layout_constraintStart_toStartOf="@+id/constraintLayout4"
+                app:layout_constraintTop_toBottomOf="@+id/textView14"
+                app:selectedBackgroundColor="@color/primary"
+                app:textSize="@dimen/default_text_size" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

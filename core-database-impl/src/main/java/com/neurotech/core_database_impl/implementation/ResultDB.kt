@@ -12,6 +12,7 @@ import com.neurotech.core_database_impl.main_database.entity.CountForCauseDB
 import com.neurotech.core_database_impl.main_database.entity.ResultDayEntity
 import com.neurotech.core_database_impl.main_database.entity.ResultHourEntity
 import com.neurotech.core_database_impl.main_database.entity.ResultTenMinuteEntity
+import com.neurotech.utils.StressLogger.log
 import com.neurotech.utils.TimeFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -212,28 +213,33 @@ class ResultDB : ResultApi {
     }
 
     override suspend fun updateResult() {
-        withContext(Dispatchers.IO){
-            val result = mutableListOf<ResultTenMinuteEntity>()
-            val data = resultTenMinuteDao.getDataByInterval(Tempo.now.toString(TimeFormat.dateTimeIsoPattern)).map { it.mapToResultTenMinute() }
-            val fact = resultTenMinuteDao.getResultsInInterval(data.map { it.time }.min(),data.map { it.time }.max()).first()
-            data.forEach {entity ->
-                val factElem = fact.firstOrNull { it.time == entity.time }
-                val elem = if(factElem != null){
-                    ResultTenMinuteEntity(
-                        entity.time,
-                        entity.peakCount,
-                        entity.tonicAvg,
-                        factElem.conditionAssessment,
-                        factElem.stressCause,
-                        factElem.keep
-                    )
-                }else{
-                    entity
-                }
-                result.add(elem)
-            }
-            resultTenMinuteDao.insertResultOnReplace(*result.toTypedArray())
+        val data =
+            resultTenMinuteDao.getDataByInterval(Tempo.now.toString(TimeFormat.dateTimeIsoPattern))
+                .map { it.mapToResultTenMinute() }
+        val minTime = data.minOfOrNull { it.time }
+        val maxTime = data.maxOfOrNull { it.time }
+        val fact = if(minTime != null && maxTime != null){
+            resultTenMinuteDao.getResultsInInterval(minTime,maxTime).first()
+        } else{
+            emptyList()
         }
+        val result = data.map { entity ->
+            val factElem = fact.firstOrNull { it.time == entity.time }
+            if (factElem != null) {
+                ResultTenMinuteEntity(
+                    entity.time,
+                    entity.peakCount,
+                    entity.tonicAvg,
+                    factElem.conditionAssessment,
+                    factElem.stressCause,
+                    factElem.keep
+                )
+            } else {
+                entity
+            }
+        }
+        firebaseData.writeTenMinuteResults(ResultsTenMinute(result.map { it.mapToResultTenMinute() }))
+        resultTenMinuteDao.insertResultOnReplace(*result.toTypedArray())
     }
 
     override suspend fun getLastFiveValidDay(): Flow<ResultsDay> {

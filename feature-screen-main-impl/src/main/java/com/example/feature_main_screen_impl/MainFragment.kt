@@ -61,30 +61,6 @@ class MainFragment: Fragment(R.layout.fragment_main) {
         MainScreenComponent.get().inject(this)
     }
 
-    private fun menuController() {
-        requireActivity().addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menu.findItem(menuR.menu_search).isVisible = false
-                menu.findItem(menuR.menu_disconnect_device).isVisible = true
-                menu.findItem(menuR.menu_disconnect_device).setOnMenuItemClickListener {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        viewModel.disconnectDevice()
-                        delay(500)
-                        navigationApi.navigateMainToScan()
-                    }
-                    true
-                }
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                Log.e("AAA", menuItem.toString())
-                return true
-            }
-
-
-        })
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -99,7 +75,6 @@ class MainFragment: Fragment(R.layout.fragment_main) {
         serviceApi.bindService()
         connectionObserver()
         fillFragment()
-        menuController()
         binding.imageView2.setOnClickListener {
             navigationApi.navigateMainToRelax()
         }

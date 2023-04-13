@@ -54,10 +54,7 @@ class PhaseInfoFragment: Fragment(R.layout.fragment_phase_info) {
     private fun setIntervalObserver(){
         binding.timeRangePhase.text = timeInterval[indexInterval].string()
         binding.timeRangePhase.setOnClickListener {
-            indexInterval++
-            if (indexInterval == 3) {
-                indexInterval = 0
-            }
+            indexInterval = (indexInterval + 1) % timeInterval.size
             binding.timeRangePhase.text = timeInterval[indexInterval].string()
             viewModel.setInterval(timeInterval[indexInterval])
         }

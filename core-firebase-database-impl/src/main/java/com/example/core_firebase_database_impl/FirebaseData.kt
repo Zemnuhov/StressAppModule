@@ -45,20 +45,21 @@ class FirebaseData : FirebaseDataApi {
     override suspend fun setUser(user: User) {
         withContext(Dispatchers.IO) {
             launch {
-                val firebaseUser = firebaseUser
-                if (firebaseUser != null && firebaseUser.uid == user.id) {
-                    databaseReference.child("users").child(user.id).setValue(
-                        UserFirebase(
-                            user.id,
-                            user.name,
-                            user.dateOfBirth?.toString(TimeFormat.dateIsoPattern),
-                            user.gender,
-                            user.tonicAvg,
-                            user.phaseInDayNormal,
-                            user.phaseInHourNormal,
-                            user.phaseNormal
+                firebaseUser?.let {
+                    if (it.uid == user.id) {
+                        databaseReference.child("users").child(user.id).setValue(
+                            UserFirebase(
+                                user.id,
+                                user.name,
+                                user.dateOfBirth?.toString(TimeFormat.dateIsoPattern),
+                                user.gender,
+                                user.tonicAvg,
+                                user.phaseInDayNormal,
+                                user.phaseInHourNormal,
+                                user.phaseNormal
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -66,41 +67,39 @@ class FirebaseData : FirebaseDataApi {
 
 
     override suspend fun writeTenMinuteResult(result: ResultTenMinute) {
-        scope.launch {
-            if (firebaseUser != null) {
-                val key = result.time.toString(TimeFormat.firebaseDateTimePattern)
+        firebaseUser?.let { user ->
+            withContext(Dispatchers.IO) {
                 databaseReference
                     .child("tenMinutesData")
-                    .child(firebaseUser!!.uid)
-                    .child(key)
+                    .child(user.uid)
+                    .child(result.time.toString(TimeFormat.firebaseDateTimePattern))
                     .setValue(
                         mapToResultTenMinuteFirebase(result)
                     ).addOnSuccessListener {
-                        log("Write results in Firebase: $key")
+                        log("Write results in Firebase: ${result.time}")
                     }
             }
         }
     }
 
     override suspend fun writeTenMinuteResults(results: ResultsTenMinute) {
-        scope.launch {
-            if (firebaseUser != null) {
-                results.list.forEach {
-                    val key = it.time.toString(TimeFormat.firebaseDateTimePattern)
+        firebaseUser?.let { user ->
+            withContext(Dispatchers.IO) {
+                results.list.forEachIndexed { index, result ->
+                    val key = result.time.toString(TimeFormat.firebaseDateTimePattern)
                     databaseReference
                         .child("tenMinutesData")
-                        .child(firebaseUser!!.uid)
+                        .child(user.uid)
                         .child(key)
-                        .setValue(
-                            mapToResultTenMinuteFirebase(it)
-                        ).addOnSuccessListener {
-                            log("Write results in Firebase: $key")
+                        .setValue(mapToResultTenMinuteFirebase(result))
+                        .addOnSuccessListener {
+                            log("Write result $index in Firebase: $key")
                         }
                 }
             }
-
         }
     }
+
 
     override suspend fun getCauses(): Causes = withContext(Dispatchers.IO) {
         var causeList = emptyList<Cause>()

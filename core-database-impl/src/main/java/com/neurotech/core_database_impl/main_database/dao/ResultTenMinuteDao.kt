@@ -27,7 +27,7 @@ interface ResultTenMinuteDao {
     @Query("SELECT stressCause, COUNT(*) as count FROM ResultTenMinuteEntity WHERE stressCause in (:causes) GROUP BY stressCause")
     fun getCountForEachCause(causes: List<String>): Flow<List<CountForCauseDB>>
 
-    @Query("SELECT * FROM ResultTenMinuteEntity WHERE time BETWEEN :beginInterval and :endInterval")
+    @Query("SELECT * FROM ResultTenMinuteEntity WHERE time BETWEEN :beginInterval and :endInterval ORDER BY time")
     fun getResultsInInterval(beginInterval: String, endInterval:String): Flow<List<ResultTenMinuteEntity>>
 
     @Query("UPDATE ResultTenMinuteEntity SET stressCause = :cause WHERE time = :time")
@@ -42,42 +42,47 @@ interface ResultTenMinuteDao {
     @Query("SELECT stressCause, COUNT(*) AS count FROM ResultTenMinuteEntity WHERE time BETWEEN :beginInterval AND :endInterval AND stressCause NOT null AND stressCause not in ('Артефакты', 'Сон')  GROUP BY stressCause ")
     fun getCountStressCauseInInterval(beginInterval: String, endInterval:String): Flow<List<CountForCauseDB>>
 
-    @Query("SELECT strftime('%Y-%m-%d %H:00:00.000', time) AS date, SUM(phaseCount) AS peaks, AVG(phaseCount) AS peaksAvg, AVG(tonicAvg) AS tonic,s AS stressCause " +
+    @Query("SELECT strftime('%Y-%m-%d %H:00:00.000', time) AS date, SUM(phaseCount) AS peaks, AVG(phaseCount) AS peaksAvg, AVG(tonicAvg) AS tonic, s AS stressCause " +
             "FROM ResultTenMinuteEntity " +
-            "JOIN (SELECT  day,s,max(count) " +
-            "FROM ResultTenMinuteEntity JOIN(SELECT strftime('%Y-%m-%d %H', time) AS day, stressCause AS s, count(stressCause) AS count FROM ResultTenMinuteEntity GROUP BY day, stressCause) GROUP BY day) ON day = strftime('%Y-%m-%d %H', time) " +
-            "WHERE date >= :beginInterval AND date <= :endInterval GROUP BY date")
+            "JOIN (SELECT day, s, max(count) " +
+            "FROM ( SELECT substr(time, 1, 13) AS day, stressCause AS s, count(stressCause) AS count FROM ResultTenMinuteEntity GROUP BY day, stressCause) " +
+            "GROUP BY day" +
+            ") ON day = substr(time, 1, 13) " +
+            "WHERE time >= :beginInterval AND time <= :endInterval " +
+            "GROUP BY date")
     fun getResultsHour(beginInterval: String, endInterval:String): List<ResultHourEntity>
 
-    @Query("SELECT date(time,'localtime') AS date, SUM(phaseCount) AS peaks, AVG(phaseCount) AS peaksAvg, AVG(tonicAvg) AS tonic,s AS stressCause " +
+    @Query("SELECT date(time,'localtime') AS date,SUM(phaseCount) AS peaks, AVG(phaseCount) AS peaksAvg, AVG(tonicAvg) AS tonic, s AS stressCause " +
+            "FROM ResultTenMinuteEntity JOIN ( " +
+            "SELECT day, s, max(count) " +
+            "FROM ( SELECT substr(time, 1, 10) AS day, stressCause AS s, count(stressCause) AS count " +
             "FROM ResultTenMinuteEntity " +
-            "JOIN (SELECT  day,s,max(count) FROM ResultTenMinuteEntity JOIN(SELECT date(time) AS day, stressCause AS s, count(stressCause) AS count FROM ResultTenMinuteEntity WHERE stressCause not in ('Сон', 'Артефакты') or stressCause is null GROUP BY day, stressCause) GROUP BY day) ON day = date(time,'localtime') " +
-            "WHERE date >= date(:beginInterval, 'localtime') AND date <= date(:endInterval, 'localtime') " +
+            "WHERE (stressCause NOT IN ('Сон', 'Артефакты') OR stressCause IS NULL) AND date(time, 'localtime') >= date(:beginInterval, 'localtime') AND date(time, 'localtime') <= date(:endInterval, 'localtime')\n" +
+            "GROUP BY day, stressCause) " +
+            "GROUP BY day) ON day = substr(time, 1, 10) " +
             "GROUP BY date")
     fun getResultForTheDay(beginInterval: String, endInterval:String): List<ResultDayEntity>
 
-    @Query("SELECT * FROM ResultTenMinuteEntity WHERE phaseCount > :threshold and stressCause is NULL")
+    @Query("SELECT * FROM ResultTenMinuteEntity WHERE phaseCount > :threshold and stressCause is NULL ORDER BY time")
     fun getResultsTenMinuteAboveThreshold(threshold: Int): Flow<List<ResultTenMinuteEntity>>
 
-    @Query("SELECT \n" +
-            "  AVG(rte.tonicAvg) AS maxTonic, \n" +
-            "  AVG(rte.phaseCount) AS maxPeaksInTenMinute,\n" +
-            "  AVG(rhe.peaks) AS maxHourInDay,\n" +
-            "  AVG(rde.peaks) AS maxPeakInDay\n" +
-            "FROM ResultTenMinuteEntity rte\n" +
-            "LEFT JOIN (SELECT AVG(peaks) AS peaks FROM ResultHourEntity) rhe ON 1=1\n" +
+    @Query("SELECT " +
+            "  AVG(rte.tonicAvg) AS maxTonic, " +
+            "  AVG(rte.phaseCount) AS maxPeaksInTenMinute," +
+            "  AVG(rhe.peaks) AS maxHourInDay," +
+            "  AVG(rde.peaks) AS maxPeakInDay " +
+            "FROM ResultTenMinuteEntity rte " +
+            "LEFT JOIN (SELECT AVG(peaks) AS peaks FROM ResultHourEntity) rhe ON 1=1 " +
             "LEFT JOIN (SELECT AVG(peaks) AS peaks FROM ResultDayEntity) rde ON 1=1")
     fun getUserParameter(): Flow<UserParameterDB>
 
-    @Query("SELECT\n" +
-            "    AVG(rte.tonicAvg) AS maxTonic,\n" +
-            "    AVG(rte.phaseCount) AS maxPeaksInTenMinute,\n" +
-            "    AVG(rhe.peaks) AS maxHourInDay,\n" +
-            "    AVG(rde.peaks) AS maxPeakInDay\n" +
-            "FROM ResultTenMinuteEntity rte\n" +
-            "LEFT JOIN ResultHourEntity rhe ON strftime('%Y-%m-%d %H', rhe.date) = strftime('%Y-%m-%d %H', rte.time)\n" +
-            "LEFT JOIN ResultDayEntity rde ON strftime('%Y-%m-%d', rde.date) = strftime('%Y-%m-%d', rte.time)\n" +
-            "WHERE rte.time BETWEEN :beginInterval AND :endInterval")
+    @Query("SELECT" +
+            "   AVG(tonicAvg) AS maxTonic," +
+            "   AVG(phaseCount) AS maxPeaksInTenMinute," +
+            "   (SELECT AVG(peaks) FROM ResultHourEntity WHERE date >= strftime('%Y-%m-%d %H', :beginInterval)  AND date <= strftime('%Y-%m-%d %H', :endInterval) ) AS maxHourInDay," +
+            "   (SELECT AVG(peaks) FROM ResultDayEntity WHERE date >= strftime('%Y-%m-%d', :beginInterval)  AND date <= strftime('%Y-%m-%d', :endInterval)) AS maxPeakInDay " +
+            "FROM ResultTenMinuteEntity " +
+            "WHERE time >= :beginInterval  AND time <= :endInterval")
     fun getUserParameterInInterval(beginInterval: String, endInterval:String): Flow<UserParameterDB>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -92,29 +97,18 @@ interface ResultTenMinuteDao {
     @Query("UPDATE ResultTenMinuteEntity SET phaseCount = :phaseCount, tonicAvg = :tonicAvg WHERE time = :time")
     fun updateResult(time: String, phaseCount: Int, tonicAvg: Int)
 
-    @Query("WITH RECURSIVE dates(date) AS (\n" +
-            "  VALUES (strftime('%Y-%m-%d %H:00:00.000', datetime(:nowDateTime, \"-1 day\")))\n" +
-            "  UNION ALL\n" +
-            "  SELECT datetime(date, '+10 minute')\n" +
-            "  FROM dates\n" +
-            "  WHERE date < :nowDateTime\n" +
-            ")\n" +
+    @Query("WITH RECURSIVE dates(date) AS ( " +
+            "  VALUES (strftime('%Y-%m-%d %H:00:00.000', datetime(:nowDateTime, '-1 day'))) " +
+            "  UNION ALL " +
+            "  SELECT datetime(date, '+10 minute') " +
+            "  FROM dates " +
+            "  WHERE date < :nowDateTime " +
+            ") " +
             "SELECT strftime('%Y-%m-%d %H:%M:00.000', date) as time, phase as phaseCount, AVG(value) as tonicAvg FROM TonicEntity\n" +
-            "JOIN(\n" +
-            "SELECT date, COUNT(*) as phase FROM PhaseEntity\n" +
-            "JOIN(SELECT date FROM dates) \n" +
-            "WHERE timeBegin >= datetime(date, '-10 minute') and timeBegin <= date GROUP BY date)\n" +
-            "WHERE time >= datetime(date, '-10 minute') and time <= date GROUP BY date\n")
+            "JOIN( " +
+            "SELECT date, COUNT(*) as phase FROM PhaseEntity " +
+            "JOIN(SELECT date FROM dates) " +
+            "WHERE timeBegin >= datetime(date, '-10 minute') and timeBegin <= date GROUP BY date) " +
+            "WHERE time >= datetime(date, '-10 minute') and time <= date GROUP BY date")
     fun getDataByInterval(nowDateTime: String):List<ResultDataDB>
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertTenMinuteResult(dayResult: List<ResultTenMinuteEntity>): List<Long>
-
-    @Transaction
-    fun insertOrUpdate(objList: List<ResultTenMinuteEntity>) {
-        val insertResult = insertTenMinuteResult(objList)
-        for (i in insertResult.indices) {
-            if (insertResult[i] == -1L) updateResult(objList[i].time,objList[i].peakCount,objList[i].tonicAvg)
-        }
-    }
 }

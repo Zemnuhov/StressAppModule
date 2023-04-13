@@ -116,25 +116,13 @@ class AnalyticFragment : Fragment() {
 
         viewModel.userRating.observe(viewLifecycleOwner) {
             binding.ratingTextView.text = it.toString()
+            val colorResId = when (it) {
+                in 0..1 -> values.color.green_active
+                in 2..4 -> values.color.yellow_active
+                else -> values.color.red_active
+            }
             binding.ratingTextView.setTextColor(
-                if (it < 2) {
-
-                    ContextCompat.getColor(
-                        requireContext(),
-                        values.color.green_active
-                    )
-
-                } else if (it in 2..4) {
-                    ContextCompat.getColor(
-                        requireContext(),
-                        values.color.yellow_active
-                    )
-                } else {
-                    ContextCompat.getColor(
-                        requireContext(),
-                        values.color.red_active
-                    )
-                }
+                ContextCompat.getColor(requireContext(), colorResId)
             )
         }
 
