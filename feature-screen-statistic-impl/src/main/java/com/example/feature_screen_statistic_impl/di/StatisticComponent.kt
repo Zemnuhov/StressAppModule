@@ -2,6 +2,7 @@ package com.example.feature_screen_statistic_impl.di
 
 import com.example.feature_item_markup_api.ItemMarkupApi
 import com.example.feature_screen_statistic_impl.StatisticFragment
+import com.neurotech.core_database_api.RelaxRecordApi
 import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.UserApi
 import dagger.Component
@@ -44,6 +45,7 @@ interface StatisticDependencies{
     val resultApi: ResultApi
     val userApi: UserApi
     val itemMarkupApi: ItemMarkupApi
+    val relaxRecordApi: RelaxRecordApi
 }
 
 interface StatisticDependenciesProvider{

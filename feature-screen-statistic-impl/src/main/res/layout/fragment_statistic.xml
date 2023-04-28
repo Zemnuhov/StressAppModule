@@ -76,6 +76,34 @@
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/relaxIndicatorImage"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="@dimen/half_small_indent"
+            android:layout_marginTop="@dimen/half_small_indent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_self_improvement_24" />
+
+        <ImageView
+            android:id="@+id/markupIndicatorImage"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="@dimen/half_small_indent"
+            app:layout_constraintStart_toEndOf="@+id/relaxIndicatorImage"
+            app:layout_constraintTop_toTopOf="@+id/relaxIndicatorImage"
+            app:srcCompat="@drawable/ic_baseline_bookmark_24" />
+
+        <ImageView
+            android:id="@+id/commentIndicatorImage"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="@dimen/half_small_indent"
+            app:layout_constraintStart_toEndOf="@+id/markupIndicatorImage"
+            app:layout_constraintTop_toTopOf="@+id/markupIndicatorImage"
+            app:srcCompat="@drawable/comment" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout

@@ -60,8 +60,13 @@ class AnalyticViewModel(
                 val relaxRecords =
                     relaxRecodingApi.getRelaxRecordByDates(it.list.map { it.date }).first()
                 val correctedDayRating = it.list.map { result ->
-                    val value = calculateResultToEvaluation(result) - sumByDate(relaxRecords, result.date)
-                    return@map if(value>1){ value }else{ 1.0 }
+                    val calculate = calculateResultToEvaluation(result)
+                    val value = calculate - sumByDate(relaxRecords, result.date)
+                    return@map when{
+                        value < 1.0 -> 1.0
+                        value > calculate -> calculate
+                        else -> value
+                    }
                 }
                 updateEvaluationGraph(dayRating, correctedDayRating)
             }
@@ -89,7 +94,12 @@ class AnalyticViewModel(
             valueMapper(result.peaks, user.phaseInDayNormal, maxParams.dayPhase, 1, 5)
         val avgPeaksMapped =
             valueMapper(result.peaksAvg, user.phaseNormal, maxParams.tenMinutePhase, 1, 5)
-        return (tonicMapped + dayPeaksMapped + avgPeaksMapped) / 3
+        val calculateResult = (tonicMapped + dayPeaksMapped + avgPeaksMapped) / 3
+        return when{
+            calculateResult<1.0 -> 1.0
+            calculateResult>5.0 -> 5.0
+            else -> calculateResult
+        }
     }
 
     private fun updateEvaluationGraph(dayRating: List<Double>, correctedDayRating: List<Double>) {

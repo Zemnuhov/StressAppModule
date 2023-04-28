@@ -21,6 +21,7 @@ import com.jjoe64.graphview.DefaultLabelFormatter
 import com.jjoe64.graphview.series.BarGraphSeries
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import com.jjoe64.graphview.series.PointsGraphSeries
 import com.neurotech.utils.StressLogger.log
 import dagger.Lazy
 import kotlinx.coroutines.*
@@ -45,6 +46,7 @@ class StatisticFragment : Fragment(), StatisticAdapter.Callback {
 
     private var barSeries = BarGraphSeries(arrayOf<DataPoint>())
     private var tonicSeries = LineGraphSeries(arrayOf<DataPoint>())
+    private var commentSeries = PointsGraphSeries(arrayOf<DataPoint>())
     private var resultDateList = listOf<Date>()
 
     private var adapter: StatisticAdapter? = null
@@ -77,6 +79,8 @@ class StatisticFragment : Fragment(), StatisticAdapter.Callback {
         barSeries.dataWidth = 550000.0
         setObservers()
         buttonListeners()
+
+
     }
 
     private fun setObservers() {
@@ -97,11 +101,15 @@ class StatisticFragment : Fragment(), StatisticAdapter.Callback {
         viewModel.results.observe(viewLifecycleOwner) { resultModel ->
             barSeries = BarGraphSeries(arrayOf<DataPoint>())
             tonicSeries = LineGraphSeries(arrayOf<DataPoint>())
+            commentSeries = PointsGraphSeries(arrayOf<DataPoint>())
             resultModel.sortedBy { result -> result.time }
                 .forEach { result ->
                     val time = result.time
                     val peaks = result.peakCount.toDouble()
                     val bar = DataPoint(time, peaks)
+                    if(result.keep != null){
+                        commentSeries.appendData(DataPoint(bar.x, bar.y+6), true, 10000)
+                    }
                     barSeries.appendData(bar, true, 10000)
                     val newBegin = when(viewModel.state){
                         1-> 50.0
@@ -129,6 +137,27 @@ class StatisticFragment : Fragment(), StatisticAdapter.Callback {
 
         viewModel.dateFlow.observe(viewLifecycleOwner) {
             binding.graphDate.text = it
+        }
+
+        viewModel.markers.observe(viewLifecycleOwner){
+            binding.relaxIndicatorImage.drawable.setTint(
+                if (it.relaxMarker)
+                    ContextCompat.getColor(requireContext(), values.color.green_active)
+                else
+                    Color.GRAY
+            )
+            binding.markupIndicatorImage.drawable.setTint(
+                if (it.markupMarker)
+                    ContextCompat.getColor(requireContext(), values.color.green_active)
+                else
+                    Color.GRAY
+            )
+            binding.commentIndicatorImage.drawable.setTint(
+                if (it.commentMarker)
+                    ContextCompat.getColor(requireContext(), values.color.green_active)
+                else
+                    Color.GRAY
+            )
         }
     }
 
@@ -238,6 +267,7 @@ class StatisticFragment : Fragment(), StatisticAdapter.Callback {
         binding.statisticGraph.apply {
             removeAllSeries()
             addSeries(tonicSeries)
+            addSeries(commentSeries)
             addSeries(barSeries)
             setBackgroundColor(
                 ContextCompat.getColor(
@@ -275,6 +305,10 @@ class StatisticFragment : Fragment(), StatisticAdapter.Callback {
                     }
                 }
             }
+        }
+        commentSeries.apply {
+            size = 8F
+            color = Color.BLACK
         }
         barSeries.apply {
             barSeries.spacing = 20

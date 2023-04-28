@@ -3,18 +3,22 @@ package com.example.feature_screen_statistic_impl
 import android.util.Log
 import androidx.lifecycle.*
 import com.cesarferreira.tempo.*
+import com.neurotech.core_database_api.RelaxRecordApi
 import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.UserApi
 import com.neurotech.core_database_api.model.ResultTenMinute
+import com.neurotech.core_database_api.model.ResultsTenMinute
 import com.neurotech.utils.TimeFormat
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Provider
 
 class StatisticViewModel(
     private val result: ResultApi,
-    private val userApi: UserApi
+    private val userApi: UserApi,
+    private val relaxRecodingApi: RelaxRecordApi
 ): ViewModel() {
 
     private var _period = Interval.DAY
@@ -26,6 +30,9 @@ class StatisticViewModel(
     private val _dateFlow = MutableLiveData<String>()
     val dateFlow: LiveData<String> get() = _dateFlow
 
+    private val _markers = MutableLiveData<Markers>()
+    val markers: LiveData<Markers> get() = _markers
+
     private var job: Job? = null
     private val scope = CoroutineScope(Dispatchers.IO)
     private var date = Tempo.now
@@ -36,6 +43,8 @@ class StatisticViewModel(
             time += 10.minute
         }
     }
+
+
 
     val user = runBlocking {
         userApi.getUser()
@@ -124,6 +133,26 @@ class StatisticViewModel(
         }
     }
 
+    private suspend fun markerUpdate(resultsTenMinute: ResultsTenMinute){
+        val relaxMarker =
+            relaxRecodingApi.getRelaxRecordByDates(listOf(date)).first().value.isNotEmpty()
+        var markupMarker = true
+        var commentMarker = false
+        with(resultsTenMinute.list){
+            forEach {
+                if(it.peakCount > user.phaseNormal && it.stressCause == null){
+                    markupMarker = false
+                }
+                if(it.keep != null){
+                    commentMarker = true
+                }
+            }
+        }
+        _markers.postValue(Markers(relaxMarker, markupMarker, commentMarker))
+
+
+    }
+
 
 
     private fun updateData(){
@@ -133,6 +162,7 @@ class StatisticViewModel(
                 job = scope.launch {
                     state = 1
                     result.getResultsInInterval(date.beginningOfDay, date.endOfDay).collect { resultsTenMinute ->
+                        markerUpdate(resultsTenMinute)
                         with(resultsTenMinute.list){
                             val resultTimes = this.map { it.time.toString("HH:mm") }
                             val resultMutableList = this.toMutableList()
@@ -215,12 +245,14 @@ class StatisticViewModel(
     class Factory @Inject constructor(
         private val resultApi: Provider<ResultApi>,
         private val userApi: Provider<UserApi>,
+        private val relaxRecodingApi: Provider<RelaxRecordApi>
     ): ViewModelProvider.Factory{
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             require(modelClass == StatisticViewModel::class.java)
             return StatisticViewModel(
                 resultApi.get(),
-                userApi.get()
+                userApi.get(),
+                relaxRecodingApi.get()
             ) as T
         }
     }

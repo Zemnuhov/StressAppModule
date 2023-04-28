@@ -97,18 +97,17 @@ interface ResultTenMinuteDao {
     @Query("UPDATE ResultTenMinuteEntity SET phaseCount = :phaseCount, tonicAvg = :tonicAvg WHERE time = :time")
     fun updateResult(time: String, phaseCount: Int, tonicAvg: Int)
 
-    @Query("WITH RECURSIVE dates(date) AS ( " +
-            "  VALUES (strftime('%Y-%m-%d %H:00:00.000', datetime(:nowDateTime, '-1 day'))) " +
-            "  UNION ALL " +
-            "  SELECT datetime(date, '+10 minute') " +
-            "  FROM dates " +
-            "  WHERE date < :nowDateTime " +
-            ") " +
-            "SELECT strftime('%Y-%m-%d %H:%M:00.000', date) as time, phase as phaseCount, AVG(value) as tonicAvg FROM TonicEntity\n" +
-            "JOIN( " +
-            "SELECT date, COUNT(*) as phase FROM PhaseEntity " +
-            "JOIN(SELECT date FROM dates) " +
-            "WHERE timeBegin >= datetime(date, '-10 minute') and timeBegin <= date GROUP BY date) " +
-            "WHERE time >= datetime(date, '-10 minute') and time <= date GROUP BY date")
+    @Query("WITH RECURSIVE dates(date) AS ( \n" +
+            "  VALUES (strftime('%Y-%m-%d %H:00:00.000', datetime(:nowDateTime, '-1 day'))) \n" +
+            "    UNION ALL \n" +
+            "      SELECT datetime(date, '+10 minute') \n" +
+            "        FROM dates \n" +
+            "          WHERE date < :nowDateTime \n" +
+            "          ) \n" +
+            "\n" +
+            "SELECT strftime('%Y-%m-%d %H:%M:00.000', Date.date) as time,IFNULL(phaseCount,0) as phaseCount, AVG(value) as tonicAvg FROM TonicEntity  \n" +
+            "JOIN(SELECT date FROM dates) as Date\n" +
+            "LEFT JOIN( SELECT date, IFNULL(COUNT(*),0) as phaseCount  FROM PhaseEntity JOIN(SELECT date FROM dates)   WHERE timeBegin >= datetime(date, '-10 minute') and timeBegin <= date GROUP BY date) as PHA ON PHA.date = Date.date\n" +
+            "WHERE time >= datetime(Date.date, '-10 minute') and time <= Date.date GROUP BY Date.date")
     fun getDataByInterval(nowDateTime: String):List<ResultDataDB>
 }
