@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout4"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -26,23 +26,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/markupRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="@dimen/default_indent" />
-
-        <TextView
-            android:id="@+id/allMarkupsComplete"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="@drawable/black_shadow"
-            android:gravity="center"
-            android:text="@string/markup_is_ok"
-            android:textSize="@dimen/default_text_size"
-            android:visibility="visible" />
-    </LinearLayout>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/markupGraph"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/small_indent"
+            android:layout_marginTop="@dimen/small_indent"
+            android:layout_marginEnd="@dimen/small_indent"
+            android:layout_marginBottom="@dimen/small_indent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
         android:id="@+id/saveButton"
