@@ -52,7 +52,7 @@ interface ResultTenMinuteDao {
             "GROUP BY date")
     fun getResultsHour(beginInterval: String, endInterval:String): List<ResultHourEntity>
 
-    @Query("SELECT date(time,'localtime') AS date,SUM(phaseCount) AS peaks, AVG(phaseCount) AS peaksAvg, AVG(tonicAvg) AS tonic, s AS stressCause " +
+    @Query("SELECT date(time) AS date,SUM(phaseCount) AS peaks, AVG(phaseCount) AS peaksAvg, AVG(tonicAvg) AS tonic, s AS stressCause " +
             "FROM ResultTenMinuteEntity JOIN ( " +
             "SELECT day, s, max(count) " +
             "FROM ( SELECT substr(time, 1, 10) AS day, stressCause AS s, count(stressCause) AS count " +

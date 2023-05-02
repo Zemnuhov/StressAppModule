@@ -22,6 +22,8 @@
     <color name="red_not_active">#ffccbc</color>
     <color name="red_active">#ff7043</color>
 
+    <color name="markup_not_active">#9C9B9B9B</color>
+
     <color name="background_color">#EAEAEA</color>
     <color name="text_color">#252525</color>
 
