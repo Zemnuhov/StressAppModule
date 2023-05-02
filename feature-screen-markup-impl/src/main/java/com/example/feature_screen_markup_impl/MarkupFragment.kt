@@ -1,13 +1,12 @@
 package com.example.feature_screen_markup_impl
 
-import android.annotation.SuppressLint
-import android.app.TimePickerDialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,7 +15,6 @@ import com.cesarferreira.tempo.beginningOfDay
 import com.cesarferreira.tempo.endOfDay
 import com.cesarferreira.tempo.toString
 import com.example.feature_screen_markup_impl.adapter.CauseAdapter
-import com.example.feature_screen_markup_impl.adapter.ResultAdapter
 import com.example.feature_screen_markup_impl.databinding.FragmentMarkupBinding
 import com.example.feature_screen_markup_impl.di.MarkupComponent
 import com.jjoe64.graphview.DefaultLabelFormatter
@@ -27,31 +25,29 @@ import com.neurotech.core_database_api.model.Cause
 import com.neurotech.core_database_api.model.ResultTenMinute
 import com.neurotech.core_database_api.model.ResultsTenMinute
 import com.neurotech.utils.StressLogger.log
-import com.neurotech.utils.TimeFormat
-import java.util.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Provider
 import com.example.values.R as values
 
-class MarkupFragment : Fragment(R.layout.fragment_markup), ResultAdapter.ResultAdapterCallback,
+class MarkupFragment : Fragment(R.layout.fragment_markup),
     CauseAdapter.CauseCallback {
-
     @Inject
     lateinit var factory: Provider<MarkupViewModel.Factory>
-
     private val viewModel: MarkupViewModel by viewModels {
         factory.get()
     }
-
-
     private var _binding: FragmentMarkupBinding? = null
     private val binding get() = _binding!!
-
-    private var resultAdapter: ResultAdapter? = null
     private var causeAdapter: CauseAdapter? = null
-
     private var barSeries = BarGraphSeries(arrayOf<DataPoint>())
     private var tonicSeries = LineGraphSeries(arrayOf<DataPoint>())
+
+    private val interval = mutableMapOf<String, Date?>("begin" to null, "end" to null)
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -67,129 +63,152 @@ class MarkupFragment : Fragment(R.layout.fragment_markup), ResultAdapter.ResultA
         return binding.root
     }
 
-
-    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        resultAdapter = ResultAdapter()
-        resultAdapter?.callback = this
-
         binding.sourceRecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         causeAdapter = CauseAdapter()
         causeAdapter?.callback = this
         binding.sourceRecyclerView.adapter = causeAdapter
 
-
-        viewModel.results.observe(viewLifecycleOwner) {
-
-        }
-
-        binding.timeSetButton.setOnClickListener {
-            val beginPeriod = binding.beginTime.text.toString()
-            val endPeriod = binding.endTime.text.toString()
-            val list = resultAdapter?.currentList
-            list?.forEachIndexed { index, resultAdapterModel ->
-                val time = resultAdapterModel.time.toString(TimeFormat.timePattern)
-                if (time in beginPeriod..endPeriod) {
-                    list[index].isChecked = true
-                }
-            }
-            resultAdapter?.submitList(list)
-            resultAdapter?.notifyDataSetChanged()
-        }
-
         viewModel.causes.observe(viewLifecycleOwner) {
             causeAdapter?.submitList(it.values)
         }
 
-        binding.saveButton.setOnClickListener {
+        binding.goToPreviousDay.setOnClickListener {
+            viewModel.goToPrevious()
+        }
+
+        binding.goToNextDay.setOnClickListener {
+            viewModel.goToNext()
+        }
+
+        viewModel.resultForMarkup.observe(viewLifecycleOwner){}
+
+        viewModel.dateFlow.observe(viewLifecycleOwner){
+            binding.dateText.text = it
+        }
+
+
+        viewModel.results.observe(viewLifecycleOwner) {
+            barSeries = BarGraphSeries(
+                mutableListOf<DataPoint>().apply {
+                    it.value.sortedBy { it.time }.forEach {
+                        add(DataPoint(it.time, it.peakCount.toDouble()))
+                    }
+                }.toTypedArray()
+            )
+            tonicSeries = LineGraphSeries(
+                mutableListOf<DataPoint>().apply {
+                    it.value.sortedBy { it.time }.forEach {
+                        add(
+                            DataPoint(
+                                it.time, mapValue(
+                                    it.tonicAvg.toDouble(),
+                                    0.0,
+                                    10000.0,
+                                    50.0,
+                                    50.0 * 2
+                                )
+                            )
+                        )
+                    }
+                }.toTypedArray()
+            )
+            CoroutineScope(Dispatchers.IO).launch {
+                while (viewModel.resultForMarkup.value == null) {
+                    delay(50)
+                }
+                launch(Dispatchers.Main) {
+                    graphSettings()
+                }
+            }
+
+        }
+
+        intervalListener()
+
+    }
+
+    private fun intervalListener() {
+        with(binding.beginTime) {
+            text = if (interval["begin"] == null) {
+                "Не выбрано"
+            } else {
+                interval["begin"]!!.toString("HH:mm")
+            }
+        }
+        with(binding.endTime) {
+            text = if (interval["end"] == null) {
+                "Не выбрано"
+            } else {
+                interval["end"]!!.toString("HH:mm")
+            }
+        }
+    }
+
+    private fun mapValue(
+        value: Double,
+        oldBegin: Double,
+        oldEnd: Double,
+        newBegin: Double,
+        newEnd: Double
+    ): Double {
+        return (value - oldBegin) / (oldEnd - oldBegin) * (newEnd - newBegin) + newBegin
+    }
+
+
+    override fun clickCause(cause: Cause) {
+        if (interval["begin"] == null) {
+            Toast.makeText(requireContext(), "Ничего не выбрано", Toast.LENGTH_SHORT).show()
+        }
+        if (interval["begin"] != null && interval["end"] == null) {
             viewModel.saveMarkups(
                 ResultsTenMinute(
-                    resultAdapter?.currentList!!
-                        .filter { it.stressCause != null }
-                        .map {
-                            ResultTenMinute(
-                                it.time,
-                                it.peakCount,
-                                it.tonicAvg,
-                                it.conditionAssessment,
-                                it.stressCause,
-                                it.keep
-                            )
+                    mutableListOf<ResultTenMinute>().apply {
+                        viewModel.resultForMarkup.value!!.list.forEach {
+                            if (it.time == interval["begin"]) {
+                                add(
+                                    ResultTenMinute(
+                                        it.time,
+                                        it.peakCount,
+                                        it.tonicAvg,
+                                        it.conditionAssessment,
+                                        cause.name,
+                                        it.keep
+                                    )
+                                )
+                            }
                         }
+                    }
                 )
             )
         }
-
-        setTimeChoiceListener()
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun setTimeChoiceListener() {
-        binding.beginTime.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            TimePickerDialog(
-                activity,
-                { _, hour, minute ->
-                    binding.beginTime.text = "${
-                        if (hour < 10) {
-                            "0$hour"
-                        } else hour
-                    }:${
-                        if (minute < 10) {
-                            "0$minute"
-                        } else minute
-                    }"
-                },
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),
-                true
-            ).show()
+        if (interval["begin"] != null && interval["end"] != null) {
+            viewModel.saveMarkups(
+                ResultsTenMinute(
+                    mutableListOf<ResultTenMinute>().apply {
+                        viewModel.resultForMarkup.value!!.list.forEach {
+                            if (it.time in interval["begin"]!!..interval["end"]!!) {
+                                add(
+                                    ResultTenMinute(
+                                        it.time,
+                                        it.peakCount,
+                                        it.tonicAvg,
+                                        it.conditionAssessment,
+                                        cause.name,
+                                        it.keep
+                                    )
+                                )
+                            }
+                        }
+                    }
+                )
+            )
         }
-
-        binding.endTime.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            TimePickerDialog(
-                activity,
-                { _, hour, minute ->
-                    binding.endTime.text = "${
-                        if (hour < 10) {
-                            "0$hour"
-                        } else hour
-                    }:${
-                        if (minute < 10) {
-                            "0$minute"
-                        } else minute
-                    }"
-                },
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),
-                true
-            ).show()
-        }
-    }
-
-    override fun isCheckedClick(position: Int, isCheck: Boolean) {
-        val list = resultAdapter?.currentList
-        if (list != null && position < list.size) {
-            list[position]?.isChecked = isCheck
-        }
-        resultAdapter?.submitList(list)
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    override fun clickCause(cause: Cause) {
-        val list = resultAdapter?.currentList
-        list?.forEachIndexed { index, resultAdapterModel ->
-            if (resultAdapterModel.isChecked) {
-                list[index].isChecked = false
-                list[index].stressCause = cause.name
-            }
-        }
-        resultAdapter?.submitList(list)
-        resultAdapter?.notifyDataSetChanged()
+        interval["begin"] = null
+        interval["end"] = null
+        intervalListener()
     }
 
     private fun graphSettings() {
@@ -231,28 +250,149 @@ class MarkupFragment : Fragment(R.layout.fragment_markup), ResultAdapter.ResultA
                 }
             }
         }
-        barSeries.apply {
-            barSeries.spacing = 20
-            val normal = viewModel.user.phaseNormal
-            log(normal.toString())
-            setValueDependentColor { data: DataPoint ->
-                if (data.y < normal) {
-                    return@setValueDependentColor ContextCompat.getColor(
-                        requireContext(),
-                        values.color.green_active
-                    )
-                }
-                if (normal <= data.y && data.y <= (normal * 2)) {
-                    return@setValueDependentColor ContextCompat
-                        .getColor(requireContext(), values.color.yellow_active)
-                }
-                ContextCompat.getColor(requireContext(), values.color.red_active)
-            }
-        }
+        barSeries.spacing = 20
+        setBarGraphColor()
+        setOnBarDataClickListener()
 
         tonicSeries.color = Color.BLACK
         binding.markupGraph.invalidate()
     }
 
+    private fun setBarGraphColor() {
+        barSeries.apply {
+            val normal = viewModel.user.phaseNormal
+            log(normal.toString())
+            setValueDependentColor { data: DataPoint ->
+                val notMarkup = viewModel.resultForMarkup.value!!.list.map {
+                    DataPoint(
+                        it.time,
+                        it.peakCount.toDouble()
+                    )
+                }
+                if (data.x in notMarkup.map { it.x }) {
+                    if (data.y < normal) {
+                        return@setValueDependentColor ContextCompat.getColor(
+                            requireContext(),
+                            values.color.green_active
+                        )
+                    }
+                    if (normal <= data.y && data.y <= (normal * 2)) {
+                        return@setValueDependentColor ContextCompat
+                            .getColor(requireContext(), values.color.yellow_active)
+                    }
+                    return@setValueDependentColor ContextCompat.getColor(
+                        requireContext(),
+                        values.color.red_active
+                    )
+                }
+                return@setValueDependentColor ContextCompat.getColor(
+                    requireContext(),
+                    values.color.markup_not_active
+                )
+            }
+        }
+    }
 
+    private fun baseColorLogic(data: DataPoint): Int {
+        val normal = viewModel.user.phaseNormal
+        if (data.x in viewModel.resultForMarkup.value!!.list.map { it.time.time.toDouble() }) {
+            if (data.y < normal) {
+                return ContextCompat.getColor(
+                    requireContext(),
+                    values.color.green_active
+                )
+            }
+            if (normal <= data.y && data.y <= (normal * 2)) {
+                return ContextCompat
+                    .getColor(requireContext(), values.color.yellow_active)
+            }
+            return ContextCompat.getColor(
+                requireContext(),
+                values.color.red_active
+            )
+        }
+        return ContextCompat.getColor(
+            requireContext(),
+            values.color.markup_not_active
+        )
+    }
+
+    private fun fullSelectedLogicColors(data: DataPoint): Int {
+        val normal = viewModel.user.phaseNormal
+        if (data.x in viewModel.resultForMarkup.value!!.list.map { it.time.time.toDouble() }) {
+            if (data.y < normal) {
+                return ContextCompat.getColor(
+                    requireContext(),
+                    values.color.green_not_active
+                )
+            }
+            if (normal <= data.y && data.y <= (normal * 2)) {
+                return ContextCompat
+                    .getColor(requireContext(), values.color.yellow_not_active)
+            }
+            return ContextCompat.getColor(
+                requireContext(),
+                values.color.red_not_active
+            )
+        }
+        return ContextCompat.getColor(
+            requireContext(),
+            values.color.markup_not_active
+        )
+    }
+
+    private fun setOnBarDataClickListener() {
+        barSeries.apply {
+            setOnDataPointTapListener { _, dataPoint ->
+                if (interval["begin"] != null && interval["end"] != null) {
+                    interval["begin"] = null
+                    interval["end"] = null
+                }
+                val xPoint = Date(dataPoint.x.toLong())
+                if (interval["begin"] == null) {
+                    interval["begin"] = xPoint
+                } else {
+                    if (interval["end"] == null) {
+                        if (interval["begin"]!! < xPoint) {
+                            interval["end"] = xPoint
+                        } else {
+                            interval["begin"] = xPoint
+                        }
+                    } else {
+                        interval["begin"] = xPoint
+                    }
+                }
+                setColorAfterClick()
+                intervalListener()
+                binding.markupGraph.invalidate()
+                log(interval.toString())
+            }
+        }
+    }
+
+    private fun setColorAfterClick() {
+        barSeries.apply {
+            setValueDependentColor { data: DataPoint ->
+                val color = if (interval["begin"] != null) {
+                    if (interval["end"] != null) {
+                        if (data.x in interval["begin"]!!.time.toDouble()..interval["end"]!!.time.toDouble()) {
+                            fullSelectedLogicColors(data)
+                        } else {
+                            baseColorLogic(data)
+                        }
+                    } else {
+                        if (data.x == interval["begin"]!!.time.toDouble()) {
+                            fullSelectedLogicColors(data)
+                        } else {
+                            baseColorLogic(data)
+                        }
+                    }
+
+                } else {
+                    baseColorLogic(data)
+                }
+                return@setValueDependentColor color
+            }
+        }
+    }
 }

@@ -8,7 +8,9 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.cesarferreira.tempo.Tempo
 import com.cesarferreira.tempo.beginningOfDay
+import com.cesarferreira.tempo.day
 import com.cesarferreira.tempo.endOfDay
+import com.cesarferreira.tempo.minus
 import com.cesarferreira.tempo.minute
 import com.cesarferreira.tempo.plus
 import com.cesarferreira.tempo.toDate
@@ -21,6 +23,7 @@ import com.neurotech.core_database_api.model.ResultsTenMinute
 import com.neurotech.utils.TimeFormat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
@@ -35,11 +38,11 @@ class MarkupViewModel(
     private val settingApi: SettingApi
 ) : ViewModel() {
 
-    val resultForMarkup = liveData {
+    val resultForMarkup = liveData{
         resultApi
             .getResultsTenMinuteAboveThreshold(
                 userApi.getUser().phaseNormal
-            ).collect {
+            ).collect{
                 emit(it)
             }
     }
@@ -50,15 +53,14 @@ class MarkupViewModel(
         }
     }
 
+    private val _dateFlow = MutableLiveData<String>()
+    val dateFlow: LiveData<String> get() = _dateFlow
+
+
     val user = runBlocking { userApi.getUser() }
 
-    fun saveMarkups(results: ResultsTenMinute) {
-        CoroutineScope(Dispatchers.IO).launch {
-            resultApi.updateResultTenMinute(results)
-        }
-    }
-
     private var date = Tempo.now
+
     private val xLabelOfDay = mutableListOf<String>().apply {
         var time = Tempo.now.beginningOfDay
         while (time < date.endOfDay) {
@@ -66,13 +68,18 @@ class MarkupViewModel(
             time += 10.minute
         }
     }
-
     private val _results = MutableLiveData<ResultsMarkup>()
+
     val results: LiveData<ResultsMarkup> get() = _results
-
-
+    private var resultJob: Job? = null
     init {
-        viewModelScope.launch {
+        updateData()
+        _dateFlow.postValue(date.toString("EE " + TimeFormat.datePattern))
+    }
+
+    private fun updateData(){
+        resultJob?.cancel()
+        resultJob = viewModelScope.launch {
             resultApi.getResultsInInterval(date.beginningOfDay, date.endOfDay)
                 .collect { resultsTenMinute ->
                     with(resultsTenMinute.list) {
@@ -107,9 +114,27 @@ class MarkupViewModel(
 
                 }
         }
-
     }
 
+    fun goToPrevious() {
+        date -= 1.day
+        updateData()
+        _dateFlow.postValue(date.toString("EE " + TimeFormat.datePattern))
+    }
+
+    fun goToNext(){
+        if(date.beginningOfDay != Tempo.now.beginningOfDay){
+            date += 1.day
+            updateData()
+            _dateFlow.postValue(date.toString("EE " + TimeFormat.datePattern))
+        }
+    }
+
+    fun saveMarkups(results: ResultsTenMinute) {
+        CoroutineScope(Dispatchers.IO).launch {
+            resultApi.updateResultTenMinute(results)
+        }
+    }
 
     @Suppress("UNCHECKED_CAST")
     class Factory @Inject constructor(

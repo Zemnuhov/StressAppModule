@@ -95,7 +95,6 @@ class StatisticViewModel(
             Interval.DAY -> {
                 date -= 1.day
                 updateData()
-
             }
             Interval.WEEK -> {
                 date -= 7.day

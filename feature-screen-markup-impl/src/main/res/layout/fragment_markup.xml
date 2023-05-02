@@ -38,28 +38,44 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/default_indent"
-        android:background="@drawable/app_standart_button"
-        android:elevation="@dimen/default_elevation"
-        android:text="@string/save_button_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout4"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout4" />
+        <ImageView
+            android:id="@+id/goToNextDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_indent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_arrow_circle_right_24" />
+
+        <ImageView
+            android:id="@+id/goToPreviousDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_indent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_arrow_circle_left_24" />
+
+        <TextView
+            android:id="@+id/dateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_indent"
+            android:layout_marginEnd="@dimen/default_indent"
+            android:textColor="@color/text_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sourceRecyclerView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/small_indent"
         android:padding="@dimen/small_indent"
-        app:layout_constraintBottom_toTopOf="@+id/saveButton"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -73,22 +89,6 @@
         app:layout_constraintBottom_toTopOf="@+id/sourceRecyclerView"
         app:layout_constraintEnd_toEndOf="@+id/linearLayout4"
         app:layout_constraintStart_toStartOf="@+id/linearLayout4">
-
-        <Button
-            android:id="@+id/timeSetButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/large_indent"
-            android:layout_marginTop="@dimen/default_indent"
-            android:layout_marginEnd="@dimen/large_indent"
-            android:layout_marginBottom="@dimen/default_indent"
-            android:background="@drawable/app_standart_button"
-            android:elevation="@dimen/default_elevation"
-            android:text="Отметить"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/endTime" />
 
         <TextView
             android:id="@+id/textView"
@@ -133,12 +133,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_indent"
+            android:layout_marginBottom="@dimen/default_indent"
             android:background="@drawable/app_standart_button"
             android:elevation="@dimen/default_elevation"
             android:padding="@dimen/default_indent"
             android:text="00:00"
             android:textColor="@color/text_color"
             android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/beginTime"
             app:layout_constraintStart_toStartOf="@+id/beginTime"
             app:layout_constraintTop_toBottomOf="@+id/beginTime" />
