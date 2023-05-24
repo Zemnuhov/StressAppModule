@@ -50,9 +50,9 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
 
     implementation 'com.google.dagger:dagger:2.44.2'
+    kapt 'com.google.dagger:dagger-compiler:2.44.2'
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation project(path: ':core-database-api')
-    kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
