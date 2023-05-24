@@ -98,7 +98,7 @@ interface ResultTenMinuteDao {
     fun updateResult(time: String, phaseCount: Int, tonicAvg: Int)
 
     @Query("WITH RECURSIVE dates(date) AS ( \n" +
-            "  VALUES (strftime('%Y-%m-%d %H:00:00.000', datetime(:nowDateTime, '-1 day'))) \n" +
+            "  VALUES (strftime('%Y-%m-%d %H:00:00.000', datetime(:nowDateTime, '-30 day'))) \n" +
             "    UNION ALL \n" +
             "      SELECT datetime(date, '+10 minute') \n" +
             "        FROM dates \n" +

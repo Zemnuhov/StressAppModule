@@ -6,6 +6,7 @@ import com.neurotech.core_bluetooth_comunication_api.BluetoothConnectionApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothWriterApi
 import com.neurotech.core_bluetooth_comunication_impl.AppBluetoothManager
 import com.neurotech.core_bluetooth_comunication_impl.di.BleCommunicationComponent
+import com.neurotech.utils.StressLogger.log
 import com.neurotech.utils.TimeFormat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +51,7 @@ class BluetoothWriter: BluetoothWriterApi {
     }
 
     override suspend fun writeDateTime(dateTime: Date) {
+        log("$dateTime writing")
         val timeString = dateTime.toString(timeFormat)
         val dateString = dateTime.toString(dateFormat)
         val timeByteArray = timeString.toByteArray()

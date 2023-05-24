@@ -5,6 +5,9 @@ import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattService
 import android.content.Context
+import com.cesarferreira.tempo.Tempo
+import com.cesarferreira.tempo.minute
+import com.cesarferreira.tempo.plus
 import com.cesarferreira.tempo.toDate
 import com.neurotech.core_bluetooth_comunication_impl.ListUUID.dataServiceUUID
 import com.neurotech.core_bluetooth_comunication_impl.ListUUID.dateUUID
@@ -384,7 +387,11 @@ class AppBluetoothManager(
             val dateTimeBegin = "$date $timeBegin".toDate(TimeFormat.dateTimeIsoPattern)
             val dateTimeEnd = "$date $timeEnd".toDate(TimeFormat.dateTimeIsoPattern)
             log("Write Phase in background")
-            PhaseEntityFromDevice(dateTimeBegin, dateTimeEnd, max!!.toDouble())
+            if(dateTimeBegin.before(Tempo.now + 10.minute)){
+                PhaseEntityFromDevice(dateTimeBegin, dateTimeEnd, max!!.toDouble())
+            }else{
+                null
+            }
         } catch (e: Exception) {
             errorFlow.value = e
             null
