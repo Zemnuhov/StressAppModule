@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.neurotech.modulestressapp"
-        minSdk 23
+        minSdk 24
         targetSdk 33
         versionCode 1
         versionName "1.1"
@@ -40,6 +40,14 @@ android {
 }
 
 dependencies {
+    constraints {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
+            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
+        }
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0") {
+            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
+        }
+    }
     implementation project(path: ':core-ble-device-scan-impl')
     implementation project(path: ':core-ble-device-scan-api')
     implementation project(path: ":feature-scan-api")
@@ -103,11 +111,11 @@ dependencies {
     implementation project(path: ':core-screen-controller-impl')
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.navigation:navigation-fragment:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
 
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'

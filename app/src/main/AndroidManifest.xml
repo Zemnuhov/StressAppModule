@@ -36,7 +36,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ModuleStressApp"
         android:enableOnBackInvokedCallback="true"
-        tools:targetApi="33">
+        tools:targetApi="33"
+        tools:overrideLibrary="com.example.feature_item_markup_impl">
         <activity
             android:name=".GoogleSignInActivity"
             android:exported="false">

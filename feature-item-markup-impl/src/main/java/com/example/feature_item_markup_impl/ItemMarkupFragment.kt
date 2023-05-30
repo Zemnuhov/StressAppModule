@@ -1,24 +1,62 @@
 package com.example.feature_item_markup_impl
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.feature_item_markup_impl.databinding.FragmentItemMarkupBinding
 import com.example.feature_item_markup_impl.di.ItemMarkupComponent
 import com.example.navigation_api.NavigationApi
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import com.himanshoe.charty.circle.CircleChart
+import com.himanshoe.charty.circle.model.CircleData
 import javax.inject.Inject
 import dagger.Lazy
 import com.example.values.R as values
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.himanshoe.charty.circle.config.CircleConfig
+import com.himanshoe.charty.circle.config.StartPosition
 
 
 class ItemMarkupFragment: Fragment(R.layout.fragment_item_markup) {
@@ -36,8 +74,7 @@ class ItemMarkupFragment: Fragment(R.layout.fragment_item_markup) {
         factory.get()
     }
 
-    private var _binding: FragmentItemMarkupBinding? = null
-    private val binding get() = _binding!!
+    var isDrawingImage = true
 
     private val colors by lazy {
         listOf(
@@ -51,7 +88,6 @@ class ItemMarkupFragment: Fragment(R.layout.fragment_item_markup) {
         )
     }
 
-    private var adapter: ItemMarkupAdapter? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -63,67 +99,93 @@ class ItemMarkupFragment: Fragment(R.layout.fragment_item_markup) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentItemMarkupBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        binding.sourceLayoutStatistic.layoutManager = LinearLayoutManager(context)
-        adapter = ItemMarkupAdapter()
-        binding.sourceLayoutStatistic.adapter = adapter
-        binding.sourceLayoutStatistic.isNestedScrollingEnabled = false
-
         if(arguments?.getString(BUNDLE_KEY) != null){
-            binding.settingIcon.visibility = View.GONE
+            isDrawingImage = false
         }
-
-        viewModel.countForEachReason.observe(viewLifecycleOwner) {
-            val requireSizeList = it.list.sortedBy { it.count }.reversed().take(colors.size-1)
-            val list = requireSizeList.mapIndexed { index, countForCause ->
-                CountForCauseModelAdapter(
-                    colors[index],
-                    countForCause.cause,
-                    countForCause.count
-                )
+        return ComposeView(requireContext()).apply {
+            setContent {
+                DrawMarkupItem()
             }
-            adapter?.submitList(list)
-            val entries = mutableListOf<PieEntry>()
-            val entryColors = mutableListOf<Int>()
-            entries.addAll(list.map { PieEntry(it.count.toFloat(), it.cause.name) })
-            entryColors.addAll(list.map { it.color })
-            if(entries.filter { it.value>0 }.isEmpty()) {
-                entries.add(PieEntry(1F,""))
-            }
-            if(entryColors.isEmpty()){
-                entryColors.add(colors[0])
-            }
-            fillPieChart(entries, entryColors)
         }
-        binding.settingIcon.setOnClickListener {
-            navigation.navigateMainToStatistic()
-        }
-    }
-
-    private fun fillPieChart(entries: List<PieEntry>, entryColors: List<Int>){
-        val set = PieDataSet(entries,"Statistic")
-        set.colors = entryColors
-        val dataSet = PieData(set)
-        dataSet.setValueTextColor(Color.BLACK)
-        binding.pieChart.data = dataSet
-        binding.pieChart.setDrawSliceText(false)
-        binding.pieChart.legend.isEnabled = false
-        binding.pieChart.description = null
-        binding.pieChart
-            .setBackgroundColor(ContextCompat.getColor(requireContext(), values.color.card_background))
-        binding.pieChart
-            .setHoleColor(ContextCompat.getColor(requireContext(), values.color.card_background))
-        binding.pieChart.invalidate()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         ItemMarkupComponent.clear()
+    }
+
+    @Composable
+    fun DrawMarkupItem(){
+        var data by remember {
+            mutableStateOf(listOf(CircleData(0, 0F, Color(colors[0]))))
+        }
+        var maxValue by remember { mutableStateOf(0F) }
+
+        viewModel.countForEachReason.observe(viewLifecycleOwner){
+            val requireSizeList = it.list.sortedBy { it.count }.reversed().take(colors.size-1)
+            maxValue = requireSizeList[0].count.toFloat()
+            data = requireSizeList.mapIndexed { index, countForCause ->
+                CircleData(
+                    countForCause.cause.name,
+                    countForCause.count.toFloat(),
+                    Color(colors[index])
+                )
+            }.reversed()
+        }
+        Box(modifier = Modifier.fillMaxSize()){
+            if (isDrawingImage){
+                Image(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = "Подробности",
+                    modifier = Modifier.align(Alignment.TopEnd).padding(16.dp).clickable { navigation.navigateMainToStatistic() }
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxSize()
+            ){
+                DrawDiagram(modifier = Modifier
+                    .fillMaxWidth(0.5F)
+                    .fillMaxHeight()
+                    .padding(start = 16.dp),
+                    data,
+                    maxValue
+                )
+                DrawSourceList(data = data)
+            }
+        }
+
+        
+    }
+
+    @Composable
+    private fun DrawDiagram(modifier: Modifier, data: List<CircleData>, maxValue: Float){
+        CircleChart(
+            modifier = modifier,
+            isAnimated = false,
+            circleData = data,
+            config = CircleConfig(StartPosition.Top, maxValue+200)
+        )
+    }
+
+    @Composable
+    private fun DrawSourceList(data: List<CircleData>){
+        Box(modifier = Modifier.padding(start = 16.dp, end = 32.dp), contentAlignment = Alignment.CenterStart){
+            Column( modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center){
+                data.reversed().forEach{
+                    Row( modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Row{
+                            Canvas(modifier = Modifier.size(16.dp), onDraw = { drawCircle(color = it.color!!) })
+                            Text(text = it.xValue.toString(), modifier = Modifier.padding(start = 16.dp))
+                        }
+                        Text(text = it.yValue.toInt().toString(), modifier = Modifier.padding(start = 16.dp), fontWeight = FontWeight(600))
+                    }
+                    
+                }
+            }
+        }
+
     }
 
 

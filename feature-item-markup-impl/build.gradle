@@ -12,7 +12,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        minSdk 23
+        minSdk 24
         targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -27,7 +27,8 @@ android {
     }
 
     buildFeatures{
-        viewBinding true
+//        viewBinding true
+        compose true
     }
 
     compileOptions {
@@ -41,6 +42,14 @@ android {
 
 dependencies {
 
+    implementation("com.himanshoe:charty:1.0.1")
+
+    implementation 'androidx.activity:activity-compose:1.7.1'
+    implementation 'androidx.compose.ui:ui:1.4.3'
+    implementation 'androidx.compose.material:material:1.4.3'
+    implementation 'androidx.compose.runtime:runtime:1.4.3'
+    implementation 'androidx.compose.ui:ui-tooling-preview:1.4.3'
+
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
@@ -53,10 +62,10 @@ dependencies {
     implementation project(path: ':feature-item-markup-api')
     implementation project(path: ':navigation-api')
     implementation project(path: ':values')
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
     kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     testImplementation 'junit:junit:4.13.2'
