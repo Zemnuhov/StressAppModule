@@ -53,20 +53,26 @@ import com.example.values.R as values
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.values.Dimens
 import com.himanshoe.charty.circle.config.CircleConfig
 import com.himanshoe.charty.circle.config.StartPosition
 
 
-class ItemMarkupFragment: Fragment(R.layout.fragment_item_markup) {
+class ItemMarkupFragment : Fragment(R.layout.fragment_item_markup) {
 
-    companion object{
+    companion object {
         const val BUNDLE_KEY = "VISIBILITY"
     }
 
     @Inject
     lateinit var navigation: NavigationApi
+
+    @Inject
+    lateinit var dimens: Dimens
 
     @Inject
     lateinit var factory: Lazy<ItemMarkupViewModel.Factory>
@@ -99,7 +105,7 @@ class ItemMarkupFragment: Fragment(R.layout.fragment_item_markup) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        if(arguments?.getString(BUNDLE_KEY) != null){
+        if (arguments?.getString(BUNDLE_KEY) != null) {
             isDrawingImage = false
         }
         return ComposeView(requireContext()).apply {
@@ -115,15 +121,15 @@ class ItemMarkupFragment: Fragment(R.layout.fragment_item_markup) {
     }
 
     @Composable
-    fun DrawMarkupItem(){
+    fun DrawMarkupItem() {
         var data by remember {
             mutableStateOf(listOf(CircleData(0, 0F, Color(colors[0]))))
         }
         var maxValue by remember { mutableStateOf(0F) }
 
-        viewModel.countForEachReason.observe(viewLifecycleOwner){
-            val requireSizeList = it.list.sortedBy { it.count }.reversed().take(colors.size-1)
-            maxValue = requireSizeList[0].count.toFloat()
+        viewModel.countForEachReason.observe(viewLifecycleOwner) {
+            val requireSizeList = it.list.sortedBy { it.count }.reversed().take(colors.size - 1)
+            maxValue = if (requireSizeList.isNotEmpty()) requireSizeList[0].count.toFloat() else 1F
             data = requireSizeList.mapIndexed { index, countForCause ->
                 CircleData(
                     countForCause.cause.name,
@@ -132,21 +138,25 @@ class ItemMarkupFragment: Fragment(R.layout.fragment_item_markup) {
                 )
             }.reversed()
         }
-        Box(modifier = Modifier.fillMaxSize()){
-            if (isDrawingImage){
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (isDrawingImage) {
                 Image(
                     imageVector = Icons.Filled.Info,
                     contentDescription = "Подробности",
-                    modifier = Modifier.align(Alignment.TopEnd).padding(16.dp).clickable { navigation.navigateMainToStatistic() }
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(dimens.indent)
+                        .clickable { navigation.navigateMainToStatistic() }
                 )
             }
             Row(
                 modifier = Modifier.fillMaxSize()
-            ){
-                DrawDiagram(modifier = Modifier
-                    .fillMaxWidth(0.5F)
-                    .fillMaxHeight()
-                    .padding(start = 16.dp),
+            ) {
+                DrawDiagram(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5F)
+                        .fillMaxHeight()
+                        .padding(start = dimens.indent),
                     data,
                     maxValue
                 )
@@ -154,34 +164,54 @@ class ItemMarkupFragment: Fragment(R.layout.fragment_item_markup) {
             }
         }
 
-        
+
     }
 
     @Composable
-    private fun DrawDiagram(modifier: Modifier, data: List<CircleData>, maxValue: Float){
+    private fun DrawDiagram(modifier: Modifier, data: List<CircleData>, maxValue: Float) {
         CircleChart(
             modifier = modifier,
             isAnimated = false,
-            circleData = data,
-            config = CircleConfig(StartPosition.Top, maxValue+200)
+            circleData = if(data.any { it.yValue > 0.0F }) data else listOf(CircleData(1, 1F, Color(colors[0]))),
+            config = CircleConfig(StartPosition.Top, maxValue + 200)
         )
     }
 
     @Composable
-    private fun DrawSourceList(data: List<CircleData>){
-        Box(modifier = Modifier.padding(start = 16.dp, end = 32.dp), contentAlignment = Alignment.CenterStart){
-            Column( modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center){
-                data.reversed().forEach{
-                    Row( modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Row{
-                            Canvas(modifier = Modifier.size(16.dp), onDraw = { drawCircle(color = it.color!!) })
-                            Text(text = it.xValue.toString(), modifier = Modifier.padding(start = 16.dp))
+    private fun DrawSourceList(data: List<CircleData>) {
+        Box(
+            modifier = Modifier.padding(start = dimens.indent, end = dimens.largeIndent),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
+                data.reversed().forEach {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                dimens.halfSmallIndent
+                            ),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row {
+                            Canvas(
+                                modifier = Modifier.size(dimens.indent),
+                                onDraw = { drawCircle(color = it.color!!) }
+                            )
+                            Text(
+                                text = it.xValue.toString(),
+                                modifier = Modifier.padding(start = dimens.indent),
+                                fontSize = dimens.smallTextSize
+                            )
                         }
-                        Text(text = it.yValue.toInt().toString(), modifier = Modifier.padding(start = 16.dp), fontWeight = FontWeight(600))
+                        Text(
+                            text = it.yValue.toInt().toString(),
+                            modifier = Modifier.padding(start = dimens.indent),
+                            fontWeight = FontWeight(600),
+                            fontSize = dimens.smallTextSize
+                        )
                     }
-                    
+
                 }
             }
         }

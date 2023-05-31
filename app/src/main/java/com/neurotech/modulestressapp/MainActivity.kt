@@ -2,6 +2,7 @@ package com.neurotech.modulestressapp
 
 import android.content.res.Resources.Theme
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -12,6 +13,8 @@ import com.example.core_screen_controller.ScreenControllerApi
 import com.example.core_screen_controller.ScreenState
 import com.example.navigation_api.NavigationApi
 import com.example.navigation_api.ViewID
+import com.example.values.Dimens
+import com.example.values.ScreenSize
 import com.neurotech.core_bluetooth_comunication_api.BluetoothConnectionApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothWriterApi
@@ -56,6 +59,11 @@ class MainActivity : AppCompatActivity(), FeatureComponentDependencies {
     override val userApi: UserApi get() = user
     override val relaxRecordApi: RelaxRecordApi get() = relaxRecord
     override val firebaseDataApi: FirebaseDataApi get() = firebaseData
+    override val dimens: Dimens
+        get() = Dimens(
+            ScreenSize(resources.displayMetrics.run { widthPixels / density }.toInt(),
+                resources.displayMetrics.run { heightPixels / density }.toInt())
+        )
 
 
     private lateinit var activityMainBinding: ActivityMainBinding
@@ -90,6 +98,11 @@ class MainActivity : AppCompatActivity(), FeatureComponentDependencies {
         toolbarBinding.upButton.setOnClickListener {
             navController.navigateUp()
         }
+
+        val widthDp = resources.displayMetrics.run { widthPixels / density }
+        val heightDp = resources.displayMetrics.run { heightPixels / density }
+
+        Log.e("AAAAAAAAAAA", "${widthDp} ----- ${heightDp}")
 
         //setSupportActionBar(binding.toolbar)
     }

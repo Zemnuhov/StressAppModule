@@ -42,6 +42,7 @@ import com.example.navigation.di.NavigationDependencies
 import com.example.navigation.di.NavigationDependenciesStore
 import com.example.navigation_api.NavigationApi
 import com.example.navigation_api.ViewID
+import com.example.values.Dimens
 import com.neurotech.core_bluetooth_comunication_api.BluetoothConnectionApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothWriterApi
@@ -138,6 +139,7 @@ interface FeatureComponentDependencies {
     val userApi: UserApi
     val relaxRecordApi: RelaxRecordApi
     val firebaseDataApi: FirebaseDataApi
+    val dimens: Dimens
 }
 
 interface FeatureComponentDependenciesProvider {

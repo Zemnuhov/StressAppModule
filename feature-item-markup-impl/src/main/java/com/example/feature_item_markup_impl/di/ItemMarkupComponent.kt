@@ -2,6 +2,7 @@ package com.example.feature_item_markup_impl.di
 
 import com.example.feature_item_markup_impl.ItemMarkupFragment
 import com.example.navigation_api.NavigationApi
+import com.example.values.Dimens
 import com.neurotech.core_database_api.ResultApi
 import com.neurotech.core_database_api.SettingApi
 import dagger.Component
@@ -41,6 +42,7 @@ interface ItemMarkupDependencies{
     val resultTenMinuteApi: ResultApi
     val settingApi: SettingApi
     val navigationApi: NavigationApi
+    val dimens: Dimens
 }
 
 interface ItemMarkupDependenciesProvider{
