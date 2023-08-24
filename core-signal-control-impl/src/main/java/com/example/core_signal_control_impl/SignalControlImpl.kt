@@ -1,5 +1,8 @@
 package com.example.core_signal_control_impl
 
+import android.content.Context
+import android.content.Intent
+import com.example.core_firebase_database_api.FirebaseDataApi
 import com.example.core_signal_control_api.SignalControlApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
 import com.neurotech.core_database_api.PhaseApi
@@ -21,6 +24,12 @@ class SignalControlImpl: SignalControlApi {
     @Inject
     lateinit var tonicDataBase: TonicApi
 
+    @Inject
+    lateinit var firebaseDataApi: FirebaseDataApi
+
+    @Inject
+    lateinit var context: Context
+
     private val threshold = 3
 
     init {
@@ -32,6 +41,8 @@ class SignalControlImpl: SignalControlApi {
         var beginTime: Date? = null
         var endTime: Date? = null
         var maxValue: Double = threshold.toDouble()
+        var lastBroadcast = 0L
+        val intent = Intent("com.neurotech.PHASE_BROADCAST_ACTION")
 
         bluetoothData.getPhaseValueFlow().collect{
             if(it.value > threshold && !beyondThreshold){
@@ -40,6 +51,11 @@ class SignalControlImpl: SignalControlApi {
             }
             if(beyondThreshold){
                 maxValue = max(maxValue, it.value)
+                if(System.currentTimeMillis() - lastBroadcast > 100){
+                    lastBroadcast = System.currentTimeMillis()
+                    intent.putExtra("value", it.value.toInt())
+                    context.sendBroadcast(intent)
+                }
             }
             if(it.value < threshold && beyondThreshold){
                 endTime = it.time
@@ -49,13 +65,24 @@ class SignalControlImpl: SignalControlApi {
                 beyondThreshold = false
                 beginTime = null
                 endTime = null
+                maxValue = threshold.toDouble()
+                intent.putExtra("value", 0)
+                context.sendBroadcast(intent)
             }
         }
     }
 
     override suspend fun listenTonicSignal() {
         var lastWriting = 0L
+        var lastBroadcast = 0L
         bluetoothData.getTonicValueFlow().collect{
+
+            if(System.currentTimeMillis() - lastBroadcast > 3000){
+                lastBroadcast = System.currentTimeMillis()
+                val intent = Intent("com.neurotech.TONIC_BROADCAST_ACTION")
+                intent.putExtra("value", it.value)
+                context.sendBroadcast(intent)
+            }
             if(System.currentTimeMillis() - lastWriting > 30000){
                 if(it.value>0){
                     lastWriting = System.currentTimeMillis()

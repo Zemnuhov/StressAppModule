@@ -1,5 +1,7 @@
 package com.example.core_signal_control_impl
 
+import android.content.Context
+import com.example.core_firebase_database_api.FirebaseDataApi
 import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
 import com.neurotech.core_database_api.PhaseApi
 import com.neurotech.core_database_api.TonicApi
@@ -43,6 +45,8 @@ interface SignalControlDependencies{
     val phaseApi: PhaseApi
     val tonicApi: TonicApi
     val bluetoothData: BluetoothDataApi
+    val firebaseDataApi: FirebaseDataApi
+    val context: Context
 }
 
 internal interface SignalControlDependenciesProvider{

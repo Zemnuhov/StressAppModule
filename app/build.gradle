@@ -104,13 +104,14 @@ dependencies {
     implementation 'androidx.work:work-runtime-ktx:2.8.0'
     
     implementation 'com.google.dagger:dagger:2.44.2'
+    kapt 'com.google.dagger:dagger-compiler:2.44.2'
     implementation project(path: ':feature-screen-relax-impl')
     implementation project(path: ':feature-screen-editing-day-plan-impl')
     implementation project(path: ':core-notification-controller-impl')
     implementation project(path: ':core-notification-controller-api')
     implementation project(path: ':core-screen-controller-api')
     implementation project(path: ':core-screen-controller-impl')
-    kapt 'com.google.dagger:dagger-compiler:2.44.2'
+
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.navigation:navigation-fragment:2.5.3'

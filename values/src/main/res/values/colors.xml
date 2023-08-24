@@ -15,7 +15,7 @@
     <color name="card_background">#FFFFFFFF</color>
     <color name="graph_grid">#878787</color>
 
-    <color name="green_not_active">#dcedc8</color>
+    <color name="green_not_active">#FFDCEDC8</color>
     <color name="green_active">#81c784</color>
     <color name="yellow_not_active">#fff9c4</color>
     <color name="yellow_active">#ffee58</color>

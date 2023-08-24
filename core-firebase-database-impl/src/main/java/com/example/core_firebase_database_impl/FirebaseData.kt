@@ -34,6 +34,25 @@ class FirebaseData : FirebaseDataApi {
         FirebaseDataComponent.get().inject(this)
     }
 
+    override suspend fun writeLedMode(mode: String) {
+        withContext(Dispatchers.IO) {
+            launch {
+                firebaseUser?.let {
+                    databaseReference.child("lamp").child(it.uid).child("mode").setValue(mode)
+                }
+            }
+        }
+    }
+    override suspend fun writeTonicValue(tonic: Tonic) {
+        withContext(Dispatchers.IO) {
+            launch {
+                firebaseUser?.let {
+                    databaseReference.child("lamp").child(it.uid).child("tonicValue").setValue(tonic.value)
+                }
+            }
+        }
+    }
+
     override suspend fun getUserFromFirebase(): User? = withContext(Dispatchers.IO) {
         return@withContext databaseReference
             .child("users")

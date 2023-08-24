@@ -1,5 +1,6 @@
 package com.example.feature_screen_relax_impl.di
 
+import com.example.core_firebase_database_api.FirebaseDataApi
 import com.example.feature_item_graph_api.ItemGraphApi
 import com.example.feature_screen_relax_impl.RelaxFragment
 import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
@@ -41,6 +42,7 @@ interface RelaxDependencies{
     val phaseApi: PhaseApi
     val itemGraphApi: ItemGraphApi
     val relaxRecordApi: RelaxRecordApi
+    val firebaseDatabaseApi: FirebaseDataApi
 }
 
 interface RelaxDependenciesProvider{

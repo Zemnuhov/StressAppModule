@@ -1,5 +1,6 @@
 package com.neurotech.feature_tonic_info_impl.di
 
+import com.example.values.Dimens
 import com.neurotech.core_bluetooth_comunication_api.BluetoothDataApi
 import com.neurotech.core_database_api.TonicApi
 import com.neurotech.feature_tonic_info_impl.TonicFragment
@@ -42,6 +43,7 @@ internal interface TonicInfoComponent {
 interface ItemTonicDependencies{
     val bluetoothDataApi: BluetoothDataApi
     val tonicApi: TonicApi
+    val dimens: Dimens
 }
 
 interface TonicInfoDependenciesProvider{

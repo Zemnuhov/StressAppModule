@@ -4,6 +4,10 @@ import com.neurotech.core_database_api.model.*
 
 
 interface FirebaseDataApi {
+
+    suspend fun writeTonicValue(tonic: Tonic)
+    suspend fun writeLedMode(mode: String)
+
     suspend fun getUserFromFirebase(): User?
     suspend fun setUser(user: User)
     suspend fun writeTenMinuteResult(result: ResultTenMinute)

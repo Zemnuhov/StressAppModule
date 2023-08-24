@@ -13,4 +13,5 @@ class Dimens(size: ScreenSize) {
     val textSize = (size.width.toFloat() * (16F/460F)).toInt().sp
     val smallTextSize = (size.width.toFloat() * (14F/460F)).toInt().sp
     val largeTextSize = (size.width.toFloat() * (30F/460F)).toInt().sp
+    val scaleIndent = (size.width.toFloat() * (2F/460F)).toInt().dp
 }
