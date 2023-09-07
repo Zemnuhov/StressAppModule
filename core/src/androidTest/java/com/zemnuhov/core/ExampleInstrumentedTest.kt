@@ -1,4 +1,4 @@
-package com.neurotech.core_ble_device_scan_api
+package com.zemnuhov.core
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.neurotech.core_ble_device_scan_api.test", appContext.packageName)
+        assertEquals("com.zemnuhov.core.test", appContext.packageName)
     }
 }

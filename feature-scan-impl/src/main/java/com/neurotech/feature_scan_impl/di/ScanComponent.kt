@@ -7,9 +7,6 @@ import com.neurotech.core_database_api.SettingApi
 import com.neurotech.feature_scan_impl.ScanFragment
 import dagger.Component
 import dagger.Component.Builder
-import dagger.Module
-import dagger.Provides
-import kotlinx.coroutines.internal.artificialFrame
 import javax.inject.Scope
 import kotlin.properties.Delegates.notNull
 

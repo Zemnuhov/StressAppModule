@@ -12,6 +12,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/app/core" />
+            <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core-ble-device-scan-api" />
             <option value="$PROJECT_DIR$/core-ble-device-scan-impl" />
             <option value="$PROJECT_DIR$/core-bluetooth-communication-api" />
@@ -34,6 +36,7 @@
             <option value="$PROJECT_DIR$/core-screen-controller-impl" />
             <option value="$PROJECT_DIR$/core-signal-control-api" />
             <option value="$PROJECT_DIR$/core-signal-control-impl" />
+            <option value="$PROJECT_DIR$/core/mylibrary" />
             <option value="$PROJECT_DIR$/custom-views" />
             <option value="$PROJECT_DIR$/feature-item-graph-api" />
             <option value="$PROJECT_DIR$/feature-item-graph-impl" />

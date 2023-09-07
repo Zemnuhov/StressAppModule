@@ -102,7 +102,6 @@ class MainActivity : AppCompatActivity(), FeatureComponentDependencies {
         val widthDp = resources.displayMetrics.run { widthPixels / density }
         val heightDp = resources.displayMetrics.run { heightPixels / density }
 
-        Log.e("AAAAAAAAAAA", "${widthDp} ----- ${heightDp}")
 
         //setSupportActionBar(binding.toolbar)
     }

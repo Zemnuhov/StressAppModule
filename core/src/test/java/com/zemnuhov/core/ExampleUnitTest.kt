@@ -1,4 +1,4 @@
-package com.neurotech.core_ble_device_scan_api
+package com.zemnuhov.core
 
 import org.junit.Test
 
