@@ -10,7 +10,6 @@ import kotlin.properties.Delegates.notNull
 @ItemGraphScope
 internal interface ItemGraphComponent {
     fun inject(phaseGraphFragment: PhaseGraphFragment)
-    fun inject(phaseGraphItemFragment: TonicGraphFragment)
     fun inject(itemGraph: ItemGraph)
 
     @Builder

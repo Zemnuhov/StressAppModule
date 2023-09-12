@@ -6,15 +6,35 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.asFlow
 import com.example.feature_item_graph_impl.databinding.FragmentPhaseGraphItemBinding
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import com.jjoe64.graphview.series.PointsGraphSeries
+import com.neurotech.core_bluetooth_comunication_api.model.Phase
+import com.neurotech.core_bluetooth_comunication_api.model.Tonic
+import com.zemnuhov.testcompose.ChartSetting
 import dagger.Lazy
+import java.util.Date
 import javax.inject.Inject
 import com.example.values.R as values
 
@@ -47,61 +67,52 @@ class PhaseGraphFragment: Fragment(R.layout.fragment_phase_graph_item) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPhaseGraphItemBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        settingGraph()
-        setObservers()
-        binding.phaseSwapButton.setOnClickListener {
-            parentFragmentManager.beginTransaction().replace(binding.phaseGraphHost.id, TonicGraphFragment()).commit()
-        }
-    }
-
-    private fun setObservers() {
-        viewModel.phaseValue.observe(viewLifecycleOwner) {
-            val x = it.time
-            val y = it.value
-            val point = DataPoint(x, y)
-            if(phaseSeries.highestValueX < x.time && excessSeries.highestValueX < x.time) {
-                if (y > threshold) {
-                    excessSeries.appendData(point, true, maxPoint)
+        return ComposeView(requireContext()).apply {
+            setContent {
+                val isPhase = remember {
+                    mutableStateOf(true)
                 }
-                phaseSeries.appendData(point, true, maxPoint)
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)) {
+                    if(isPhase.value){
+                        LineChart(
+                            listOf(),
+                            setting = ChartSetting(
+                                threshold = 3F,
+                                minY = -30F,
+                                maxY = 30F,
+                                minPointsInScreen = 500
+                            ),
+                            modifier = Modifier.fillMaxSize())
 
+                        val phase = viewModel.phaseValue.asFlow().collectAsState(initial = Phase(0.0, Date()))
+                        addPoint(Point(phase.value.time.time, phase.value.value.toFloat()))
+                    }else{
+                        LineChart(
+                            listOf(),
+                            setting = ChartSetting(
+                                minY = -30F,
+                                maxY = 30F,
+                                minPointsInScreen = 500
+                            ),
+                            modifier = Modifier.fillMaxSize())
+
+                        val tonic = viewModel.tonicValue.asFlow().collectAsState(initial = Tonic(0, Date()))
+                        setYDiapason(tonic.value.value.toFloat()-100F, tonic.value.value.toFloat()+100F)
+                        addPoint(Point(tonic.value.time.time, tonic.value.value.toFloat()))
+                    }
+                    Image(
+                        imageVector = Icons.Default.ArrowForward,
+                        "aaa",
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(16.dp)
+                            .clickable { isPhase.value = !isPhase.value }
+                    )
+                }
             }
         }
-    }
-
-    private fun settingGraph() {
-        with(binding.phaseGraphMain){
-            removeAllSeries()
-            addSeries(phaseSeries)
-            addSeries(excessSeries)
-            viewport.isYAxisBoundsManual = true
-            viewport.isXAxisBoundsManual = false
-            viewport.setMinY(-30.0)
-            viewport.setMaxY(30.0)
-            viewport.setMinX(0.0)
-            viewport.setMaxX(30000.0)
-            viewport.isScalable = true
-            viewport.isScrollable = true
-            viewport.setScalableY(false)
-            viewport.setScrollableY(false)
-            setBackgroundColor(ContextCompat.getColor(requireContext(), values.color.card_background))
-            gridLabelRenderer.gridColor = ContextCompat.getColor(requireContext(), values.color.card_background)
-            gridLabelRenderer.isHorizontalLabelsVisible = false
-            gridLabelRenderer.isVerticalLabelsVisible = false
-            gridLabelRenderer.setHumanRounding(false)
-            gridLabelRenderer.labelFormatter =
-                DateAsXAxisLabelFormatter(activity)
-            gridLabelRenderer.numHorizontalLabels = 3
-        }
-        excessSeries.color = Color.RED
-        excessSeries.size = 3f
-        phaseSeries.color = Color.BLACK
     }
 
     override fun onDestroyView() {
